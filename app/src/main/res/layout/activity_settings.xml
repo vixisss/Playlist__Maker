@@ -11,13 +11,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/for_settings">
+        android:layout_height="@dimen/for_settings"
+        android:backgroundTint="@color/white">
 
         <Button
             android:id="@+id/rollback"
             android:layout_width="@dimen/for_settings"
             android:layout_height="match_parent"
             android:backgroundTint="@color/white"
+            android:background="@android:color/transparent"
 
             app:icon="@drawable/light_mode"
             app:iconGravity="textStart"
