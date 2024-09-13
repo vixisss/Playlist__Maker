@@ -1,20 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/white"
-    tools:context=".SearchActivity">
+
+
+    android:theme="@style/Theme.MyApp.White">
+
+    <Button
+        android:id="@+id/rollback_search"
+        android:layout_width="@dimen/for_settings"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="@dimen/padding_icon"
+
+        app:icon="@drawable/light_mode"
+        style="@style/IconStyle" />
 
     <TextView
-        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+
+        android:layout_marginStart="@dimen/for_settings"
+        android:layout_marginTop="@dimen/padding_icon"
+
+        android:text="@string/search"
+
+        style="@style/MainTextStyle"/>
+
+
+
+    <EditText
+        android:id="@+id/editText_Search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/text_SearchActivity"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSize"
-        android:textStyle="bold" />
+
+        android:inputType="text|textNoSuggestions|textVisiblePassword"
+        android:imeOptions="actionNone"
+        android:hint="@string/search"
+
+        android:drawableStart="@drawable/search"
+
+        style="@style/EditTextTheme" />
+
+    <ImageView
+        android:id="@+id/clearIcon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+
+        android:layout_gravity="end"
+        android:visibility="gone"
+        android:src="@drawable/clear"
+        style="@style/EditTextTheme"/>
 
 </FrameLayout>

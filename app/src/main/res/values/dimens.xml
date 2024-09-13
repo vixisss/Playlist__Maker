@@ -7,4 +7,5 @@
     <dimen name="margin">10dp</dimen>
     <dimen name="btn_layout_height">0dp</dimen>
     <dimen name="text_size_settings">16sp</dimen>
+    <dimen name="search_size">64dp</dimen>
 </resources>
