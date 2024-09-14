@@ -8,43 +8,25 @@
     android:orientation="vertical"
     android:theme="@style/Theme.MyApp.White">
 
-    <FrameLayout
+
+    <Toolbar
+        android:id="@+id/settings_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/for_settings"
-        android:theme="@style/Theme.MyApp.White"
-        android:padding="@dimen/margin">
+        android:layout_height="@dimen/toolbar_size"
 
-        <Button
-            android:id="@+id/rollback"
-            android:layout_width="@dimen/for_settings"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
+        android:title="@string/settings"
+        style="@style/ToolbarStyle" />
 
-
-            app:icon="@drawable/light_mode"
-            style="@style/IconStyle"
-            />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            android:layout_marginStart="@dimen/for_settings"
-            android:text="@string/settings"
-
-            style="@style/MainTextStyle"/>
-    </FrameLayout>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchDarkTheme"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/setting_btn_style"
 
-        android:layout_weight="0"
 
         android:text="@string/night_theme"
 
-        style="@style/SettingsStyle"/>
+        style="@style/SettingsButtonStyle"/>
 
     <Button
         android:id="@+id/btn_shareApp"
@@ -52,7 +34,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/setting_btn_style"
         android:layout_weight="0"
 
         android:text="@string/give_app"
@@ -64,7 +46,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/setting_btn_style"
         android:layout_weight="0"
 
         android:text="@string/support"
@@ -76,7 +58,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/setting_btn_style"
         android:layout_weight="0"
 
         android:text="@string/user_agree"
