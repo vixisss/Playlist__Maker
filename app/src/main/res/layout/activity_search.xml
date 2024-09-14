@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
 
     android:theme="@style/Theme.MyApp.White">
 
+    <Button
+        android:id="@+id/rollback_search"
+        android:layout_width="@dimen/for_settings"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="@dimen/padding_icon"
 
-    <Toolbar
-        android:id="@+id/search_toolbar"
+        app:icon="@drawable/light_mode"
+        style="@style/IconStyle" />
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_size"
+        android:layout_height="48dp"
 
-        android:title="@string/search"
-        style="@style/ToolbarStyle" />
+        android:layout_marginStart="@dimen/for_settings"
+        android:layout_marginTop="@dimen/padding_icon"
+
+        android:text="@string/search"
+
+        style="@style/MainTextStyle"/>
+
 
 
     <EditText
@@ -36,7 +50,6 @@
 
         android:layout_gravity="end"
         android:visibility="gone"
-
         android:src="@drawable/clear"
         style="@style/EditTextTheme"/>
 

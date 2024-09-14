@@ -15,22 +15,21 @@
         <item name="android:textColor">@color/night_theme</item>
         <item name="android:textSize">@dimen/textSize</item>
         <item name="cornerRadius">@dimen/radius</item>
-        <item name="android:letterSpacing">0</item>
 
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/padding_icon</item>
         <item name="iconTint">@color/night_theme</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="SettingsButtonStyle">
         <item name="android:textAllCaps">false</item>
-        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:backgroundTint">@color/night_theme</item>
         <item name="android:background">@android:color/transparent</item>
 
-        <item name="android:layout_marginTop">@dimen/margin</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:paddingStart">@dimen/radius</item>
-        <item name="android:paddingEnd">@dimen/radius</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:paddingLeft">@dimen/margin</item>
+        <item name="android:paddingEnd">@dimen/margin</item>
         <item name="android:textAlignment">textStart</item>
         <item name="cornerRadius">0dp</item>
         <item name="android:textColor">@color/white</item>
@@ -43,12 +42,35 @@
     </style>
 
 
+    <style name="SettingsStyle">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:backgroundTint">@color/night_theme</item>
+
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:paddingLeft">@dimen/margin</item>
+        <item name="android:paddingEnd">@dimen/margin</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_settings</item>
+        <item name="android:letterSpacing">0</item>
+
+        <item name="iconGravity">end</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="IconStyle">
+        <item name="iconTint">@color/white</item>
+        <item name="iconGravity">textStart</item>
+        app:iconGravity="textStart"
+    </style>
+
     <style name="EditTextTheme" parent="Widget.AppCompat.EditText">
         <item name="android:padding">@dimen/margin</item>
         <item name="android:textSize">@dimen/text_size_settings</item>
 
         <item name="android:drawablePadding">@dimen/padding_icon</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:layout_marginStart">@dimen/radius</item>
         <item name="android:layout_marginTop">@dimen/search_size</item>
         <item name="android:layout_marginEnd">@dimen/radius</item>
@@ -58,21 +80,10 @@
         <item name="android:drawableTint">@color/night_theme</item>
 
         <item name="android:textColor">@color/night_theme</item>
-        <item name="android:background">@drawable/edit_text_light_theme</item>
-    </style>
-
-
-    <style name="ImageTheme" parent="Widget.AppCompat.EditText">
-        <item name="android:paddingEnd">@dimen/padding_icon</item>
         <item name="android:background">@drawable/edit_text_night_theme</item>
     </style>
 
-    <style name="ToolbarStyle">
-        <item name="android:titleTextColor">@color/white</item>
-        <item name="android:titleTextAppearance">@style/MainTextStyle</item>
 
-        <item name="android:navigationIcon">@drawable/light_mode_night</item>
-    </style>
 
 
 </resources>
