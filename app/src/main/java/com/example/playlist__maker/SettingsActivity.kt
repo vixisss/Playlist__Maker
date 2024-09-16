@@ -1,21 +1,23 @@
 package com.example.playlist__maker
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
-import com.example.playlist__maker.R.id.rollback
+
 
 class SettingsActivity : AppCompatActivity() {
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         //"назад"
-        val rollbackBtn = findViewById<Button>(rollback)
-
-        rollbackBtn.setOnClickListener {
+        val rollback = findViewById<Toolbar>(R.id.settings_toolbar)
+        rollback.setNavigationOnClickListener{
             finish()
         }
 

@@ -21,7 +21,7 @@
     <Button
         android:id="@+id/search_btn"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_layout_height"
+        android:layout_height="0dp"
 
         android:layout_weight="1"
         android:layout_margin="@dimen/radius"
@@ -34,7 +34,7 @@
     <Button
         android:id="@+id/media_btn"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_layout_height"
+        android:layout_height="0dp"
 
         android:layout_weight="1"
         android:layout_marginStart="@dimen/radius"
@@ -48,7 +48,7 @@
     <Button
         android:id="@+id/settings_btn"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_layout_height"
+        android:layout_height="0dp"
 
         android:layout_weight="1"
         android:layout_margin="@dimen/radius"

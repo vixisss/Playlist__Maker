@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -40,10 +41,12 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         //"Назад"
-        val rollbackBtn = findViewById<Button>(R.id.rollback_search)
-        rollbackBtn.setOnClickListener {
+        val rollback = findViewById<Toolbar>(R.id.search_toolbar)
+        rollback.setNavigationOnClickListener{
             finish()
         }
+
+
 
         //"Поиск"
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
