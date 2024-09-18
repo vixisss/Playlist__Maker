@@ -55,6 +55,7 @@
         <item name="android:layout_marginTop">@dimen/search_size</item>
         <item name="android:layout_marginEnd">@dimen/radius</item>
 
+        <item name="android:textCursorDrawable">@drawable/light_cursor</item>
         <item name="android:textColorHint">@color/edit_text_lightTheme_search</item>
         <item name="android:tint">@color/edit_text_lightTheme_text</item>
         <item name="android:drawableTint">@color/edit_text_lightTheme_text</item>

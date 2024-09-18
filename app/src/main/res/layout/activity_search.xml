@@ -3,9 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-
     android:theme="@style/Theme.MyApp.White">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/editText_Search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:imeOptions="actionNone"
+            android:hint="@string/search"
+
+            android:drawableStart="@drawable/search"
+
+            style="@style/EditTextTheme" />
+
+        <ImageView
+            android:id="@+id/clearIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+
+            android:layout_gravity="end"
+            android:visibility="gone"
+
+            android:src="@drawable/clear"
+            style="@style/EditTextTheme"/>
+
+    </FrameLayout>
 
     <Toolbar
         android:id="@+id/search_toolbar"
@@ -14,30 +42,5 @@
 
         android:title="@string/search"
         style="@style/ToolbarStyle" />
-
-
-    <EditText
-        android:id="@+id/editText_Search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:inputType="text|textNoSuggestions|textVisiblePassword"
-        android:imeOptions="actionNone"
-        android:hint="@string/search"
-
-        android:drawableStart="@drawable/search"
-
-        style="@style/EditTextTheme" />
-
-    <ImageView
-        android:id="@+id/clearIcon"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-
-        android:layout_gravity="end"
-        android:visibility="gone"
-
-        android:src="@drawable/clear"
-        style="@style/EditTextTheme"/>
 
 </FrameLayout>

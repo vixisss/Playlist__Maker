@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toolbar
@@ -42,7 +41,7 @@ class SearchActivity : AppCompatActivity() {
 
         //"Назад"
         val rollback = findViewById<Toolbar>(R.id.search_toolbar)
-        rollback.setNavigationOnClickListener{
+        rollback.setNavigationOnClickListener {
             finish()
         }
 
@@ -58,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
+
             override fun afterTextChanged(s: Editable?) {}
         }
         searchEditText.addTextChangedListener(simpleTextWatcher)

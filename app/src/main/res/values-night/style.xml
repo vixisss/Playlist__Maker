@@ -53,6 +53,7 @@
         <item name="android:layout_marginTop">@dimen/search_size</item>
         <item name="android:layout_marginEnd">@dimen/radius</item>
 
+        <item name="android:textCursorDrawable">@drawable/light_cursor</item>
         <item name="android:textColorHint">@color/night_theme</item>
         <item name="android:tint">@color/night_theme</item>
         <item name="android:drawableTint">@color/night_theme</item>
