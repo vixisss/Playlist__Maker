@@ -10,5 +10,4 @@
     <dimen name="search_size">64dp</dimen>
     <dimen name="toolbar_size">56dp</dimen>
     <dimen name="setting_btn_style">61dp</dimen>
-
 </resources>
