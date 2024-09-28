@@ -1,68 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="@color/white"
     android:orientation="vertical"
-    android:theme="@style/Theme.MyApp.White">
+    android:padding="@dimen/padding_icon">
 
-
-    <Toolbar
-        android:id="@+id/settings_toolbar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_size"
+        android:layout_height="@dimen/for_settings"
+        android:backgroundTint="@color/white">
 
-        android:title="@string/settings"
-        style="@style/ToolbarStyle" />
+        <Button
+            android:id="@+id/rollback"
+            android:layout_width="@dimen/for_settings"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            android:background="@android:color/transparent"
+
+            app:icon="@drawable/light_mode"
+            app:iconGravity="textStart"
+            app:iconTint="@color/night_theme" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchDarkTheme"
+            android:layout_marginStart="@dimen/for_settings"
+            android:gravity="center_vertical"
+            android:text="@string/settings"
+            android:textColor="@color/night_theme"
+            android:textSize="@dimen/textSize"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <Switch
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
-
-
+        android:layout_height="@dimen/btn_layout_height"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_weight="0"
         android:text="@string/night_theme"
 
-        style="@style/SettingsButtonStyle"/>
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_settings"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    <Button
-        android:id="@+id/btn_shareApp"
-
-        style="@style/SettingsButtonStyle"
-
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:layout_weight="0"
 
         android:text="@string/give_app"
-        app:icon="@drawable/share" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_settings"
 
-    <Button
-        android:id="@+id/btn_supportHelp"
+        app:drawableRightCompat="@drawable/share" />
 
-        style="@style/SettingsButtonStyle"
-
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:layout_weight="0"
 
         android:text="@string/support"
-        app:icon="@drawable/support" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_settings"
 
-    <Button
-        android:id="@+id/btn_userAgree"
+        app:drawableRightCompat="@drawable/support" />
 
-        style="@style/SettingsButtonStyle"
-
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:layout_weight="0"
 
         android:text="@string/user_agree"
-        app:icon="@drawable/user_agree" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_settings"
 
+        app:drawableRightCompat="@drawable/user_agree" />
 
 </LinearLayout>
