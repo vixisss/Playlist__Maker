@@ -1,16 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Основная тема приложения. -->
-    <style name="Theme.MyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:background">@color/night_theme</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="iconTint">@color/white</item>
-
-
-
-    </style>
-    <style name="Theme.MyApp.White" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="background">@color/night_theme</item>
-        <item name="android:textColor">@color/white</item>"
-        <item name="android:iconTintMode">@color/white</item>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Playlist__Maker" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 </resources>
