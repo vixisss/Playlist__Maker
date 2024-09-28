@@ -3,18 +3,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/white"
-    tools:context=".SearchActivity">
 
-    <TextView
-        android:id="@+id/message"
+    android:theme="@style/Theme.MyApp.White">
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/text_SearchActivity"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSize"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/editText_Search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+            android:imeOptions="actionNone"
+            android:hint="@string/search"
+
+            android:drawableStart="@drawable/search"
+
+            style="@style/EditTextTheme" />
+
+        <ImageView
+            android:id="@+id/clearIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+
+            android:layout_gravity="end"
+            android:visibility="gone"
+
+            android:src="@drawable/clear"
+            style="@style/EditTextTheme"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_tracksList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+
+            android:layout_marginTop="124dp"
+            tools:ignore="RtlSymmetry" />
+
+
+    </FrameLayout>
+
+    <Toolbar
+        android:id="@+id/search_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_size"
+
+        android:title="@string/search"
+        style="@style/ToolbarStyle" />
 
 </FrameLayout>

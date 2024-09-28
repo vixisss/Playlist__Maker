@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="textSize">22sp</dimen>
+    <dimen name="text_size_settings">16sp</dimen>
+
     <dimen name="for_settings">48dp</dimen>
     <dimen name="padding_icon">5dp</dimen>
     <dimen name="radius">16dp</dimen>
     <dimen name="margin">10dp</dimen>
-    <dimen name="btn_layout_height">0dp</dimen>
-    <dimen name="text_size_settings">16sp</dimen>
+    <dimen name="search_size">64dp</dimen>
+    <dimen name="toolbar_size">56dp</dimen>
+    <dimen name="setting_btn_style">61dp</dimen>
+
 </resources>
