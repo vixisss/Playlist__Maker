@@ -64,6 +64,8 @@
         <item name="android:background">@drawable/edit_text_light_theme</item>
     </style>
 
+
+
     <style name="ImageTheme" parent="Widget.AppCompat.EditText">
         <item name="android:paddingEnd">@dimen/padding_icon</item>
         <item name="android:background">@drawable/edit_text_light_theme</item>
