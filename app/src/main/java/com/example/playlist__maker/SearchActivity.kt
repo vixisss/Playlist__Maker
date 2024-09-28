@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -12,6 +13,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 
 class SearchActivity : AppCompatActivity() {
@@ -45,8 +50,6 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-
-
         //"Поиск"
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
         val searchEditText = findViewById<EditText>(R.id.editText_Search)
@@ -72,6 +75,14 @@ class SearchActivity : AppCompatActivity() {
             }
             v?.onTouchEvent(event) ?: true
         }
+
+
+        //recycle
+        val recycler = findViewById<RecyclerView>(R.id.recyclerView_tracksList)
+        recycler.layoutManager = LinearLayoutManager(this)
+        val adapter = TrackAdapter(tracks)
+        recycler.adapter = adapter
+
     }
 
 
@@ -80,5 +91,7 @@ class SearchActivity : AppCompatActivity() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
     }
+
+
 
 }
