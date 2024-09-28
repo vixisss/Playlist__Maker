@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
+    style="@style/ThemeOverlay.AppCompat.Dark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.MyApp"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <TextView
@@ -12,51 +13,81 @@
         android:layout_height="56dp"
         android:layout_marginStart="12dp"
 
+        android:gravity="center_vertical"
         android:text="@string/app_name"
         android:textColor="@color/white"
-
-        style="@style/MainTextStyle"/>
+        android:textSize="@dimen/textSize"
+        android:textStyle="bold" />
 
 
     <Button
         android:id="@+id/search_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/btn_layout_height"
 
         android:layout_weight="1"
+        android:backgroundTint="@color/white"
+
         android:layout_margin="@dimen/radius"
 
-        style="@style/ButtonStyle"
 
+        android:fontFamily="sans-serif-medium"
         android:text="@string/search"
-        app:icon="@drawable/search" />
+        android:textAllCaps="false"
+        android:textColor="@color/night_theme"
+
+        android:textSize="@dimen/textSize"
+        app:cornerRadius="@dimen/radius"
+        app:icon="@drawable/search"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/padding_icon"
+        app:iconTint="@color/night_theme" />
 
     <Button
         android:id="@+id/media_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/btn_layout_height"
 
-        android:layout_weight="1"
+
         android:layout_marginStart="@dimen/radius"
         android:layout_marginEnd="@dimen/radius"
 
-        style="@style/ButtonStyle"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
 
+        android:fontFamily="sans-serif-medium"
         android:text="@string/media"
-        app:icon="@drawable/media" />
+        android:textAllCaps="false"
+        android:textColor="@color/night_theme"
+
+        android:textSize="@dimen/textSize"
+        app:cornerRadius="@dimen/radius"
+        app:icon="@drawable/media"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/padding_icon"
+        app:iconTint="@color/night_theme" />
 
     <Button
         android:id="@+id/settings_btn"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/btn_layout_height"
 
-        android:layout_weight="1"
         android:layout_margin="@dimen/radius"
 
-        style="@style/ButtonStyle"
-
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:fontFamily="sans-serif-medium"
         android:text="@string/settings"
-        app:icon="@drawable/group" />
+
+        android:textAllCaps="false"
+        android:textColor="@color/night_theme"
+        android:textSize="@dimen/textSize"
+
+        app:cornerRadius="@dimen/radius"
+        app:icon="@drawable/group"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/padding_icon"
+        app:iconTint="@color/night_theme" />
 
 
 </LinearLayout>
