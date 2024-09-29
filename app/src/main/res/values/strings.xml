@@ -11,4 +11,11 @@
     <string name="text_SettingsActivity">Нажали на кнопку Настройки</string>
     <string name="text_SearchActivity">Нажали на кнопку Поиск</string>
     <string name="text_MediaActivity">Нажали на кнопку Медиатека</string>
+
+
+    <string name="settingsShare_Text">https://practicum.yandex.ru/android-developer/</string>
+    <string name="supportHelpTheme_text">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="supportHelpBodyLetter_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="myEmail">shkanovaviktoria@mail.ru</string>
+    <string name="offerYandex">https://yandex.ru/legal/practicum_offer/</string>
 </resources>
