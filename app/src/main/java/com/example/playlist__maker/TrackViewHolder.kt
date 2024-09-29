@@ -17,7 +17,7 @@ class TrackViewHolder (parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflat
     private val trackTimeView: TextView
     private val artworkUrl100View: ImageView
 
-    fun dpToPx(dp: Float, context: Context): Int {
+    private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
@@ -39,7 +39,7 @@ class TrackViewHolder (parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflat
 
         Glide.with(itemView)
             .load(track.artworkUrl100)
-            .transform(RoundedCorners(2))
+            .transform(RoundedCorners(dpToPx(2F, itemView.context)))
             .centerCrop()
             .override(dpToPx(45F, itemView.context), dpToPx(45F, itemView.context))
             .into(artworkUrl100View)
