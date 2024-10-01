@@ -1,6 +1,11 @@
 package com.example.playlist__maker
 
-data class Track (var trackName: String, var artistName: String, var trackTime: String, var artworkUrl100: String)
+data class Track (
+    val trackName: String,
+    val artistName: String,
+    val trackTime: String,
+    val artworkUrl100: String
+)
 
 
 val tracks = listOf(
