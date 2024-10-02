@@ -27,7 +27,7 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
     fun bind(model: Track) {
         Glide.with(this.itemView.context)
             .load(model.artworkUrl100)
-            .placeholder(R.drawable.no_wifi)
+            .placeholder(R.drawable.placeholder)
             .transform(RoundedCorners(dpToPx(2F, itemView.context)))
             .centerCrop()
             .override(dpToPx(45F, itemView.context), dpToPx(45F, itemView.context))
