@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
@@ -24,14 +25,24 @@
 
         <ImageView
             android:id="@+id/clearIcon"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/img_clear"
+            android:layout_height="@dimen/img_clear"
 
             android:layout_gravity="end"
             android:visibility="gone"
 
             android:src="@drawable/clear"
             style="@style/EditTextTheme"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_tracksList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+
+            android:layout_marginTop="@dimen/recycleView_marginTop"
+            tools:ignore="RtlSymmetry" />
+
 
     </FrameLayout>
 
