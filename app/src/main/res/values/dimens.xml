@@ -2,6 +2,7 @@
 <resources>
     <dimen name="textSize">22sp</dimen>
     <dimen name="text_size_settings">16sp</dimen>
+    <dimen name="text14">14sp</dimen>
 
     <dimen name="for_settings">48dp</dimen>
     <dimen name="padding_icon">5dp</dimen>
@@ -16,5 +17,6 @@
     <dimen name="recycleView_marginTop">124dp</dimen>
     <dimen name="img_close">24dp</dimen>
     <dimen name="marginTop_img">20dp</dimen>
+    <dimen name="margin86">86dp</dimen>
 
 </resources>

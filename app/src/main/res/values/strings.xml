@@ -20,4 +20,9 @@
     <string name="offerYandex">https://yandex.ru/legal/practicum_offer/</string>
 
     <string name="smels">Smells Like Teen Spirit</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="no_internet">
+        Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету
+    </string>
+    <string name="update">Обновить</string>
 </resources>
