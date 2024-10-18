@@ -14,10 +14,10 @@ class MediaActivity : AppCompatActivity() {
 
         rollback = findViewById(R.id.media_toolbar)
 
-        rollback()
+        setupToolbar()
     }
 
-    private fun rollback(){
+    private fun  setupToolbar(){
         rollback.setOnClickListener {
             finish()
         }
