@@ -6,14 +6,12 @@
     tools:context=".MediaActivity"
     android:theme="@style/Theme.MyApp.White">
 
-    <TextView
-        android:id="@+id/message"
+    <Toolbar
+        android:id="@+id/media_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/text_MediaActivity"
-        android:textSize="@dimen/textSize"
-        android:textStyle="bold" />
+        android:layout_height="@dimen/toolbar_size"
+
+        android:title="@string/media"
+        style="@style/ToolbarStyle"/>
 
 </FrameLayout>

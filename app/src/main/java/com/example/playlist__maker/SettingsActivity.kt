@@ -10,19 +10,35 @@ import androidx.appcompat.app.AppCompatActivity
 
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var rollback: Toolbar
+    private lateinit var shareButton: Button
+    private lateinit var supportHelpButton: Button
+    private lateinit var userAgreeButton: Button
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        //"назад"
-        val rollback = findViewById<Toolbar>(R.id.settings_toolbar)
+
+        rollback = findViewById(R.id.settings_toolbar)
+        shareButton = findViewById(R.id.btn_shareApp)
+        supportHelpButton = findViewById(R.id.btn_supportHelp)
+        userAgreeButton = findViewById(R.id.btn_userAgree)
+
+        rollback()
+        shareApp()
+        supportHelp()
+        userAgree()
+    }
+
+    private fun rollback(){
         rollback.setNavigationOnClickListener{
             finish()
         }
+    }
 
-        // "Поделиться приложением"
-        val shareButton = findViewById<Button>(R.id.btn_shareApp)
+    private fun shareApp(){
         shareButton.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -32,9 +48,9 @@ class SettingsActivity : AppCompatActivity() {
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
+    }
 
-        //"Написать в поддержку"
-        val supportHelpButton = findViewById<Button>(R.id.btn_supportHelp)
+    private fun supportHelp(){
         supportHelpButton.setOnClickListener{
             val message = getString(R.string.supportHelpBodyLetter_text)
             val theme = getString(R.string.supportHelpTheme_text)
@@ -45,15 +61,14 @@ class SettingsActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_TEXT, message)
             startActivity(shareIntent)
         }
+    }
 
-        //"Пользовательское соглашение"
-        val userAgreeButton = findViewById<Button>(R.id.btn_userAgree)
+    private fun userAgree(){
         userAgreeButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(getString(R.string.offerYandex))
             }
             startActivity(intent)
         }
-
     }
 }
