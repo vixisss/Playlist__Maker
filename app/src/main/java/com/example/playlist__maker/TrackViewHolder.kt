@@ -12,12 +12,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-
     private val trackNameView: TextView = view.findViewById(R.id.trackName)
     private val artistNameView : TextView = view.findViewById(R.id.artistName)
     private val trackTimeView: TextView = view.findViewById(R.id.trackTime)
     private val artworkUrl100View: ImageView = view.findViewById(R.id.artworkUrl100)
-
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
@@ -26,7 +24,7 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
             context.resources.displayMetrics).toInt()
     }
 
-    fun bind(model: Track) {
+    fun bind(model: Track, listenerOnClick: Listener) {
         Glide.with(this.itemView.context)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.placeholder)
@@ -35,6 +33,9 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
             .override(dpToPx(45F, itemView.context), dpToPx(45F, itemView.context))
             .into(artworkUrl100View)
 
+        itemView.setOnClickListener {
+            listenerOnClick.onClick(model)
+        }
 
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName

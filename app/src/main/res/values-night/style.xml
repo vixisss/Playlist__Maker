@@ -125,4 +125,12 @@
         <item name="android:textSize">@dimen/text14</item>
         <item name="fontFamily">@font/ys_display_medium</item>
     </style>
+
+    <style name="historyToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/white</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">@dimen/text19</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
 </resources>

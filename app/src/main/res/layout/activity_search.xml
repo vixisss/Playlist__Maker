@@ -22,7 +22,7 @@
         <EditText
             android:id="@+id/editText_Search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
 
             android:imeOptions="actionDone"
             android:singleLine="true"
@@ -44,6 +44,46 @@
 
             android:src="@drawable/clear"
             style="@style/EditTextTheme"/>
+
+        <LinearLayout
+            android:id="@+id/history_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="76dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <TextView
+                    android:id="@+id/titleHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/historyTitle"
+                    style="@style/historyToolbar"/>
+
+            </Toolbar>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/historyList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+
+                tools:ignore="RtlSymmetry"/>
+
+            <Button
+                android:id="@+id/clear_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/historyBtn"
+                style="@style/button_in_noInternet"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/trackList_layout"
@@ -80,8 +120,10 @@
                 android:id="@+id/update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/update"
                 style="@style/button_in_noInternet"/>
         </LinearLayout>
+
 
 
 

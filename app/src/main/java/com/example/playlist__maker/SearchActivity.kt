@@ -24,20 +24,22 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), Listener{
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val FIRST_STRING = ""
+
+        const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
+    }
+
+
     private val baseURL = "https://itunes.apple.com/"
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseURL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val itunesAPIService = retrofit.create(ItunesAPI::class.java)
-    private var saveText: String = FIRST_STRING
 
-    companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val FIRST_STRING = ""
-    }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_TEXT, saveText)
@@ -46,6 +48,9 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         saveText = savedInstanceState.getString(SEARCH_TEXT, FIRST_STRING)
     }
+
+    private val itunesAPIService = retrofit.create(ItunesAPI::class.java)
+    private var saveText: String = FIRST_STRING
 
 
     private lateinit var rollback: Toolbar
@@ -57,6 +62,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderImg: ImageView
     private lateinit var updateButton: Button
     private lateinit var adapter: TrackAdapter
+
+    private lateinit var history: History
+    private lateinit var historyLayout: LinearLayout
+    private lateinit var clearHistory: Button
+    private lateinit var historyRecycle: RecyclerView
+    private lateinit var historyAdapter: TrackAdapter
+    private lateinit var toolbarHistory: TextView
 
 
     @SuppressLint("MissingInflatedId")
@@ -74,20 +86,24 @@ class SearchActivity : AppCompatActivity() {
         placeholderImg = findViewById(R.id.img_placeholder)
         updateButton = findViewById(R.id.update)
 
+        historyLayout = findViewById(R.id.history_layout)
+        clearHistory = findViewById(R.id.clear_history)
+        historyRecycle = findViewById(R.id.historyList)
+        toolbarHistory = findViewById(R.id.titleHistory)
+
+
 
         clearFun()
         simpleTextWatcherFun()
         showRecycler()
         search()
+        clearHistoryFun()
     }
-
 
 
     @SuppressLint("ClickableViewAccessibility")
     private fun clearFun() {
-        rollback.setNavigationOnClickListener {
-            finish()
-        }
+        rollback.setNavigationOnClickListener { finish() }
         clearButton.setOnTouchListener { v, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -99,11 +115,32 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun simpleTextWatcherFun(){
+
+
+    @SuppressLint("CommitPrefEdits")
+    private fun clearHistoryFun() {
+        history = History(getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE))
+        historyAdapter = TrackAdapter(history.makeHistoryList(), this)
+        historyRecycle.adapter = historyAdapter
+        historyRecycle.layoutManager = LinearLayoutManager(this)
+
+        clearHistory.setOnClickListener {
+            getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply()
+
+            history.clearHistory()
+            historyLayout.visibility = View.GONE
+        }
+    }
+
+
+    private fun simpleTextWatcherFun() {
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                clearButton.visibility = if (s.isNullOrBlank()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         }
@@ -112,15 +149,17 @@ class SearchActivity : AppCompatActivity() {
 
 
     private fun showRecycler() {
-        adapter = TrackAdapter(emptyList())
+        adapter = TrackAdapter(emptyList(), this)
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(this)
     }
+
 
     private fun stopSearch() {
         recycler.visibility = View.GONE
         placeholderLayout.visibility = View.GONE
     }
+
 
     private fun hideKeyboard() {
         val hideKeyboard = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -140,17 +179,30 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-
         clearButton.setOnClickListener{
             searchEditText.text.clear()
             clearButton.visibility = View.GONE
+            searchEditText.clearFocus()
             hideKeyboard()
             stopSearch()
         }
 
-
         updateButton.setOnClickListener {
             placeholderOrResult()
+        }
+
+        searchEditText.setOnFocusChangeListener { view, hasFocus ->
+            if(hasFocus && history.historyTracks.size > 0) {
+                historyLayout.visibility = View.VISIBLE
+                historyRecycle.visibility = View.VISIBLE
+                toolbarHistory.visibility = View.VISIBLE
+                clearHistory.visibility = View.VISIBLE
+            } else {
+                historyLayout.visibility = View.GONE
+                historyRecycle.visibility = View.GONE
+                toolbarHistory.visibility = View.GONE
+                clearHistory.visibility = View.GONE
+            }
         }
     }
 
@@ -158,6 +210,7 @@ class SearchActivity : AppCompatActivity() {
     private fun placeholderOrResult() {
         val term = searchEditText.text.toString().trim()
         if (term.isNotEmpty()) {
+            historyLayout.visibility = View.GONE
             lifecycleScope.launch {
                 try {
                     val response = searchTracks(term)
@@ -168,6 +221,7 @@ class SearchActivity : AppCompatActivity() {
 
                         recycler.visibility = View.GONE
                         updateButton.visibility = View.GONE
+                        historyLayout.visibility = View.GONE
 
                         placeholderImg.setImageResource(R.drawable.placeholder_nothing_find_day)
                         placeholderTextMessageError.text = getString(R.string.nothing_found)
@@ -203,8 +257,15 @@ class SearchActivity : AppCompatActivity() {
         updateButton.visibility = View.GONE
     }
 
+
     private suspend fun searchTracks(term: String): SearchResponse {
         return itunesAPIService.search(term)
     }
 
+
+    override fun onClick(track: Track) {
+        history = History(getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE))
+        history.addTrack(track)
+        historyAdapter.newTracks(history.makeHistoryList())
+    }
 }
