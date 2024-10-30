@@ -40,6 +40,9 @@
         <item name="iconGravity">end</item>
         <item name="iconTint">@color/white</item>
 
+        <item name="thumbTint">@color/background</item>
+        <item name="trackTint">@color/switcherTrack_dark</item>
+
     </style>
 
 

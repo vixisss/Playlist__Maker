@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -92,14 +93,19 @@ class SearchActivity : AppCompatActivity(), Listener{
         toolbarHistory = findViewById(R.id.titleHistory)
 
 
-
         clearFun()
         simpleTextWatcherFun()
         showRecycler()
         search()
         clearHistoryFun()
-    }
 
+        if (savedInstanceState == null) {
+            searchEditText.requestFocus()
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        }
+
+
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun clearFun() {
@@ -109,12 +115,12 @@ class SearchActivity : AppCompatActivity(), Listener{
                 MotionEvent.ACTION_DOWN -> {
                     searchEditText.text.clear()
                     hideKeyboard()
+                    stopSearch()
                 }
             }
             v?.onTouchEvent(event) ?: true
         }
     }
-
 
 
     @SuppressLint("CommitPrefEdits")
@@ -135,12 +141,47 @@ class SearchActivity : AppCompatActivity(), Listener{
         }
     }
 
+    private fun updateVisibility() {
+        val term = searchEditText.text.toString().trim()
+        if (term.isEmpty()) {
+            placeholderLayout.visibility = View.GONE
+            recycler.visibility = View.GONE
+            updateButton.visibility = View.GONE
+            historyLayout.visibility = View.VISIBLE
+        } else {
+            placeholderLayout.visibility = View.GONE
+            recycler.visibility = View.VISIBLE
+            updateButton.visibility = View.VISIBLE
+            historyLayout.visibility = View.GONE
+            search()
+        }
+        if(history.historyTracks.size <= 0){
+            placeholderLayout.visibility = View.GONE
+            recycler.visibility = View.GONE
+            updateButton.visibility = View.GONE
+            historyLayout.visibility = View.GONE
+        }
+    }
 
     private fun simpleTextWatcherFun() {
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = if (s.isNullOrBlank()) View.GONE else View.VISIBLE
+                if (s.isNullOrBlank()){
+                    clearButton.visibility = View.GONE
+                    if (history.historyTracks.size > 0){
+                        historyLayout.visibility = View.VISIBLE
+                        search()
+                        updateVisibility()
+                    } else {
+                        historyLayout.visibility = View.GONE
+                        search()
+                        updateVisibility()
+                    }
+                } else {
+                    clearButton.visibility = View.VISIBLE
+                }
+
             }
             override fun afterTextChanged(s: Editable?) {}
         }
@@ -158,6 +199,7 @@ class SearchActivity : AppCompatActivity(), Listener{
     private fun stopSearch() {
         recycler.visibility = View.GONE
         placeholderLayout.visibility = View.GONE
+        searchEditText.requestFocus()
     }
 
 
@@ -170,12 +212,15 @@ class SearchActivity : AppCompatActivity(), Listener{
     private fun search() {
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                placeholderOrResult()
-                hideKeyboard()
+                if(searchEditText.text.isNotEmpty()){
+                    placeholderOrResult()
+                } else {
+                    placeholderOrResult()
+                }
+
                 true
             } else {
                 false
-
             }
         }
 
@@ -204,6 +249,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                 clearHistory.visibility = View.GONE
             }
         }
+
     }
 
 
@@ -223,6 +269,8 @@ class SearchActivity : AppCompatActivity(), Listener{
                         updateButton.visibility = View.GONE
                         historyLayout.visibility = View.GONE
 
+                        searchEditText.requestFocus()
+
                         placeholderImg.setImageResource(R.drawable.placeholder_nothing_find_day)
                         placeholderTextMessageError.text = getString(R.string.nothing_found)
                     } else {
@@ -234,6 +282,8 @@ class SearchActivity : AppCompatActivity(), Listener{
                     placeholderTextMessageError.visibility = View.VISIBLE
                     updateButton.visibility = View.VISIBLE
 
+                    hideKeyboard()
+
                     recycler.visibility = View.GONE
 
                     placeholderImg.setImageResource(R.drawable.placeholder_nointernet_day)
@@ -241,13 +291,16 @@ class SearchActivity : AppCompatActivity(), Listener{
                 }
             }
         } else {
+            placeholderLayout.visibility = View.GONE
             stopSearch()
+            historyLayout.visibility = View.VISIBLE
         }
     }
 
 
     private fun showResults(tracks: List<Track>) {
         adapter.newTracks(tracks)
+        hideKeyboard()
 
         recycler.visibility = View.VISIBLE
         placeholderLayout.visibility = View.VISIBLE

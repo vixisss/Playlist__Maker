@@ -5,6 +5,7 @@
 
     <color name="background">#3772E7</color>
     <color name="night_theme">#1A1B22</color>
+    <color name="switcherTrack_dark">#9FBBF3</color>
 
     <color name="edit_text_lightTheme">#E6E8EB</color>
     <color name="edit_text_lightTheme_search">#818C99</color>

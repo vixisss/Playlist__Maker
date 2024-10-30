@@ -27,6 +27,7 @@
             android:imeOptions="actionDone"
             android:singleLine="true"
 
+
             android:inputType="text|textNoSuggestions|textVisiblePassword"
             android:hint="@string/search"
 

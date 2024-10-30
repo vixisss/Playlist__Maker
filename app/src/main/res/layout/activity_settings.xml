@@ -18,15 +18,15 @@
         style="@style/ToolbarStyle" />
 
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/themeSwitcher"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/themeSwitcher"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:layout_gravity="end"
 
+            android:text="@string/night_theme"
 
-        android:text="@string/night_theme"
-
-        style="@style/SettingsButtonStyle"/>
+            style="@style/SettingsButtonStyle"/>
 
     <Button
         android:id="@+id/btn_shareApp"

@@ -43,6 +43,9 @@
         <item name="android:backgroundTint">@color/white</item>
         <item name="iconTint">@color/edit_text_lightTheme_text</item>
 
+        <item name="thumbTint">@color/edit_text_lightTheme_text</item>
+        <item name="trackTint">@color/edit_text_lightTheme</item>
+
     </style>
 
 
