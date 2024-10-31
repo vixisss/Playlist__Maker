@@ -169,6 +169,8 @@ class SearchActivity : AppCompatActivity(), Listener{
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrBlank()){
                     clearButton.visibility = View.GONE
+                    search()
+                    updateVisibility()
                     if (history.historyTracks.size > 0){
                         historyLayout.visibility = View.VISIBLE
                         search()
@@ -200,6 +202,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         recycler.visibility = View.GONE
         placeholderLayout.visibility = View.GONE
         searchEditText.requestFocus()
+        historyLayout.visibility = View.VISIBLE
     }
 
 
@@ -227,7 +230,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         clearButton.setOnClickListener{
             searchEditText.text.clear()
             clearButton.visibility = View.GONE
-            searchEditText.clearFocus()
+            historyLayout.visibility = View.VISIBLE
             hideKeyboard()
             stopSearch()
         }
@@ -243,6 +246,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                 toolbarHistory.visibility = View.VISIBLE
                 clearHistory.visibility = View.VISIBLE
             } else {
+                searchEditText.requestFocus()
                 historyLayout.visibility = View.GONE
                 historyRecycle.visibility = View.GONE
                 toolbarHistory.visibility = View.GONE
