@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -98,6 +99,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         showRecycler()
         search()
         clearHistoryFun()
+        setupDeleteKeyListener()
 
         if (savedInstanceState == null) {
             searchEditText.requestFocus()
@@ -106,6 +108,41 @@ class SearchActivity : AppCompatActivity(), Listener{
 
 
     }
+
+    private fun setupDeleteKeyListener() {
+        searchEditText.setOnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
+                // Проверка, что текст не пустой
+                if (searchEditText.text.length > 0) {
+                    // Очистка текста
+                    searchEditText.text.delete(0, 1)
+
+                    // Отображение истории
+                    showHistory()
+                }
+            }
+            true
+        }
+    }
+
+    private fun showHistory() {
+        if (history.historyTracks.size > 0) {
+            historyLayout.visibility = View.VISIBLE
+            historyRecycle.visibility = View.VISIBLE
+            toolbarHistory.visibility = View.VISIBLE
+            clearHistory.visibility = View.VISIBLE
+            historyAdapter.newTracks(history.makeHistoryList())
+        } else {
+            historyLayout.visibility = View.GONE
+            historyRecycle.visibility = View.GONE
+            toolbarHistory.visibility = View.GONE
+            clearHistory.visibility = View.GONE
+        }
+    }
+
+
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     private fun clearFun() {
@@ -116,6 +153,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                     searchEditText.text.clear()
                     hideKeyboard()
                     stopSearch()
+                    searchEditText.requestFocus()
                 }
             }
             v?.onTouchEvent(event) ?: true
@@ -147,7 +185,10 @@ class SearchActivity : AppCompatActivity(), Listener{
             placeholderLayout.visibility = View.GONE
             recycler.visibility = View.GONE
             updateButton.visibility = View.GONE
-            historyLayout.visibility = View.VISIBLE
+            if(history.historyTracks.size <= 0){
+                historyLayout.visibility = View.GONE
+            }
+
         } else {
             placeholderLayout.visibility = View.GONE
             recycler.visibility = View.VISIBLE
