@@ -1,5 +1,6 @@
 package com.example.playlist__maker
 
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
@@ -7,7 +8,11 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import com.google.android.material.switchmaterial.SwitchMaterial
 
+private const val EXAMPLE_PREFERENCES = "shared_preferences"
+private const val SWITCH_THEME_KEY = "key_of_switch_theme"
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var rollback: Toolbar
@@ -25,6 +30,18 @@ class SettingsActivity : AppCompatActivity() {
         shareButton = findViewById(R.id.btn_shareApp)
         supportHelpButton = findViewById(R.id.btn_supportHelp)
         userAgreeButton = findViewById(R.id.btn_userAgree)
+
+
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        val themeSharedPreferences = getSharedPreferences(EXAMPLE_PREFERENCES, MODE_PRIVATE)
+        themeSwitcher.isChecked = (application as App).darkTheme
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            themeSharedPreferences.edit{
+                putBoolean(SWITCH_THEME_KEY, checked)
+                apply()
+            }
+        }
 
         rollback()
         shareApp()
