@@ -9,7 +9,7 @@
     <Toolbar
         android:id="@+id/media_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_size"
+        android:layout_height="@dimen/margin56"
 
         android:title="@string/media"
         style="@style/ToolbarStyle"/>

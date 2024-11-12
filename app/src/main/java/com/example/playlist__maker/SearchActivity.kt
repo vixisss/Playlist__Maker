@@ -2,6 +2,7 @@ package com.example.playlist__maker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -116,6 +118,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                 if (searchEditText.text.length > 0) {
                     // Очистка текста
                     searchEditText.text.delete(0, 1)
+                    searchEditText.requestFocus()
 
                     // Отображение истории
                     showHistory()
@@ -154,6 +157,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                     hideKeyboard()
                     stopSearch()
                     searchEditText.requestFocus()
+                    showHistory()
                 }
             }
             v?.onTouchEvent(event) ?: true
@@ -272,6 +276,8 @@ class SearchActivity : AppCompatActivity(), Listener{
             searchEditText.text.clear()
             clearButton.visibility = View.GONE
             historyLayout.visibility = View.VISIBLE
+            searchEditText.requestFocus()
+            showHistory()
             hideKeyboard()
             stopSearch()
         }
@@ -362,6 +368,12 @@ class SearchActivity : AppCompatActivity(), Listener{
 
 
     override fun onClick(track: Track) {
+        val layoutIntent = Intent(this, PlayerActivity::class.java)
+        val gson = Gson()
+        val json = gson.toJson(track)
+        layoutIntent.putExtra("track", json)
+        startActivity(layoutIntent)
+
         history = History(getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE))
         history.addTrack(track)
         historyAdapter.newTracks(history.makeHistoryList())

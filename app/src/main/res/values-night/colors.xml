@@ -11,4 +11,5 @@
     <color name="edit_text_lightTheme_text">#AEAFB4</color>
 
     <color name="icon_placeholder">#FFFFFFFF</color>
+    <color name="icon_placeholder_background">#1A1B22</color>
 </resources>

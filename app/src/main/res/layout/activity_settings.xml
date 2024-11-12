@@ -12,7 +12,7 @@
     <Toolbar
         android:id="@+id/settings_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_size"
+        android:layout_height="@dimen/margin56"
 
         android:title="@string/settings"
         style="@style/ToolbarStyle" />
@@ -34,7 +34,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="@dimen/margin61"
         android:layout_weight="0"
 
         android:text="@string/give_app"
@@ -46,7 +46,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="@dimen/margin61"
         android:layout_weight="0"
 
         android:text="@string/support"
@@ -58,7 +58,7 @@
         style="@style/SettingsButtonStyle"
 
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_btn_style"
+        android:layout_height="@dimen/margin61"
         android:layout_weight="0"
 
         android:text="@string/user_agree"

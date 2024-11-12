@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="textSize">22sp</dimen>
-    <dimen name="text_size_settings">16sp</dimen>
     <dimen name="text14">14sp</dimen>
+    <dimen name="text_size_settings">16sp</dimen>
     <dimen name="text19">19sp</dimen>
+    <dimen name="textSize">22sp</dimen>
 
-    <dimen name="for_settings">48dp</dimen>
-    <dimen name="padding_icon">5dp</dimen>
-    <dimen name="radius">16dp</dimen>
-    <dimen name="margin">10dp</dimen>
-    <dimen name="search_size">64dp</dimen>
-    <dimen name="toolbar_size">56dp</dimen>
-    <dimen name="setting_btn_style">61dp</dimen>
-    <dimen name="btn_layout_height">0dp</dimen>
-    <dimen name="img_clear">35dp</dimen>
-    <dimen name="img_track_size">45dp</dimen>
-    <dimen name="recycleView_marginTop">124dp</dimen>
-    <dimen name="img_close">24dp</dimen>
-    <dimen name="marginTop_img">20dp</dimen>
+
+    <dimen name="margin5">5dp</dimen>
+    <dimen name="margin10">10dp</dimen>
+    <dimen name="margin12">12dp</dimen>
+    <dimen name="margin16">16dp</dimen>
+    <dimen name="margin20">20dp</dimen>
+    <dimen name="margin24">24dp</dimen>
+    <dimen name="margin26">26dp</dimen>
+    <dimen name="margin30">30dp</dimen>
+    <dimen name="margin32">32dp</dimen>
+    <dimen name="margin35">35dp</dimen>
+    <dimen name="margin56">56dp</dimen>
+    <dimen name="margin61">61dp</dimen>
     <dimen name="margin86">86dp</dimen>
 
 </resources>
