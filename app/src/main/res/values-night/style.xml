@@ -14,11 +14,11 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/night_theme</item>
         <item name="android:textSize">@dimen/textSize</item>
-        <item name="cornerRadius">@dimen/radius</item>
+        <item name="cornerRadius">@dimen/margin16</item>
         <item name="android:letterSpacing">0</item>
 
         <item name="iconGravity">textStart</item>
-        <item name="iconPadding">@dimen/padding_icon</item>
+        <item name="iconPadding">@dimen/margin5</item>
         <item name="iconTint">@color/night_theme</item>
     </style>
 
@@ -27,10 +27,10 @@
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:background">@android:color/transparent</item>
 
-        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/margin10</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:paddingStart">@dimen/radius</item>
-        <item name="android:paddingEnd">@dimen/radius</item>
+        <item name="android:paddingStart">@dimen/margin16</item>
+        <item name="android:paddingEnd">@dimen/margin16</item>
         <item name="android:textAlignment">textStart</item>
         <item name="cornerRadius">0dp</item>
         <item name="android:textColor">@color/white</item>
@@ -47,14 +47,14 @@
 
 
     <style name="EditTextTheme" parent="Widget.AppCompat.EditText">
-        <item name="android:padding">@dimen/margin</item>
+        <item name="android:padding">@dimen/margin10</item>
         <item name="android:textSize">@dimen/text_size_settings</item>
 
-        <item name="android:drawablePadding">@dimen/padding_icon</item>
+        <item name="android:drawablePadding">@dimen/margin5</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:layout_marginStart">@dimen/radius</item>
-        <item name="android:layout_marginTop">@dimen/radius</item>
-        <item name="android:layout_marginEnd">@dimen/radius</item>
+        <item name="android:layout_marginStart">@dimen/margin16</item>
+        <item name="android:layout_marginTop">@dimen/margin16</item>
+        <item name="android:layout_marginEnd">@dimen/margin16</item>
 
         <item name="android:textCursorDrawable">@drawable/light_cursor</item>
         <item name="android:textColorHint">@color/night_theme</item>
@@ -71,7 +71,7 @@
     </style>
 
     <style name="ImageTheme" parent="Widget.AppCompat.EditText">
-        <item name="android:paddingEnd">@dimen/padding_icon</item>
+        <item name="android:paddingEnd">@dimen/margin5</item>
         <item name="android:background">@drawable/edit_text_night_theme</item>
     </style>
 
@@ -105,20 +105,20 @@
 
     <style name="Placeholder_text_noInternet">
         <item name="android:layout_gravity">center</item>
-        <item name="android:layout_marginTop">@dimen/radius</item>
+        <item name="android:layout_marginTop">@dimen/margin16</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">19sp</item>
         <item name="android:textAlignment">center</item>
         <item name="fontWeight">400</item>
-        <item name="android:layout_marginStart">@dimen/img_close</item>
-        <item name="android:layout_marginEnd">@dimen/img_close</item>
+        <item name="android:layout_marginStart">@dimen/margin24</item>
+        <item name="android:layout_marginEnd">@dimen/margin24</item>
         <item name="fontFamily">@font/ys_display_medium</item>
     </style>
 
     <style name="button_in_noInternet">
         <item name="cornerRadius">54dp</item>
         <item name="backgroundTint">@color/white</item>
-        <item name="android:layout_marginTop">@dimen/img_close</item>
+        <item name="android:layout_marginTop">@dimen/margin24</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:text">@string/update</item>
         <item name="textAllCaps">false</item>
@@ -135,5 +135,20 @@
         <item name="android:textFontWeight">500</item>
         <item name="android:textSize">@dimen/text19</item>
         <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="playerText">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight">500</item>
+
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="playerAttributes">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
     </style>
 </resources>
