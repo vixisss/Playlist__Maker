@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -16,6 +18,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
@@ -32,11 +35,12 @@ class SearchActivity : AppCompatActivity(), Listener{
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val FIRST_STRING = ""
-
         const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
-
+    private val searchRunnable = Runnable { placeholderOrResult() }
+    private val handler = Handler(Looper.getMainLooper())
     private val baseURL = "https://itunes.apple.com/"
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseURL)
@@ -73,14 +77,9 @@ class SearchActivity : AppCompatActivity(), Listener{
     private lateinit var historyRecycle: RecyclerView
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var toolbarHistory: TextView
+    private lateinit var progressbar: ProgressBar
 
-
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-
-
+    private fun initialComponents(){
         rollback = findViewById(R.id.search_toolbar)
         clearButton = findViewById(R.id.clearIcon)
         searchEditText = findViewById(R.id.editText_Search)
@@ -94,7 +93,16 @@ class SearchActivity : AppCompatActivity(), Listener{
         clearHistory = findViewById(R.id.clear_history)
         historyRecycle = findViewById(R.id.historyList)
         toolbarHistory = findViewById(R.id.titleHistory)
+        progressbar = findViewById(R.id.progressBar_search)
+    }
 
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_search)
+
+        initialComponents()
 
         clearFun()
         simpleTextWatcherFun()
@@ -107,26 +115,31 @@ class SearchActivity : AppCompatActivity(), Listener{
             searchEditText.requestFocus()
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         }
-
-
     }
+
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
 
     private fun setupDeleteKeyListener() {
         searchEditText.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                // Проверка, что текст не пустой
-                if (searchEditText.text.length > 0) {
-                    // Очистка текста
-                    searchEditText.text.delete(0, 1)
-                    searchEditText.requestFocus()
+                if (searchEditText.text.isNotEmpty()) {
+                    val text = searchEditText.text
+                    val editable = text as? Editable
+                    editable?.delete(text.length - 1, text.length)
+                    searchEditText.setSelection(text.length)
 
-                    // Отображение истории
                     showHistory()
                 }
             }
             true
         }
     }
+
 
     private fun showHistory() {
         if (history.historyTracks.size > 0) {
@@ -144,9 +157,6 @@ class SearchActivity : AppCompatActivity(), Listener{
     }
 
 
-
-
-
     @SuppressLint("ClickableViewAccessibility")
     private fun clearFun() {
         rollback.setNavigationOnClickListener { finish() }
@@ -156,6 +166,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                     searchEditText.text.clear()
                     hideKeyboard()
                     stopSearch()
+                    progressbar.visibility = View.GONE
                     searchEditText.requestFocus()
                     showHistory()
                 }
@@ -180,8 +191,10 @@ class SearchActivity : AppCompatActivity(), Listener{
 
             history.clearHistory()
             historyLayout.visibility = View.GONE
+            progressbar.visibility = View.GONE
         }
     }
+
 
     private fun updateVisibility() {
         val term = searchEditText.text.toString().trim()
@@ -192,7 +205,6 @@ class SearchActivity : AppCompatActivity(), Listener{
             if(history.historyTracks.size <= 0){
                 historyLayout.visibility = View.GONE
             }
-
         } else {
             placeholderLayout.visibility = View.GONE
             recycler.visibility = View.VISIBLE
@@ -212,6 +224,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchDebounce()
                 if (s.isNullOrBlank()){
                     clearButton.visibility = View.GONE
                     search()
@@ -224,6 +237,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                         historyLayout.visibility = View.GONE
                         search()
                         updateVisibility()
+
                     }
                 } else {
                     clearButton.visibility = View.VISIBLE
@@ -263,9 +277,9 @@ class SearchActivity : AppCompatActivity(), Listener{
                 if(searchEditText.text.isNotEmpty()){
                     placeholderOrResult()
                 } else {
+
                     placeholderOrResult()
                 }
-
                 true
             } else {
                 false
@@ -275,6 +289,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         clearButton.setOnClickListener{
             searchEditText.text.clear()
             clearButton.visibility = View.GONE
+            progressbar.visibility = View.GONE
             historyLayout.visibility = View.VISIBLE
             searchEditText.requestFocus()
             showHistory()
@@ -300,11 +315,11 @@ class SearchActivity : AppCompatActivity(), Listener{
                 clearHistory.visibility = View.GONE
             }
         }
-
     }
 
 
     private fun placeholderOrResult() {
+        progressbar.visibility = View.VISIBLE
         val term = searchEditText.text.toString().trim()
         if (term.isNotEmpty()) {
             historyLayout.visibility = View.GONE
@@ -316,6 +331,7 @@ class SearchActivity : AppCompatActivity(), Listener{
                         placeholderImg.visibility = View.VISIBLE
                         placeholderTextMessageError.visibility = View.VISIBLE
 
+                        progressbar.visibility = View.GONE
                         recycler.visibility = View.GONE
                         updateButton.visibility = View.GONE
                         historyLayout.visibility = View.GONE
@@ -337,11 +353,13 @@ class SearchActivity : AppCompatActivity(), Listener{
 
                     recycler.visibility = View.GONE
 
+                    progressbar.visibility = View.GONE
                     placeholderImg.setImageResource(R.drawable.placeholder_nointernet_day)
                     placeholderTextMessageError.text = getString(R.string.no_internet)
                 }
             }
         } else {
+            progressbar.visibility = View.GONE
             placeholderLayout.visibility = View.GONE
             stopSearch()
             historyLayout.visibility = View.VISIBLE
@@ -359,6 +377,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         placeholderImg.visibility = View.GONE
         placeholderTextMessageError.visibility = View.GONE
         updateButton.visibility = View.GONE
+        progressbar.visibility = View.GONE
     }
 
 
