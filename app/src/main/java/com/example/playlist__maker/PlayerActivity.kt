@@ -2,20 +2,40 @@ package com.example.playlist__maker
 
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.print.PrintJobInfo.STATE_COMPLETED
 import android.util.TypedValue
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
+
+    companion object {
+    private const val STATE_DEFAULT = 0
+    private const val STATE_PREPARED = 1
+    private const val STATE_PLAYING = 2
+    private const val STATE_PAUSED = 3
+}
+
+    private var playerState = STATE_DEFAULT
+    private var mediaPlayer = MediaPlayer()
+    private var url: String? = null
+    private var currentRunnable: Runnable? = null
+    private var handler: Handler = Handler(Looper.getMainLooper())
 
     private lateinit var backButton: Toolbar
     private lateinit var artworkUrl312: ImageView
@@ -27,11 +47,10 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var genreTrack: TextView
     private lateinit var country: TextView
     private lateinit var albumTrack: TextView
+    private lateinit var play: ImageButton
+    private lateinit var time: TextView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-
+    private fun initialComponents(){
         backButton = findViewById(R.id.player_toolbar)
         artworkUrl312 = findViewById(R.id.artworkUrl100)
         trackName = findViewById(R.id.trackName)
@@ -42,13 +61,118 @@ class PlayerActivity : AppCompatActivity() {
         genreTrack = findViewById(R.id.primaryGenreName)
         country = findViewById(R.id.country)
         albumTrack = findViewById(R.id.player_album)
+        play = findViewById(R.id.player_play_pause)
+        time = findViewById(R.id.time)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
+
+        initialComponents()
 
         exit()
         showPlayer()
+        preparePlayer()
+
+        play.setOnClickListener {
+            playbackControl()
+        }
     }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+    }
+
+
+    private fun updateCurrentTime() {
+        if (playerState != STATE_DEFAULT && playerState != STATE_PREPARED) {
+            val currentPosition = mediaPlayer.currentPosition
+            time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+
+            handler.postDelayed({ updateCurrentTime() }, 300)
+        } else {
+            stopTimer()
+        }
+    }
+
+    private fun startTimer() {
+        stopTimer()
+        currentRunnable = Runnable { updateCurrentTime() }
+        handler.postDelayed(currentRunnable!!, 300)
+    }
+
+    private fun stopTimer() {
+        handler.removeCallbacksAndMessages(null)
+        currentRunnable = null
+    }
+
+
+    private fun playbackControl() {
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+
+    private fun preparePlayer() {
+        url?.let { url ->
+            try {
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(url)
+                mediaPlayer.prepareAsync()
+                mediaPlayer.setOnPreparedListener {
+                    play.isEnabled = true
+                    playerState = STATE_PREPARED
+                }
+                mediaPlayer.setOnCompletionListener {
+                    play.setImageResource(R.drawable.player_play)
+                    playerState = STATE_PREPARED
+                    time.text = "00:00"
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(this, "Ошибка загрузки трека", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        play.setImageResource(R.drawable.player_pause)
+        playerState = STATE_PLAYING
+        startTimer()
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        play.setImageResource(R.drawable.player_play)
+        playerState = STATE_PAUSED
+    }
+
+    private fun stopPlayer() {
+        if (playerState == STATE_PLAYING) {
+            mediaPlayer.pause()
+        }
+        playerState = STATE_PAUSED
+        stopTimer()
+    }
+
 
     private fun exit(){
         backButton.setOnClickListener {
+            stopPlayer()
             finish()
         }
     }
@@ -75,6 +199,11 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             collectionName.visibility = View.GONE
             albumTrack.visibility = View.GONE
+        }
+
+        track.previewUrl?.let {
+            url = it
+            preparePlayer()
         }
 
 

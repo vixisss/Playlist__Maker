@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
 
     android:theme="@style/Theme.MyApp.White">
 
+
     <Toolbar
         android:id="@+id/search_toolbar"
+        style="@style/ToolbarStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin56"
 
         android:title="@string/search"
-        style="@style/ToolbarStyle" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar_search"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:indeterminate="false"
+        android:indeterminateTint="@color/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        android:layout_marginTop="140dp"
+        android:visibility="gone"/>
 
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/search_toolbar">
+
 
         <EditText
             android:id="@+id/editText_Search"
+            style="@style/EditTextTheme"
             android:layout_width="match_parent"
+
             android:layout_height="36dp"
-
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-
-
-            android:inputType="text|textNoSuggestions|textVisiblePassword"
-            android:hint="@string/search"
-
             android:drawableStart="@drawable/search"
 
-            style="@style/EditTextTheme" />
+
+            android:hint="@string/search"
+            android:imeOptions="actionDone"
+
+            android:inputType="text|textNoSuggestions|textVisiblePassword"
+
+            android:singleLine="true" />
 
         <ImageView
             android:id="@+id/clearIcon"
+            style="@style/EditTextTheme"
             android:layout_width="@dimen/margin35"
-            android:layout_height="@dimen/margin35"
 
+            android:layout_height="@dimen/margin35"
             android:layout_gravity="end"
-            android:visibility="gone"
 
             android:src="@drawable/clear"
-            style="@style/EditTextTheme"/>
+            android:visibility="gone" />
+
 
         <LinearLayout
             android:id="@+id/history_layout"
@@ -61,10 +83,10 @@
 
                 <TextView
                     android:id="@+id/titleHistory"
+                    style="@style/historyToolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/historyTitle"
-                    style="@style/historyToolbar"/>
+                    android:text="@string/historyTitle" />
 
             </Toolbar>
 
@@ -74,15 +96,15 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
 
-                tools:ignore="RtlSymmetry"/>
+                tools:ignore="RtlSymmetry" />
 
             <Button
                 android:id="@+id/clear_history"
+                style="@style/button_in_noInternet"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
 
-                android:text="@string/historyBtn"
-                style="@style/button_in_noInternet"/>
+                android:layout_height="wrap_content"
+                android:text="@string/historyBtn" />
 
         </LinearLayout>
 
@@ -105,30 +127,29 @@
                 android:id="@+id/img_placeholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/placeholder_nothing_find_day"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/margin86" />
+                android:layout_marginTop="@dimen/margin86"
+                android:src="@drawable/placeholder_nothing_find_day" />
 
             <TextView
                 android:id="@+id/error_message_placeholder"
+                style="@style/Placeholder_text_noInternet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Placeholder_text_noInternet"
                 android:text="Error message" />
 
 
             <Button
                 android:id="@+id/update"
+                style="@style/button_in_noInternet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/update"
-                style="@style/button_in_noInternet"/>
+                android:text="@string/update" />
         </LinearLayout>
-
-
 
 
     </FrameLayout>
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
