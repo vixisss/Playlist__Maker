@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.print.PrintJobInfo.STATE_COMPLETED
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
@@ -91,12 +92,14 @@ class PlayerActivity : AppCompatActivity() {
 
 
     private fun updateCurrentTime() {
-        if (playerState == STATE_PLAYING) {
+        if (playerState != STATE_DEFAULT && playerState != STATE_PREPARED) {
             val currentPosition = mediaPlayer.currentPosition
-
             time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+
+            handler.postDelayed({ updateCurrentTime() }, 300)
+        } else {
+            stopTimer()
         }
-        handler.postDelayed({ updateCurrentTime() }, 300)
     }
 
     private fun startTimer() {
@@ -122,6 +125,7 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+
     private fun preparePlayer() {
         url?.let { url ->
             try {
@@ -135,6 +139,7 @@ class PlayerActivity : AppCompatActivity() {
                 mediaPlayer.setOnCompletionListener {
                     play.setImageResource(R.drawable.player_play)
                     playerState = STATE_PREPARED
+                    time.text = "00:00"
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -156,10 +161,18 @@ class PlayerActivity : AppCompatActivity() {
         playerState = STATE_PAUSED
     }
 
+    private fun stopPlayer() {
+        if (playerState == STATE_PLAYING) {
+            mediaPlayer.pause()
+        }
+        playerState = STATE_PAUSED
+        stopTimer()
+    }
 
 
     private fun exit(){
         backButton.setOnClickListener {
+            stopPlayer()
             finish()
         }
     }

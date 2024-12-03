@@ -37,6 +37,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         const val FIRST_STRING = ""
         const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     private val searchRunnable = Runnable { placeholderOrResult() }
@@ -57,6 +58,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         saveText = savedInstanceState.getString(SEARCH_TEXT, FIRST_STRING)
     }
 
+    private var isClickAllowed = true
     private val itunesAPIService = retrofit.create(ItunesAPI::class.java)
     private var saveText: String = FIRST_STRING
 
@@ -117,6 +119,14 @@ class SearchActivity : AppCompatActivity(), Listener{
         }
     }
 
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
 
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
@@ -387,11 +397,13 @@ class SearchActivity : AppCompatActivity(), Listener{
 
 
     override fun onClick(track: Track) {
-        val layoutIntent = Intent(this, PlayerActivity::class.java)
-        val gson = Gson()
-        val json = gson.toJson(track)
-        layoutIntent.putExtra("track", json)
-        startActivity(layoutIntent)
+        if (clickDebounce()) {
+            val layoutIntent = Intent(this, PlayerActivity::class.java)
+            val gson = Gson()
+            val json = gson.toJson(track)
+            layoutIntent.putExtra("track", json)
+            startActivity(layoutIntent)
+        }
 
         history = History(getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE))
         history.addTrack(track)
