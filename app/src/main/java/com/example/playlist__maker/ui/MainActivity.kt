@@ -1,13 +1,15 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.playlist__maker.R
 import com.example.playlist__maker.R.id.media_btn
 import com.example.playlist__maker.R.id.search_btn
 import com.example.playlist__maker.R.id.settings_btn
+import com.example.playlist__maker.ui.SearchActivity
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")

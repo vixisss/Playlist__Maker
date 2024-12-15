@@ -1,9 +1,8 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.data.dto
 
-import java.io.Serializable
-
-data class Track (
+data class TrackDto(
     val trackId: Int,
+    val resultType: String,
     val trackName: String,
     val artistName: String,
     val trackTime: String,
@@ -16,6 +15,5 @@ data class Track (
     val country: String?,
     val previewUrl: String?
 
-): Serializable {
-    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
-}
+)
+

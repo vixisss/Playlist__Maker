@@ -1,7 +1,8 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.data.network
 
 
 import android.content.SharedPreferences
+import com.example.playlist__maker.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

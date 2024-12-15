@@ -1,4 +1,4 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,16 +22,24 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlist__maker.R
+import com.example.playlist__maker.data.dto.TrackSearchResponse
+import com.example.playlist__maker.data.network.History
+import com.example.playlist__maker.data.network.ItunesAPI
+import com.example.playlist__maker.domain.models.Track
+import com.example.playlist__maker.presentation.Listener
+import com.example.playlist__maker.presentation.TrackAdapter
 import com.google.gson.Gson
-import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class SearchActivity : AppCompatActivity(), Listener{
+class SearchActivity : AppCompatActivity(), Listener {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val FIRST_STRING = ""
@@ -40,7 +48,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val searchRunnable = Runnable { placeholderOrResult() }
+    private val searchRunnable = Runnable { showResultCode() }
     private val handler = Handler(Looper.getMainLooper())
     private val baseURL = "https://itunes.apple.com/"
     private val retrofit = Retrofit.Builder()
@@ -80,6 +88,8 @@ class SearchActivity : AppCompatActivity(), Listener{
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var toolbarHistory: TextView
     private lateinit var progressbar: ProgressBar
+
+    private val tracks = ArrayList<Track>()
 
     private fun initialComponents(){
         rollback = findViewById(R.id.search_toolbar)
@@ -285,10 +295,9 @@ class SearchActivity : AppCompatActivity(), Listener{
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if(searchEditText.text.isNotEmpty()){
-                    placeholderOrResult()
+                    showResultCode()
                 } else {
-
-                    placeholderOrResult()
+                    showResultCode()
                 }
                 true
             } else {
@@ -308,7 +317,7 @@ class SearchActivity : AppCompatActivity(), Listener{
         }
 
         updateButton.setOnClickListener {
-            placeholderOrResult()
+            showResultCode()
         }
 
         searchEditText.setOnFocusChangeListener { view, hasFocus ->
@@ -328,53 +337,76 @@ class SearchActivity : AppCompatActivity(), Listener{
     }
 
 
-    private fun placeholderOrResult() {
-        progressbar.visibility = View.VISIBLE
-        val term = searchEditText.text.toString().trim()
-        if (term.isNotEmpty()) {
+    private fun showResultCode(){
+        if (searchEditText.text.isNotEmpty()) {
+
+            placeholderLayout.visibility = View.GONE
+            updateButton.visibility = View.GONE
+            placeholderTextMessageError.visibility = View.GONE
+            recycler.visibility = View.GONE
+            progressbar.visibility = View.VISIBLE
             historyLayout.visibility = View.GONE
-            lifecycleScope.launch {
-                try {
-                    val response = searchTracks(term)
-                    if (response.results.isEmpty()) {
+
+            itunesAPIService.search(searchEditText.text.toString()).enqueue(object :
+                Callback<TrackSearchResponse> {
+                override fun onResponse(call: Call<TrackSearchResponse>,
+                                        response: Response<TrackSearchResponse>
+                ) {
+                    progressbar.visibility = View.GONE
+                    if (response.code() == 200) {
+                        tracks.clear()
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            searchTracks(searchEditText.text.toString().trim())
+                            showResults(response.body()?.results!!)
+                            recycler.visibility = View.VISIBLE
+                            tracks.addAll(response.body()?.results!!)
+                            adapter.notifyDataSetChanged()
+                        }
+                        if (tracks.isEmpty()) {
+                            placeholderLayout.visibility = View.VISIBLE
+                            placeholderImg.visibility = View.VISIBLE
+                            placeholderTextMessageError.visibility = View.VISIBLE
+
+                            progressbar.visibility = View.GONE
+                            recycler.visibility = View.GONE
+                            updateButton.visibility = View.GONE
+                            historyLayout.visibility = View.GONE
+
+                            searchEditText.requestFocus()
+
+                            placeholderImg.setImageResource(R.drawable.placeholder_nothing_find_day)
+                            placeholderTextMessageError.text = getString(R.string.nothing_found)
+                        } else {
+                            placeholderLayout.visibility = View.GONE
+                            showResults(tracks)
+                        }
+                    } else {
                         placeholderLayout.visibility = View.VISIBLE
                         placeholderImg.visibility = View.VISIBLE
                         placeholderTextMessageError.visibility = View.VISIBLE
+                        updateButton.visibility = View.VISIBLE
+
+                        hideKeyboard()
+
+                        recycler.visibility = View.GONE
 
                         progressbar.visibility = View.GONE
-                        recycler.visibility = View.GONE
-                        updateButton.visibility = View.GONE
-                        historyLayout.visibility = View.GONE
-
-                        searchEditText.requestFocus()
-
-                        placeholderImg.setImageResource(R.drawable.placeholder_nothing_find_day)
-                        placeholderTextMessageError.text = getString(R.string.nothing_found)
-                    } else {
-                        showResults(response.results)
+                        placeholderImg.setImageResource(R.drawable.placeholder_nointernet_day)
+                        placeholderTextMessageError.text = getString(R.string.no_internet)
                     }
-                } catch (e: Exception) {
-                    placeholderLayout.visibility = View.VISIBLE
-                    placeholderImg.visibility = View.VISIBLE
-                    placeholderTextMessageError.visibility = View.VISIBLE
-                    updateButton.visibility = View.VISIBLE
+                }
 
-                    hideKeyboard()
-
-                    recycler.visibility = View.GONE
-
+                override fun onFailure(call: Call<TrackSearchResponse>, t: Throwable) {
                     progressbar.visibility = View.GONE
                     placeholderImg.setImageResource(R.drawable.placeholder_nointernet_day)
-                    placeholderTextMessageError.text = getString(R.string.no_internet)
+                    placeholderTextMessageError.setText(R.string.no_internet)
+                    updateButton.visibility = View.VISIBLE
                 }
-            }
-        } else {
-            progressbar.visibility = View.GONE
-            placeholderLayout.visibility = View.GONE
-            stopSearch()
-            historyLayout.visibility = View.VISIBLE
+            })
         }
     }
+
+
 
 
     private fun showResults(tracks: List<Track>) {
@@ -391,7 +423,7 @@ class SearchActivity : AppCompatActivity(), Listener{
     }
 
 
-    private suspend fun searchTracks(term: String): SearchResponse {
+    private fun searchTracks(term: String): Call<TrackSearchResponse> {
         return itunesAPIService.search(term)
     }
 
@@ -405,7 +437,7 @@ class SearchActivity : AppCompatActivity(), Listener{
             startActivity(layoutIntent)
         }
 
-        history = History(getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE))
+        history = History(getSharedPreferences(HISTORY_PREFERENCES, MODE_PRIVATE))
         history.addTrack(track)
         historyAdapter.newTracks(history.makeHistoryList())
     }
