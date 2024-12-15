@@ -1,9 +1,10 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import com.example.playlist__maker.R
 
 class MediaActivity : AppCompatActivity() {
     private lateinit var rollback: Toolbar

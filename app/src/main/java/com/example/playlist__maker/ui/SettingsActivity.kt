@@ -1,5 +1,4 @@
-package com.example.playlist__maker
-
+package com.example.playlist__maker.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,6 +8,8 @@ import android.widget.Button
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import com.example.playlist__maker.presentation.App
+import com.example.playlist__maker.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 private const val EXAMPLE_PREFERENCES = "shared_preferences"

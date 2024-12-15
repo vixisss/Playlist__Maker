@@ -1,4 +1,4 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.presentation
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
