@@ -17,14 +17,17 @@ class RetrofitBuild : NetworkClient {
 
     override fun doRequest(dto: Any): Response {
         if (dto is TrackSearchRequest) {
-            val resp = imdbService.search(dto.expression).execute()
-
-            val body = resp.body() ?: Response()
-
-            return body.apply { resultCode = resp.code() }
+            return try {
+                val resp = imdbService.search(dto.expression).execute()
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            } catch (ex: Exception) {
+                return Response().apply { resultCode = 400 }
+            }
         } else {
             return Response().apply { resultCode = 400 }
         }
     }
 }
+
 

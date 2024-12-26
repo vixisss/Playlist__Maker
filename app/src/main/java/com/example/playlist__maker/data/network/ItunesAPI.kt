@@ -11,7 +11,3 @@ interface ItunesAPI {
     fun search(@Query("term") expression: String): Call<TrackSearchResponse>
 }
 
-//data class SearchResponse(
-//    val resultCount: Int,
-//    val results: List<Track>
-//): Response()

@@ -4,30 +4,35 @@ import com.example.playlist__maker.data.dto.TrackSearchRequest
 import com.example.playlist__maker.data.dto.TrackSearchResponse
 import com.example.playlist__maker.domain.models.Track
 import com.example.playlist__maker.domain.api.TracksRepository
+import com.example.playlist__maker.domain.models.ResponseCode
 
 class TracksRepositoryImpl (private val networkClient: NetworkClient) : TracksRepository {
-    override fun searchTracks(expression: String): List<Track> {
+    override fun searchTracks(expression: String): ResponseCode<List<Track>> {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
-        return if (response.resultCode == 200) {
-            (response as TrackSearchResponse).results.map { track ->
+
+        return if (response is TrackSearchResponse) {
+            val tracksList = response.results.filter {
+                it.trackName.isNotEmpty() &&
+                        it.artistName.isNotEmpty() &&
+                        it.trackTimeMillis > 0
+            }.map {
                 Track(
-                    track.trackId,
-                    track.resultType,
-                    track.trackName,
-                    track.artistName,
-                    track.trackTime,
-                    track.trackTimeMillis,
-                    track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-                    track.collectionName,
-                    track.releaseDate,
-                    track.primaryGenreName,
-                    track.country ?: "",
-                    track.previewUrl
+                    trackId = it.trackId,
+                    trackName = it.trackName,
+                    artistName = it.artistName,
+                    trackTime = it.trackTime,
+                    trackTimeMillis = it.trackTimeMillis,
+                    artworkUrl100 = it.artworkUrl100,
+                    collectionName = it.collectionName,
+                    releaseDate = it.releaseDate,
+                    primaryGenreName = it.primaryGenreName,
+                    country = it.country,
+                    previewUrl = it.previewUrl
                 )
             }
+            ResponseCode.Success(tracksList)
         } else {
-            emptyList()
+            ResponseCode.Error("error")
         }
     }
-
 }
