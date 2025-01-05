@@ -1,4 +1,4 @@
-package com.example.playlist__maker
+package com.example.playlist__maker.presentation.ui
 
 import android.content.Context
 import android.util.TypedValue
@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlist__maker.R
+import com.example.playlist__maker.domain.models.Track
+import com.example.playlist__maker.presentation.utils.Listener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -39,6 +42,6 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
 
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName
-        trackTimeView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+        trackTimeView.text = model.trackTime
     }
 }

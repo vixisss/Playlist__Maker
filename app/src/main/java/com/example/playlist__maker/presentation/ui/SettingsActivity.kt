@@ -1,5 +1,4 @@
-package com.example.playlist__maker
-
+package com.example.playlist__maker.presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,38 +8,37 @@ import android.widget.Button
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import com.example.playlist__maker.presentation.utils.App
+import com.example.playlist__maker.R
+import com.example.playlist__maker.data.network.AppSwitcher
+import com.example.playlist__maker.domain.api.AppSwitcherInteractor
+import com.example.playlist__maker.presentation.utils.Creator
 import com.google.android.material.switchmaterial.SwitchMaterial
-
-private const val EXAMPLE_PREFERENCES = "shared_preferences"
-private const val SWITCH_THEME_KEY = "key_of_switch_theme"
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var rollback: Toolbar
     private lateinit var shareButton: Button
     private lateinit var supportHelpButton: Button
     private lateinit var userAgreeButton: Button
+    private lateinit var themeSwitcher: SwitchMaterial
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-
         rollback = findViewById(R.id.settings_toolbar)
         shareButton = findViewById(R.id.btn_shareApp)
         supportHelpButton = findViewById(R.id.btn_supportHelp)
         userAgreeButton = findViewById(R.id.btn_userAgree)
+        themeSwitcher = findViewById(R.id.themeSwitcher)
 
 
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-        val themeSharedPreferences = getSharedPreferences(EXAMPLE_PREFERENCES, MODE_PRIVATE)
-        themeSwitcher.isChecked = (application as App).darkTheme
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-            themeSharedPreferences.edit{
-                putBoolean(SWITCH_THEME_KEY, checked)
-                apply()
-            }
+        val appSwitcherInteractor = Creator.provideAppSwitcherInteractor()
+
+        themeSwitcher.isChecked = appSwitcherInteractor.getTheme()
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            appSwitcherInteractor.switchTheme(checked)
         }
 
         rollback()
@@ -48,6 +46,7 @@ class SettingsActivity : AppCompatActivity() {
         supportHelp()
         userAgree()
     }
+
 
     private fun rollback(){
         rollback.setNavigationOnClickListener{
