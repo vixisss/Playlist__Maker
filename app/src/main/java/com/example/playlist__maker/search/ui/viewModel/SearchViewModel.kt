@@ -53,8 +53,8 @@ class SearchViewModel(
         if (newSearchText.isNotEmpty()) {
             tracksState.postValue(UiState.Loading)
             tracksInteractor.searchTracks(newSearchText, object : TrackConsumer {
-                override fun consume(foundTracks: ResponseCode<List<Track>>) {
-                    when (foundTracks) {
+                override fun consume(foundTrack: ResponseCode<List<Track>>) {
+                    when (foundTrack) {
                         is ResponseCode.ServerError -> {
                             tracksState.postValue(UiState.Error(ResponseErrorType.NO_INTERNET))
                         }
@@ -62,7 +62,7 @@ class SearchViewModel(
                             tracksState.postValue(UiState.Error(ResponseErrorType.NOTHING_FOUND))
                         }
                         is ResponseCode.Success -> {
-                            tracksState.postValue(UiState.SearchContent(data = foundTracks.data))
+                            tracksState.postValue(UiState.SearchContent(data = foundTrack.data))
                         }
                     }
                 }
@@ -106,6 +106,4 @@ class SearchViewModel(
         super.onCleared()
         removeCallbacksAndMessages()
     }
-
-
 }

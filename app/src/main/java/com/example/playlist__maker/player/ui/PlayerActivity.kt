@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -27,7 +26,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 class PlayerActivity : AppCompatActivity() {
 
-    private var currentRunnable: Runnable? = null
     private var handler: Handler? = null
 
     private lateinit var viewModel: PlayerViewModel
@@ -91,13 +89,11 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.playerPlayPause.setOnClickListener {
             val stateModel = viewModel.getState()
-            Log.d("StateModel", viewModel.state.value.toString())
             var newStateModel : PlayState = PlayState.Paused
 
             when (stateModel) {
                 PlayState.Playing -> { newStateModel = PlayState.Paused }
                 PlayState.Paused -> { newStateModel = PlayState.Playing }
-                else-> {}
             }
 
             updatePlayButtonState(newStateModel)

@@ -57,9 +57,6 @@ class SearchActivity : AppCompatActivity(), Listener {
         viewModel = ViewModelProvider(this, SearchViewModel.factory())[SearchViewModel::class.java]
 
 
-
-
-
         clearFun()
         simpleTextWatcherFun()
         showRecycler()
@@ -74,7 +71,7 @@ class SearchActivity : AppCompatActivity(), Listener {
         }
 
         viewModel.getTracksState().observe(this) { state ->
-            renderSearchResult(state)
+            showStateResult(state)
         }
     }
 
@@ -293,7 +290,6 @@ class SearchActivity : AppCompatActivity(), Listener {
             binding.progressBarSearch.visibility = View.VISIBLE
             binding.historyLayout.visibility = View.GONE
 
-
             when (errorType) {
                 ResponseErrorType.NO_INTERNET -> {
                     binding.trackListLayout.visibility = View.VISIBLE
@@ -329,14 +325,11 @@ class SearchActivity : AppCompatActivity(), Listener {
             }
 
         }
-
-
-
     }
 
 
 
-    private fun renderSearchResult(state: UiState) {
+    private fun showStateResult(state: UiState) {
         when (state) {
             is UiState.Loading -> {
                 binding.progressBarSearch.visibility = View.VISIBLE
@@ -361,7 +354,6 @@ class SearchActivity : AppCompatActivity(), Listener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showResults(trackList: List<Track>) {
-
         adapter.newTracks(trackList)
         hideKeyboard()
         binding.recyclerViewTracksList.visibility = View.VISIBLE

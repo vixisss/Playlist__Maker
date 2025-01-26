@@ -7,24 +7,26 @@ import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.domain.TracksRepository
 import com.example.playlist__maker.utils.ResponseCode
 
-
-const val CLIENT_ERROR = 404
-const val SERVER_ERROR = 500
-
 class TracksRepositoryImpl (private val networkClient: NetworkClient) : TracksRepository {
+
+    companion object{
+        const val NOTHING_FOUND = 404
+        const val NO_INTERNET = 500
+    }
+
 
     override fun searchTracks(expression: String): ResponseCode<List<Track>> {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
 
         return when (response.resultCode) {
-            SERVER_ERROR -> {
+            NO_INTERNET -> {
                 ResponseCode.ServerError(
-                    status = SERVER_ERROR
+                    status = NO_INTERNET
                 )
             }
-            CLIENT_ERROR -> {
+            NOTHING_FOUND -> {
                 ResponseCode.ClientError(
-                    status = CLIENT_ERROR
+                    status = NOTHING_FOUND
                 )
             }
             else -> {
@@ -60,7 +62,7 @@ class TracksRepositoryImpl (private val networkClient: NetworkClient) : TracksRe
                     }
                 } else {
                     ResponseCode.ClientError(
-                        status = CLIENT_ERROR
+                        status = NOTHING_FOUND
                     )
                 }
             }

@@ -60,7 +60,6 @@ class PlayerViewModel(
             playerInteractor.start()
         }
 
-        //playerInteractor.start()
         state.value = PlayState.Playing
     }
 
@@ -73,12 +72,6 @@ class PlayerViewModel(
 
     fun getCurrentPosition(): Long {
         return playerInteractor.getCurrentPosition()
-    }
-
-
-    fun stop(){
-        playerInteractor.stop()
-        state.value = (PlayState.Paused)
     }
 
 }
