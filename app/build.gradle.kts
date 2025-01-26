@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-
+    implementation ("androidx.core:core-ktx:1.9.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -56,4 +56,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(kotlin("script-runtime"))
+    implementation (libs.androidx.activity.ktx)
+
 }

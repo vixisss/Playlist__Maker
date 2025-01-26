@@ -1,5 +1,7 @@
 [versions]
-agp = "8.7.3"
+activityKtx = "1.9.3"
+agp = "8.8.0"
+coreKtxVersion = "1.15.0"
 glide = "4.14.2"
 gson = "2.10.1"
 kotlin = "1.9.0"
@@ -16,7 +18,9 @@ navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 
 [libraries]
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v1150 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
