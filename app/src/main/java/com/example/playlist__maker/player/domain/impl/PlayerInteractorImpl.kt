@@ -2,7 +2,7 @@ package com.example.playlist__maker.player.domain.impl
 
 import com.example.playlist__maker.player.data.PlayerNetwork
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
-
+import com.example.playlist__maker.player.domain.models.PlayState
 
 
 class PlayerInteractorImpl(private val context: PlayerNetwork) : PlayerInteractor {
@@ -11,31 +11,17 @@ class PlayerInteractorImpl(private val context: PlayerNetwork) : PlayerInteracto
         context.stop()
     }
 
-
-    override fun resetComplete() {
-        context.resetComplete()
-    }
-
-
     override fun prepare(url: String) {
         context.prepare(url)
     }
-
 
     override fun start() {
         context.start()
     }
 
-
     override fun pause() {
         context.pause()
     }
-
-
-    override fun getComplete(): Boolean {
-        return context.getComplete()
-    }
-
 
     override fun getCurrentPosition(): Long = context.getCurrentPosition()
 
@@ -46,5 +32,9 @@ class PlayerInteractorImpl(private val context: PlayerNetwork) : PlayerInteracto
 
     override fun exit() {
         context.exit()
+    }
+
+    override fun getStatePlayer(): PlayState {
+        return context.getPlayerState()
     }
 }

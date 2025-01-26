@@ -28,7 +28,7 @@ import java.util.Locale
 class PlayerActivity : AppCompatActivity() {
 
     private var currentRunnable: Runnable? = null
-    private var handler: Handler = Handler(Looper.getMainLooper())
+    private var handler: Handler? = null
 
     private lateinit var viewModel: PlayerViewModel
     private lateinit var binding: ActivityPlayerBinding
@@ -36,9 +36,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private var imageState: Map<PlayState, Int> = mapOf(
         PlayState.Playing to R.drawable.player_pause,
-        PlayState.Paused to R.drawable.player_play,
-        PlayState.Complete to R.drawable.player_play,
-        PlayState.Prepared to R.drawable.player_play)
+        PlayState.Paused to R.drawable.player_play)
 
 
     private fun updateTrackInfo() {
@@ -83,6 +81,8 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        handler = Handler(Looper.getMainLooper())
+
         viewModel = ViewModelProvider(this, PlayerViewModel.factory())[PlayerViewModel::class.java]
 
         showPlayer()
@@ -90,17 +90,14 @@ class PlayerActivity : AppCompatActivity() {
         exit()
 
         binding.playerPlayPause.setOnClickListener {
-            val stateModel = viewModel.state.value
+            val stateModel = viewModel.getState()
             Log.d("StateModel", viewModel.state.value.toString())
-            var newStateModel : PlayState = PlayState.Prepared
+            var newStateModel : PlayState = PlayState.Paused
 
             when (stateModel) {
                 PlayState.Playing -> { newStateModel = PlayState.Paused }
                 PlayState.Paused -> { newStateModel = PlayState.Playing }
-                PlayState.Prepared -> { newStateModel = PlayState.Playing }
-                PlayState.Complete -> { newStateModel = PlayState.Prepared }
-
-                else -> {}
+                else-> {}
             }
 
             updatePlayButtonState(newStateModel)
@@ -113,7 +110,6 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun exit(){
         binding.playerToolbar.setOnClickListener{
-
             finish()
         }
     }
@@ -123,8 +119,7 @@ class PlayerActivity : AppCompatActivity() {
         track.previewUrl?.let { url ->
             try {
                 viewModel.setUrlTrack(url)
-                viewModel.prepare()
-                binding.playerPlayPause.setImageResource(imageState[PlayState.Prepared]!!)
+                binding.playerPlayPause.setImageResource(imageState[PlayState.Paused]!!)
             } catch (e: IOException) {
                 Toast.makeText(this, "Ошибка загрузки трека", Toast.LENGTH_LONG).show()
             }
@@ -137,49 +132,23 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentTime() {
-        if (viewModel.getComplete()) {
-            stopPlayer()
-            viewModel.resetComplete()
-        }
 
-        if (viewModel.state.value == PlayState.Playing) {
+        val state = viewModel.getState()
+        updatePlayButtonState(state)
 
-            val currentPosition = viewModel.getCurrentPosition()
-            binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-            handler.postDelayed({ updateCurrentTime() }, 300)
-        }
-    }
-
-
-    private fun stopTimer() {
-        Log.d("PlayerActivity::stopTimer()", "")
-        handler.removeCallbacksAndMessages(null)
-        currentRunnable = null
-    }
-
-
-    private fun stopPlayer() {
-
-        Log.d("PlayerActivity::stopPlayer()", "private fun stopPlayer()")
-        binding.time.text = "00:00"
-        stopTimer()
-
-        viewModel.changeState(PlayState.Complete)
-        updatePlayButtonState(PlayState.Paused)
+        val currentPosition = viewModel.getCurrentPosition()
+        binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+        handler?.postDelayed({ updateCurrentTime() }, 300)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.exit()
+        handler?.let {
+            it.removeCallbacksAndMessages(null)
+            handler = null
+        }
     }
-
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.pause()
-    }
-
-
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(

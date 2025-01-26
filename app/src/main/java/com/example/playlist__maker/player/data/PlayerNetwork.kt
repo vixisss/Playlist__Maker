@@ -1,68 +1,87 @@
 package com.example.playlist__maker.player.data
 
+import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
+import com.example.playlist__maker.player.domain.models.PlayState
 
 
 class PlayerNetwork {
 
     var trackIsComplete : Boolean = false
-    var mediaPlayer : MediaPlayer = MediaPlayer()
+    private var mediaPlayer: MediaPlayer? = null
 
+
+    fun stop() {
+        mediaPlayer!!.stop()
+    }
 
     fun prepare(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnCompletionListener {
-            trackIsComplete = true
-            stop()
+        release()
+
+        mediaPlayer = MediaPlayer()
+        mediaPlayer?.setDataSource(url)
+        mediaPlayer?.prepareAsync()
+
+        mediaPlayer!!.setOnPreparedListener {
+            start()
+        }
+
+        mediaPlayer!!.setOnCompletionListener {
+            mediaPlayer!!.seekTo(0)
         }
 
     }
 
-
-    fun getComplete() : Boolean {
-        return trackIsComplete
-    }
-
-
-    fun resetComplete() {
-        trackIsComplete = false
-    }
-
-
-    fun stop() {
-        mediaPlayer.stop()
-
-        mediaPlayer.prepareAsync()
-    }
-
-
     fun start() {
-        mediaPlayer.start()
+        if (mediaPlayer == null) { return }
+
+        if (!mediaPlayer!!.isPlaying()) {
+            mediaPlayer!!.seekTo(mediaPlayer!!.currentPosition)
+            mediaPlayer!!.start()
+        }
     }
 
+    fun resume() {
+        if (!mediaPlayer!!.isPlaying()) {
+            mediaPlayer!!.start()
+        }
+    }
 
     fun pause() {
-        mediaPlayer.pause()
+        if (mediaPlayer == null) { return }
+        if (mediaPlayer!!.isPlaying()) {
+            mediaPlayer!!.pause()
+        }
     }
 
 
     fun release() {
-        mediaPlayer.release()
+        if (mediaPlayer == null) {return}
+
+        mediaPlayer!!.release()
+        mediaPlayer = null
     }
 
-
     fun getCurrentPosition(): Long{
-        return if (mediaPlayer.isPlaying){
-            mediaPlayer.currentPosition.toLong()
-        } else {
-            0L
-        }
+        if (mediaPlayer == null) { return -1L }
+
+        return mediaPlayer!!.currentPosition.toLong()
     }
 
     fun exit() {
-        mediaPlayer.stop()
-        mediaPlayer.release()
+        if (mediaPlayer == null) { return }
+        mediaPlayer!!.release()
+    }
 
+    fun getPlayerState() : PlayState {
+        if (mediaPlayer == null) {
+            return PlayState.Paused
+        }
+        if (mediaPlayer!!.isPlaying()) {
+            return PlayState.Playing
+        }
+
+        return PlayState.Paused
     }
 }

@@ -13,7 +13,7 @@ import com.example.playlist__maker.player.domain.models.PlayState
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor) : ViewModel() {
-    var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Prepared)
+    var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
     private var urlTrack : String = ""
 
     companion object {
@@ -30,6 +30,10 @@ class PlayerViewModel(
 
     }
 
+    fun getState() : PlayState {
+        return playerInteractor.getStatePlayer()
+    }
+
     fun exit() {
         playerInteractor.exit()
     }
@@ -37,9 +41,7 @@ class PlayerViewModel(
     fun changeState(state : PlayState) {
         when(state) {
             PlayState.Playing -> { start() }
-            PlayState.Prepared -> { prepare() }
             PlayState.Paused -> { pause() }
-            PlayState.Complete -> { stop() }
         }
     }
 
@@ -50,25 +52,15 @@ class PlayerViewModel(
         }
     }
 
-
-    fun getComplete() : Boolean {
-        return playerInteractor.getComplete()
-    }
-
-
-    fun resetComplete() {
-        playerInteractor.resetComplete()
-    }
-
-
-    fun prepare(){
-        playerInteractor.prepare(urlTrack)
-        state.value = (PlayState.Prepared)
-    }
-
-
     fun start() {
-        playerInteractor.start()
+        if (playerInteractor.getCurrentPosition() == -1L) {
+            playerInteractor.prepare(urlTrack)
+        }
+        else {
+            playerInteractor.start()
+        }
+
+        //playerInteractor.start()
         state.value = PlayState.Playing
     }
 
@@ -86,12 +78,9 @@ class PlayerViewModel(
 
     fun stop(){
         playerInteractor.stop()
-        state.value = (PlayState.Prepared)
+        state.value = (PlayState.Paused)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }
 
 
