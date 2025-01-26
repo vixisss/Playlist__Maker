@@ -1,6 +1,7 @@
 package com.example.playlist__maker.player.ui.viewModel
 
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +14,7 @@ import com.example.playlist__maker.player.domain.models.PlayState
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor) : ViewModel() {
-    var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
+    private var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
     private var urlTrack : String = ""
 
     companion object {
@@ -52,7 +53,7 @@ class PlayerViewModel(
         }
     }
 
-    fun start() {
+    private fun start() {
         if (playerInteractor.getCurrentPosition() == -1L) {
             playerInteractor.prepare(urlTrack)
         }
@@ -64,14 +65,14 @@ class PlayerViewModel(
     }
 
 
-    fun pause() {
+    private fun pause() {
         playerInteractor.pause()
         state.value = (PlayState.Paused)
     }
 
 
-    fun getCurrentPosition(): Long {
-        return playerInteractor.getCurrentPosition()
+    fun getCurrentPosition(): MutableLiveData<Long> {
+        return MutableLiveData<Long>(playerInteractor.getCurrentPosition())
     }
 
 }

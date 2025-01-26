@@ -5,10 +5,12 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -31,6 +33,17 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var viewModel: PlayerViewModel
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
+
+    private val trackObserver = Observer<Long> { trackPosition->
+        Log.d("Time Observer send time", trackPosition.toString())
+        if (trackPosition == -1L) {
+            binding.time.text = SimpleDateFormat("mm:ss",
+                Locale.getDefault()).format(0L)
+        } else {
+            binding.time.text = SimpleDateFormat("mm:ss",
+                Locale.getDefault()).format(trackPosition)
+        }
+    }
 
     private var imageState: Map<PlayState, Int> = mapOf(
         PlayState.Playing to R.drawable.player_pause,
@@ -112,6 +125,8 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun preparePlayer() {
         binding.time.text = "00:00"
+
+
         track.previewUrl?.let { url ->
             try {
                 viewModel.setUrlTrack(url)
@@ -128,18 +143,17 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentTime() {
-
         val state = viewModel.getState()
         updatePlayButtonState(state)
 
-        val currentPosition = viewModel.getCurrentPosition()
-        binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-        handler?.postDelayed({ updateCurrentTime() }, 300)
+        viewModel.getCurrentPosition().observe(this, trackObserver)
+        handler?.postDelayed({  updateCurrentTime() }, 300)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.exit()
+
         handler?.let {
             it.removeCallbacksAndMessages(null)
             handler = null

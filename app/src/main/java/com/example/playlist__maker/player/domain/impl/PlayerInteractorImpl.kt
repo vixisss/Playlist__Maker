@@ -23,7 +23,7 @@ class PlayerInteractorImpl(private val context: PlayerNetwork) : PlayerInteracto
         context.pause()
     }
 
-    override fun getCurrentPosition(): Long = context.getCurrentPosition()
+    override fun getCurrentPosition(): Long = context.getCurrentPosition().value!!
 
 
     override fun release() {
