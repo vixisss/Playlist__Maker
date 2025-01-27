@@ -85,8 +85,6 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerAlbum.visibility = if (track.collectionName.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -116,7 +114,6 @@ class PlayerActivity : AppCompatActivity() {
 
     }
 
-
     private fun exit(){
         binding.playerToolbar.setOnClickListener{
             finish()
@@ -136,7 +133,6 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun updatePlayButtonState(state: PlayState?) {
         binding.playerPlayPause.setImageResource(imageState[state]!!)

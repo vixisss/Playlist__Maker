@@ -1,5 +1,6 @@
 package com.example.playlist__maker.settings.ui.viewModel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -27,7 +28,7 @@ class SettingsViewModel(
         sharingInteractor.userAgree()
     }
 
-    fun getTheme(): MutableLiveData<Boolean> = MutableLiveData<Boolean>(settingsInteractor.getTheme())
+    fun getTheme(): LiveData<Boolean> = MutableLiveData(settingsInteractor.getTheme())
 
     fun switchTheme(checked: Boolean) {
         settingsInteractor.switchTheme(checked)

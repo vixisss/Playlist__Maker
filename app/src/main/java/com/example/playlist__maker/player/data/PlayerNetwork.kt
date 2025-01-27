@@ -1,7 +1,6 @@
 package com.example.playlist__maker.player.data
 
 import android.media.MediaPlayer
-import androidx.lifecycle.MutableLiveData
 import com.example.playlist__maker.player.domain.models.PlayState
 
 
@@ -55,10 +54,10 @@ class PlayerNetwork {
         mediaPlayer = null
     }
 
-    fun getCurrentPosition(): MutableLiveData<Long> {
-        if (mediaPlayer == null) { return MutableLiveData<Long>(-1L) }
+    fun getCurrentPosition() : Long {
+        if (mediaPlayer == null) { return -1L }
 
-        return MutableLiveData<Long>(mediaPlayer!!.currentPosition.toLong())
+        return mediaPlayer!!.currentPosition.toLong()
     }
 
     fun exit() {

@@ -13,7 +13,8 @@ import com.example.playlist__maker.player.domain.models.PlayState
 
 
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor) : ViewModel() {
+        private val playerInteractor: PlayerInteractor) : ViewModel() {
+
     private var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
     private var urlTrack : String = ""
 
@@ -71,8 +72,8 @@ class PlayerViewModel(
     }
 
 
-    fun getCurrentPosition(): MutableLiveData<Long> {
-        return MutableLiveData<Long>(playerInteractor.getCurrentPosition())
+    fun getCurrentPosition(): LiveData<Long> {
+        return MutableLiveData(playerInteractor.getCurrentPosition())
     }
 
 }
