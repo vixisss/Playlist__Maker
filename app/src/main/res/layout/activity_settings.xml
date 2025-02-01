@@ -10,7 +10,7 @@
 
 
     <Toolbar
-        android:id="@+id/settings_toolbar"
+        android:id="@+id/backToolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin56"
 
@@ -19,7 +19,7 @@
 
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/themeSwitcher"
+            android:id="@+id/switchTheme"
             android:layout_width="match_parent"
             android:layout_height="61dp"
             android:layout_gravity="end"
@@ -29,7 +29,7 @@
             style="@style/SettingsButtonStyle"/>
 
     <Button
-        android:id="@+id/btn_shareApp"
+        android:id="@+id/btnShareApp"
 
         style="@style/SettingsButtonStyle"
 
@@ -41,7 +41,7 @@
         app:icon="@drawable/share" />
 
     <Button
-        android:id="@+id/btn_supportHelp"
+        android:id="@+id/btnSupportHelp"
 
         style="@style/SettingsButtonStyle"
 
@@ -53,7 +53,7 @@
         app:icon="@drawable/support" />
 
     <Button
-        android:id="@+id/btn_userAgree"
+        android:id="@+id/btnUserAgree"
 
         style="@style/SettingsButtonStyle"
 

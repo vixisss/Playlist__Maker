@@ -19,7 +19,7 @@
 
 
     <Button
-        android:id="@+id/search_btn"
+        android:id="@+id/mainBtnSearch"
         android:layout_width="match_parent"
         android:layout_height="0dp"
 
