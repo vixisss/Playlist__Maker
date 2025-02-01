@@ -6,16 +6,12 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlist__maker.creator.Creator
-import com.example.playlist__maker.search.domain.HistoryInteractor
-import com.example.playlist__maker.search.domain.TracksInteractor
-import com.example.playlist__maker.search.domain.TracksInteractor.TrackConsumer
-import com.example.playlist__maker.search.domain.UiState
+import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
+import com.example.playlist__maker.search.domain.interactors.TracksInteractor
+import com.example.playlist__maker.search.domain.interactors.TracksInteractor.TrackConsumer
+import com.example.playlist__maker.search.domain.models.UiState
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.ui.ResponseErrorType
+import com.example.playlist__maker.search.ui.model.ResponseErrorType
 import com.example.playlist__maker.utils.ResponseCode
 
 class SearchViewModel(
@@ -26,17 +22,6 @@ class SearchViewModel(
     companion object {
         private val SEARCH_REQUEST_TOKEN = Any()
         private const val SEARCH_DEBOUNCE_DELAY = 2_000L
-
-        fun factory(): ViewModelProvider.Factory {
-            return viewModelFactory {
-                initializer {
-                    SearchViewModel(
-                        tracksInteractor = Creator.provideTracksInteractor(),
-                        historyInteractor = Creator.provideHistoryInteractor()
-                    )
-                }
-            }
-        }
     }
 
     private var latestSearchText: String? = null

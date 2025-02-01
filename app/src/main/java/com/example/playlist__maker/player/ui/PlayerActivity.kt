@@ -5,13 +5,11 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
@@ -20,6 +18,7 @@ import com.example.playlist__maker.player.domain.models.PlayState
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -30,12 +29,11 @@ class PlayerActivity : AppCompatActivity() {
 
     private var handler: Handler? = null
 
-    private lateinit var viewModel: PlayerViewModel
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
+    private val viewModel by viewModel<PlayerViewModel>()
 
     private val trackObserver = Observer<Long> { trackPosition->
-        Log.d("Time Observer send time", trackPosition.toString())
         if (trackPosition == -1L) {
             binding.time.text = SimpleDateFormat("mm:ss",
                 Locale.getDefault()).format(0L)
@@ -92,7 +90,6 @@ class PlayerActivity : AppCompatActivity() {
 
         handler = Handler(Looper.getMainLooper())
 
-        viewModel = ViewModelProvider(this, PlayerViewModel.factory())[PlayerViewModel::class.java]
 
         showPlayer()
         preparePlayer()

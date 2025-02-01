@@ -1,7 +1,7 @@
-package com.example.playlist__maker.sharing.domain.impl
+package com.example.playlist__maker.sharing.domain.interactor.impl
 
-import com.example.playlist__maker.sharing.domain.ExternalNavigator
-import com.example.playlist__maker.sharing.domain.SharingInteractor
+import com.example.playlist__maker.sharing.domain.repository.ExternalNavigator
+import com.example.playlist__maker.sharing.domain.interactor.SharingInteractor
 
 class SharingInteractorImpl(
     private val externalNavigator: ExternalNavigator

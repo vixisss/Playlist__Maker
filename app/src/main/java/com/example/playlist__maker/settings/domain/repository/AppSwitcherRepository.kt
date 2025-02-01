@@ -1,4 +1,4 @@
-package com.example.playlist__maker.settings.domain.interactor
+package com.example.playlist__maker.settings.domain.repository
 
 interface AppSwitcherRepository {
     fun getTheme(): Boolean

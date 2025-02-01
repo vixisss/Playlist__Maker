@@ -4,10 +4,12 @@ import com.example.playlist__maker.search.data.NetworkClient
 import com.example.playlist__maker.search.data.TrackSearchRequest
 import com.example.playlist__maker.search.data.TrackSearchResponse
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.domain.TracksRepository
+import com.example.playlist__maker.search.domain.repository.TracksRepository
 import com.example.playlist__maker.utils.ResponseCode
 
-class TracksRepositoryImpl (private val networkClient: NetworkClient) : TracksRepository {
+class TracksRepositoryImpl (
+    private val networkClient: NetworkClient
+) : TracksRepository {
 
     companion object{
         const val NOTHING_FOUND = 404

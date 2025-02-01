@@ -1,7 +1,6 @@
-package com.example.playlist__maker.search.domain
+package com.example.playlist__maker.search.domain.models
 
-import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.ui.ResponseErrorType
+import com.example.playlist__maker.search.ui.model.ResponseErrorType
 
 sealed interface UiState {
     object Loading : UiState

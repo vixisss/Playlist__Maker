@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.example.playlist__maker.R
-import com.example.playlist__maker.sharing.domain.ExternalNavigator
+import com.example.playlist__maker.sharing.domain.repository.ExternalNavigator
 import com.example.playlist__maker.sharing.domain.models.UriForUserAgree
 import com.example.playlist__maker.sharing.domain.models.EmailData
 import com.example.playlist__maker.sharing.domain.models.UriForShareApp

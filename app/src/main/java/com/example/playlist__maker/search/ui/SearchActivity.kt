@@ -15,17 +15,18 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.databinding.ActivitySearchBinding
 import com.example.playlist__maker.player.ui.PlayerActivity
-import com.example.playlist__maker.search.domain.UiState
+import com.example.playlist__maker.search.domain.models.UiState
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
+import com.example.playlist__maker.search.ui.model.ResponseErrorType
 import com.example.playlist__maker.search.ui.viewModel.SearchViewModel
 import com.example.playlist__maker.utils.Listener
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchActivity : AppCompatActivity(), Listener {
@@ -40,9 +41,9 @@ class SearchActivity : AppCompatActivity(), Listener {
 
     private var isClickAllowed = true
     private var saveText: String = FIRST_STRING
+    private val viewModel by viewModel<SearchViewModel>()
 
 
-    private lateinit var viewModel: SearchViewModel
     private lateinit var binding: ActivitySearchBinding
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var adapter: TrackAdapter
@@ -53,8 +54,6 @@ class SearchActivity : AppCompatActivity(), Listener {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(this, SearchViewModel.factory())[SearchViewModel::class.java]
 
 
         clearFun()
