@@ -43,7 +43,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation ("androidx.core:core-ktx:1.9.0")
+    implementation (libs.androidx.core.ktx.v190)
+    implementation(libs.koin.android)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

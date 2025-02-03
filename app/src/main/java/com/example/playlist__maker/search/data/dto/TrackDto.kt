@@ -1,4 +1,4 @@
-package com.example.playlist__maker.search.data
+package com.example.playlist__maker.search.data.dto
 
 data class TrackDto(
     val trackId: Int,

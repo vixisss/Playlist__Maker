@@ -4,10 +4,9 @@ import android.media.MediaPlayer
 import com.example.playlist__maker.player.domain.models.PlayState
 
 
-class PlayerNetwork {
-
+class PlayerNetwork (
     private var mediaPlayer: MediaPlayer? = null
-
+){
     fun stop() {
         mediaPlayer!!.stop()
     }
@@ -50,7 +49,7 @@ class PlayerNetwork {
     fun release() {
         if (mediaPlayer == null) {return}
 
-        mediaPlayer!!.release()
+        mediaPlayer?.release()
         mediaPlayer = null
     }
 

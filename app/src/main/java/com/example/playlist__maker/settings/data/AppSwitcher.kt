@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlist__maker.settings.domain.interactor.AppSwitcherRepository
+import com.example.playlist__maker.settings.domain.repository.AppSwitcherRepository
 
 class AppSwitcher(
     private val app: Application,

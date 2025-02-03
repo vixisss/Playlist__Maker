@@ -3,12 +3,8 @@ package com.example.playlist__maker.settings.ui.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlist__maker.creator.Creator
 import com.example.playlist__maker.settings.domain.interactor.AppSwitcherInteractor
-import com.example.playlist__maker.sharing.domain.SharingInteractor
+import com.example.playlist__maker.sharing.domain.interactor.SharingInteractor
 
 
 class SettingsViewModel(
@@ -32,16 +28,5 @@ class SettingsViewModel(
 
     fun switchTheme(checked: Boolean) {
         settingsInteractor.switchTheme(checked)
-    }
-
-    companion object {
-        fun factory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SettingsViewModel(
-                    settingsInteractor = Creator.provideAppSwitcherInteractor(),
-                    sharingInteractor = Creator.provideSharingInteractor()
-                )
-            }
-        }
     }
 }

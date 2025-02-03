@@ -1,4 +1,4 @@
-package com.example.playlist__maker.search.domain
+package com.example.playlist__maker.search.domain.interactors
 
 import com.example.playlist__maker.utils.ResponseCode
 import com.example.playlist__maker.search.domain.models.Track

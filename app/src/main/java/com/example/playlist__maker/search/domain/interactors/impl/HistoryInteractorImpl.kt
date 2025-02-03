@@ -1,7 +1,7 @@
-package com.example.playlist__maker.search.domain.impl
+package com.example.playlist__maker.search.domain.interactors.impl
 
-import com.example.playlist__maker.search.data.History
-import com.example.playlist__maker.search.domain.HistoryInteractor
+import com.example.playlist__maker.search.data.dto.History
+import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.models.Track
 
 class HistoryInteractorImpl(

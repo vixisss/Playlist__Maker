@@ -4,33 +4,17 @@ package com.example.playlist__maker.player.ui.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlist__maker.creator.Creator
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.player.domain.models.PlayState
 
 
 class PlayerViewModel(
-        private val playerInteractor: PlayerInteractor) : ViewModel() {
+        private val playerInteractor: PlayerInteractor
+) : ViewModel() {
 
     private var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
     private var urlTrack : String = ""
 
-    companion object {
-        fun factory(): ViewModelProvider.Factory {
-            return viewModelFactory {
-                initializer {
-                    PlayerViewModel(
-                        playerInteractor = Creator.providePlayer(),
-                        )
-
-                }
-            }
-        }
-
-    }
 
     fun getState() : PlayState {
         return playerInteractor.getStatePlayer()
@@ -46,6 +30,7 @@ class PlayerViewModel(
             PlayState.Paused -> { pause() }
         }
     }
+
 
 
     fun setUrlTrack(url : String?) {
@@ -74,6 +59,11 @@ class PlayerViewModel(
 
     fun getCurrentPosition(): LiveData<Long> {
         return MutableLiveData(playerInteractor.getCurrentPosition())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        playerInteractor.release()
     }
 
 }

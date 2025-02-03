@@ -5,7 +5,9 @@ import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.player.domain.models.PlayState
 
 
-class PlayerInteractorImpl(private val context: PlayerNetwork) : PlayerInteractor {
+class PlayerInteractorImpl(
+    private val context: PlayerNetwork
+) : PlayerInteractor {
 
     override fun stop() {
         context.stop()
