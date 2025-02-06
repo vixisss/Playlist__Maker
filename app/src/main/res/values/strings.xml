@@ -29,4 +29,7 @@
     <string name="historyTitle">Вы искали</string>
     <string name="historyBtn">Очистить историю</string>
     <string name="time">00:00</string>
+
+    <string name="favTracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
 </resources>

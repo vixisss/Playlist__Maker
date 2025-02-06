@@ -1,21 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Основная тема приложения. -->
     <style name="Theme.MyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:background">@color/night_theme</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="iconTint">@color/white</item>
+        <item name="colorPrimary">@color/edit_text_lightTheme_text</item>
+        <item name="colorPrimaryVariant">@color/edit_text_lightTheme</item>
+        <item name="colorOnPrimary">@color/night_theme</item>
 
-
-    </style>
-
-    <style name="Theme.MyApp.White" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="background">@color/night_theme</item>
-        <item name="android:textColor">@color/white</item>"
-        <item name="android:iconTintMode">@color/white</item>
-    </style>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorSecondary">@color/background</item>
+        <item name="colorSecondaryVariant">@color/switcherTrack_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:windowBackground">?attr/colorOnPrimary</item>
     </style>
 </resources>

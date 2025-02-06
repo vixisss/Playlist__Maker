@@ -12,4 +12,6 @@
 
     <color name="icon_placeholder">#FFFFFFFF</color>
     <color name="icon_placeholder_background">#1A1B22</color>
+
+    <color name="mainBackground">#1A1B22</color>
 </resources>
