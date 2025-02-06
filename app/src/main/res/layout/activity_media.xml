@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:theme="@style/Theme.MyApp.White"
-    tools:context=".media.ui.MediaActivity">
+    android:orientation="vertical">
 
 
     <Toolbar
@@ -20,13 +18,16 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
 
-        app:tabIndicatorHeight="2dp"
+        app:tabIndicator="@drawable/tab_indicator"
+        app:tabIndicatorFullWidth="true"
         app:tabIndicatorColor="@color/icon_placeholder"
-        android:background="@color/white"
+        app:tabIndicatorHeight="2dp"
+        android:background="@android:color/transparent"
         app:tabTextAppearance="@style/Tab"
-        app:tabSelectedTextColor="@color/icon_placeholder"/>
+        app:tabSelectedTextColor="@color/icon_placeholder"
+        app:tabTextColor="@color/icon_placeholder"/>
 
 
     <androidx.viewpager2.widget.ViewPager2
@@ -36,3 +37,4 @@
 
 
 </LinearLayout>
+
