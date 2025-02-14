@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/mediaPlaylistLayout">
+
+    <Button
+        android:id="@+id/mediaAddPlaylist"
+        style="@style/mediaButtonAddPlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin24"
+        android:paddingLeft="14dp"
+        android:paddingTop="10dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="10dp"
+        android:text="Новый плейлист"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/mediaPlaceholderPlaylist"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/placeholder_nothing_find_day"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mediaAddPlaylist" />
+
+    <TextView
+        style="@style/mediaFavTracks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Вы не создали \nни одного плейлиста"
+        android:textAlignment="center"
+        android:textFontWeight="400"
+        android:layout_marginTop="@dimen/margin16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mediaPlaceholderPlaylist" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

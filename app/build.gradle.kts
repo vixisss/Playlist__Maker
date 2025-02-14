@@ -39,24 +39,29 @@ android {
 }
 
 dependencies {
-    implementation(libs.glide)
-    implementation(libs.gson)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation (libs.androidx.core.ktx.v190)
-    implementation(libs.koin.android)
+    val fragment_version = "1.5.5"
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.core.ktx.v1120)
+    implementation(libs.androidx.appcompat.v170)
+    implementation(libs.material.v1120)
+    implementation(libs.androidx.constraintlayout.v220)
+    implementation(libs.androidx.contentpager)
+    implementation(libs.androidx.activity.v192)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.junit.v121)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(kotlin("script-runtime"))
-    implementation (libs.androidx.activity.ktx)
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
 
+    // подключаем библиотеку retrofit и конвертер converter_gson
+    implementation(libs.gson.v210)
+    implementation(libs.retrofit)
+    implementation (libs.converter.gson)
+
+    // подключаем библиотеку koin
+    implementation (libs.koin.android)
+    // ViewPager2
+    implementation (libs.androidx.viewpager2)
+    implementation("androidx.fragment:fragment-ktx:$fragment_version")
 }
