@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist__maker.R
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.utils.Listener
 
 class TrackAdapter(
     private var tracks: List<Track>,
-    private val listenerOnClick: Listener
+    private val listenerOnClick: OnTrackClickListener
 ) :  RecyclerView.Adapter<TrackViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -28,6 +27,10 @@ class TrackAdapter(
     fun newTracks(newTracks: List<Track>) {
         tracks = newTracks
         notifyDataSetChanged()
+    }
+
+    interface OnTrackClickListener {
+        fun onClick(track: Track)
     }
 
 }

@@ -77,8 +77,6 @@
 
     <style name="ToolbarStyle">
         <item name="android:titleTextAppearance">@style/MainTextStyle</item>
-
-        <item name="android:navigationIcon">@drawable/light_mode_night</item>
         <item name="android:titleTextColor">@color/white</item>
     </style>
 

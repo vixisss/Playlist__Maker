@@ -39,8 +39,6 @@ android {
 }
 
 dependencies {
-    val fragment_version = "1.5.5"
-
     implementation(libs.androidx.core.ktx.v1120)
     implementation(libs.androidx.appcompat.v170)
     implementation(libs.material.v1120)
@@ -61,7 +59,13 @@ dependencies {
 
     // подключаем библиотеку koin
     implementation (libs.koin.android)
+
     // ViewPager2
     implementation (libs.androidx.viewpager2)
-    implementation("androidx.fragment:fragment-ktx:$fragment_version")
+    implementation(libs.androidx.fragment.ktx)
+
+    //navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.fragment.ktx)
 }
