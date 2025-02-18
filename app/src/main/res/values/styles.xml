@@ -81,8 +81,6 @@
     <style name="ToolbarStyle">
         <item name="android:titleTextColor">@color/night_theme</item>
         <item name="android:titleTextAppearance">@style/MainTextStyle</item>
-
-        <item name="android:navigationIcon">@drawable/light_mode</item>
     </style>
 
 
@@ -180,5 +178,8 @@
         <item name="android:textFontWeight">500</item>
         <item name="lineHeight">16.41sp</item>
     </style>
+
+
+
 
 </resources>
