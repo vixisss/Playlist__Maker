@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.utils.Listener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -27,7 +26,7 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
             context.resources.displayMetrics).toInt()
     }
 
-    fun bind(model: Track, listenerOnClick: Listener) {
+    fun bind(model: Track, listenerOnClick: TrackAdapter.OnTrackClickListener) {
         Glide.with(this.itemView.context)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.placeholder)
