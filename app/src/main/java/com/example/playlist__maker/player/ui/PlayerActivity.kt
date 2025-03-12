@@ -1,10 +1,7 @@
 package com.example.playlist__maker.player.ui
 
-
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -18,35 +15,29 @@ import com.example.playlist__maker.player.domain.models.PlayState
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.google.gson.Gson
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 import java.io.IOException
 import java.text.SimpleDateFormat
-
-
 import java.util.Locale
-class PlayerActivity : AppCompatActivity() {
 
-    private var handler: Handler? = null
+class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
     private val viewModel by viewModel<PlayerViewModel>()
 
-    private val trackObserver = Observer<Long> { trackPosition->
-        if (trackPosition == -1L) {
-            binding.time.text = SimpleDateFormat("mm:ss",
-                Locale.getDefault()).format(0L)
-        } else {
-            binding.time.text = SimpleDateFormat("mm:ss",
-                Locale.getDefault()).format(trackPosition)
-        }
+    private val trackObserver = Observer<Long> { trackPosition ->
+        binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackPosition)
     }
 
     private var imageState: Map<PlayState, Int> = mapOf(
         PlayState.Playing to R.drawable.player_pause,
-        PlayState.Paused to R.drawable.player_play)
+        PlayState.Paused to R.drawable.player_play,
+        PlayState.Prepared to R.drawable.player_play
+    )
 
+    private var updateJob: Job? = null
 
     private fun updateTrackInfo() {
         binding.trackName.text = track.trackName
@@ -88,38 +79,36 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        handler = Handler(Looper.getMainLooper())
-
-
         showPlayer()
         preparePlayer()
         exit()
 
         binding.playerPlayPause.setOnClickListener {
             val stateModel = viewModel.getState()
-            var newStateModel : PlayState = PlayState.Paused
+            var newStateModel: PlayState = PlayState.Paused
 
-            when (stateModel) {
-                PlayState.Playing -> { newStateModel = PlayState.Paused }
-                PlayState.Paused -> { newStateModel = PlayState.Playing }
+            newStateModel = when (stateModel) {
+                PlayState.Playing -> PlayState.Paused
+                PlayState.Paused -> PlayState.Playing
+                PlayState.Prepared -> PlayState.Playing
             }
 
             updatePlayButtonState(newStateModel)
             viewModel.changeState(newStateModel)
             updateCurrentTime()
         }
-
     }
 
-    private fun exit(){
-        binding.playerToolbar.setOnClickListener{
+
+
+    private fun exit() {
+        binding.playerToolbar.setOnClickListener {
             finish()
         }
     }
 
     private fun preparePlayer() {
         binding.time.text = "00:00"
-
 
         track.previewUrl?.let { url ->
             try {
@@ -135,28 +124,30 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerPlayPause.setImageResource(imageState[state]!!)
     }
 
-    private fun updateCurrentTime() {
-        val state = viewModel.getState()
-        updatePlayButtonState(state)
 
-        viewModel.getCurrentPosition().observe(this, trackObserver)
-        handler?.postDelayed({  updateCurrentTime() }, 300)
+    private fun updateCurrentTime() {
+        updateJob?.cancel()
+        updateJob = CoroutineScope(Dispatchers.Main).launch {
+            while (true) {
+                val state = viewModel.getState()
+                updatePlayButtonState(state)
+                viewModel.getCurrentPosition().observe(this@PlayerActivity, trackObserver)
+                delay(300)
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.exit()
-
-        handler?.let {
-            it.removeCallbacksAndMessages(null)
-            handler = null
-        }
+        updateJob?.cancel()
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
-            context.resources.displayMetrics).toInt()
+            context.resources.displayMetrics
+        ).toInt()
     }
 }

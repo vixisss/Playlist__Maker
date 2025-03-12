@@ -11,6 +11,8 @@ interface PlayerInteractor {
 
     fun getStatePlayer() : PlayState
 
+    fun setOnCompletionListener(listener: () -> Unit)
+
     fun stop()
     fun exit()
 }

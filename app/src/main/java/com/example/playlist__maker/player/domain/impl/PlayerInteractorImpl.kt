@@ -27,7 +27,6 @@ class PlayerInteractorImpl(
 
     override fun getCurrentPosition(): Long = context.getCurrentPosition()
 
-
     override fun release() {
         context.release()
     }
@@ -38,5 +37,9 @@ class PlayerInteractorImpl(
 
     override fun getStatePlayer(): PlayState {
         return context.getPlayerState()
+    }
+
+    override fun setOnCompletionListener(listener: () -> Unit) {
+        context.setOnCompletionListener(listener) // Передаем колбэк в PlayerNetwork
     }
 }

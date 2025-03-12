@@ -1,4 +1,4 @@
 package com.example.playlist__maker.player.domain.models
 
 
-enum class PlayState {Playing, Paused}
+enum class PlayState {Prepared, Playing, Paused}

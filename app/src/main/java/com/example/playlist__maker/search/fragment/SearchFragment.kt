@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -17,6 +15,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentSearchBinding
@@ -27,7 +26,11 @@ import com.example.playlist__maker.search.ui.adapter.TrackAdapter
 import com.example.playlist__maker.search.ui.model.ResponseErrorType
 import com.example.playlist__maker.search.ui.viewModel.SearchViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.core.content.edit
 
 class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private var _binding: FragmentSearchBinding? = null
@@ -37,7 +40,8 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private var saveText: String = FIRST_STRING
 
     private val viewModel by viewModel<SearchViewModel>()
-    private val handler = Handler(Looper.getMainLooper())
+    private var clickDebounceJob: Job? = null
+    private var addHistoryJob: Job? = null
 
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var adapter: TrackAdapter
@@ -63,8 +67,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         clearHistoryFun()
         setupDeleteKeyListener()
         showHistory()
-
-
 
         if (savedInstanceState == null) {
             requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
@@ -100,9 +102,9 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
         binding.clearHistory.setOnClickListener {
             requireContext().getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE)
-                .edit()
-                .clear()
-                .apply()
+                .edit() {
+                    clear()
+                }
 
             viewModel.clearHistory()
             binding.historyLayout.visibility = View.GONE
@@ -139,8 +141,12 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             startActivity(layoutIntent)
         }
 
-        viewModel.addTrackToHistory(track)
-        historyAdapter.newTracks(viewModel.showHistoryList())
+
+        addHistoryJob = lifecycleScope.launch {
+            delay(500) // Задержка в 500мс
+            viewModel.addTrackToHistory(track)
+            historyAdapter.newTracks(viewModel.showHistoryList())
+        }
     }
 
     private fun setupDeleteKeyListener() {
@@ -324,7 +330,10 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+            clickDebounceJob = lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }
@@ -343,6 +352,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        clickDebounceJob?.cancel()
         _binding = null
     }
 }

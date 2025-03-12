@@ -2,10 +2,10 @@ package com.example.playlist__maker.search.ui.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor.TrackConsumer
@@ -13,6 +13,10 @@ import com.example.playlist__maker.search.domain.models.UiState
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.model.ResponseErrorType
 import com.example.playlist__maker.utils.ResponseCode
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -20,19 +24,14 @@ class SearchViewModel(
 ) : ViewModel() {
 
     companion object {
-        private val SEARCH_REQUEST_TOKEN = Any()
         private const val SEARCH_DEBOUNCE_DELAY = 2_000L
     }
 
     private var latestSearchText: String? = null
-
     private val handler = Handler(Looper.getMainLooper())
-
     private var tracksState = MutableLiveData<UiState>()
+    private var searchJob: Job? = null
 
-    private fun removeCallbacksAndMessages() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
 
     private fun makeRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
@@ -56,23 +55,28 @@ class SearchViewModel(
     }
 
     fun repeatRequest() {
-        removeCallbacksAndMessages()
-        makeRequest(latestSearchText ?: "")
+        latestSearchText?.let { searchText ->
+            searchJob?.cancel()
+            viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                makeRequest(searchText)
+            }
+        }
     }
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
             return
         }
         latestSearchText = changedText
+        searchJob?.cancel()
 
-        removeCallbacksAndMessages()
-        val searchRunnable = Runnable { makeRequest(changedText) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+
+            if (isActive) {
+                makeRequest(changedText)
+            }
+        }
     }
 
     fun getTracksState(): LiveData<UiState> = tracksState
@@ -89,6 +93,6 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        removeCallbacksAndMessages()
+        searchJob?.cancel()
     }
 }
