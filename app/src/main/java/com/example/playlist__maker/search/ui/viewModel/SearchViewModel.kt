@@ -1,18 +1,14 @@
 package com.example.playlist__maker.search.ui.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
-import com.example.playlist__maker.search.domain.interactors.TracksInteractor.TrackConsumer
-import com.example.playlist__maker.search.domain.models.UiState
+import com.example.playlist__maker.utils.UiState
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.ui.model.ResponseErrorType
-import com.example.playlist__maker.utils.ResponseCode
+import com.example.playlist__maker.utils.ResponseErrorType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -28,7 +24,6 @@ class SearchViewModel(
     }
 
     private var latestSearchText: String? = null
-    private val handler = Handler(Looper.getMainLooper())
     private var tracksState = MutableLiveData<UiState>()
     private var searchJob: Job? = null
 
@@ -36,21 +31,40 @@ class SearchViewModel(
     private fun makeRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
             tracksState.postValue(UiState.Loading)
-            tracksInteractor.searchTracks(newSearchText, object : TrackConsumer {
-                override fun consume(foundTrack: ResponseCode<List<Track>>) {
-                    when (foundTrack) {
-                        is ResponseCode.ServerError -> {
-                            tracksState.postValue(UiState.Error(ResponseErrorType.NO_INTERNET))
-                        }
-                        is ResponseCode.ClientError -> {
-                            tracksState.postValue(UiState.Error(ResponseErrorType.NOTHING_FOUND))
-                        }
-                        is ResponseCode.Success -> {
-                            tracksState.postValue(UiState.SearchContent(data = foundTrack.data))
+            viewModelScope.launch {
+                tracksInteractor
+                    .searchTracks(newSearchText)
+                    .collect { pair ->
+                        val (foundTracks, httpStatus) = pair
+                        when(httpStatus){
+                            500 -> {
+                                tracksState.postValue(
+                                    UiState.Error(
+                                    error = ResponseErrorType.NO_INTERNET
+                                ))
+                            }
+                            404 -> {
+                                tracksState.postValue(
+                                    UiState.Error(
+                                    error = ResponseErrorType.NOTHING_FOUND
+                                ))
+                            }
+                            200 -> {
+                                if (foundTracks != null){
+                                    tracksState.postValue(
+                                        UiState.SearchContent(
+                                        data = foundTracks
+                                    ))
+                                } else {
+                                    tracksState.postValue(
+                                        UiState.Error(
+                                        error = ResponseErrorType.NOTHING_FOUND
+                                    ))
+                                }
+                            }
                         }
                     }
-                }
-            })
+            }
         }
     }
 

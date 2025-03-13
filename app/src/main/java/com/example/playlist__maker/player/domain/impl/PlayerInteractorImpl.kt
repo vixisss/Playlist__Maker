@@ -2,7 +2,7 @@ package com.example.playlist__maker.player.domain.impl
 
 import com.example.playlist__maker.player.data.PlayerNetwork
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 
 class PlayerInteractorImpl(
@@ -40,6 +40,6 @@ class PlayerInteractorImpl(
     }
 
     override fun setOnCompletionListener(listener: () -> Unit) {
-        context.setOnCompletionListener(listener) // Передаем колбэк в PlayerNetwork
+        context.setOnCompletionListener(listener)
     }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor
@@ -67,7 +67,7 @@ class PlayerViewModel(
 
     init {
         playerInteractor.setOnCompletionListener {
-            state.postValue(PlayState.Paused) // Меняем состояние на Paused при завершении
+            state.postValue(PlayState.Paused)
         }
     }
 }

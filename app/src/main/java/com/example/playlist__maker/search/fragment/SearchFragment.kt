@@ -21,9 +21,9 @@ import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentSearchBinding
 import com.example.playlist__maker.player.ui.PlayerActivity
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.domain.models.UiState
+import com.example.playlist__maker.utils.UiState
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
-import com.example.playlist__maker.search.ui.model.ResponseErrorType
+import com.example.playlist__maker.utils.ResponseErrorType
 import com.example.playlist__maker.search.ui.viewModel.SearchViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
@@ -31,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.core.content.edit
+import androidx.core.view.isVisible
 
 class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private var _binding: FragmentSearchBinding? = null
@@ -79,16 +80,16 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     private fun showHistory() {
         if (viewModel.showHistoryList().isNotEmpty()) {
-            binding.historyLayout.visibility = View.VISIBLE
-            binding.historyList.visibility = View.VISIBLE
-            binding.titleHistory.visibility = View.VISIBLE
-            binding.clearHistory.visibility = View.VISIBLE
+            binding.historyLayout.isVisible = true
+            binding.historyList.isVisible = true
+            binding.titleHistory.isVisible = true
+            binding.clearHistory.isVisible = true
             historyAdapter.newTracks(viewModel.showHistoryList())
         } else {
-            binding.historyLayout.visibility = View.GONE
-            binding.historyList.visibility = View.GONE
-            binding.titleHistory.visibility = View.GONE
-            binding.clearHistory.visibility = View.GONE
+            binding.historyLayout.isVisible = false
+            binding.historyList.isVisible = false
+            binding.titleHistory.isVisible = false
+            binding.clearHistory.isVisible = false
         }
     }
 
@@ -107,27 +108,27 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                 }
 
             viewModel.clearHistory()
-            binding.historyLayout.visibility = View.GONE
-            binding.progressBarSearch.visibility = View.GONE
+            binding.historyLayout.isVisible = false
+            binding.progressBarSearch.isVisible = false
         }
     }
 
     private fun updateVisibility() {
         val term = binding.editTextSearch.text.toString().trim()
         if (term.isEmpty()) {
-            binding.trackListLayout.visibility = View.GONE
-            binding.recyclerViewTracksList.visibility = View.GONE
-            binding.update.visibility = View.GONE
+            binding.trackListLayout.isVisible = false
+            binding.recyclerViewTracksList.isVisible = false
+            binding.update.isVisible = false
             if (viewModel.showHistoryList().isEmpty()) {
-                binding.historyLayout.visibility = View.GONE
+                binding.historyLayout.isVisible = false
             } else {
                 showHistory()
             }
         } else {
-            binding.trackListLayout.visibility = View.GONE
-            binding.recyclerViewTracksList.visibility = View.VISIBLE
-            binding.update.visibility = View.VISIBLE
-            binding.historyLayout.visibility = View.GONE
+            binding.trackListLayout.isVisible = false
+            binding.recyclerViewTracksList.isVisible = true
+            binding.update.isVisible = true
+            binding.historyLayout.isVisible = false
             search()
         }
     }
@@ -177,7 +178,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                     binding.editTextSearch.text.clear()
                     hideKeyboard()
                     stopSearch()
-                    binding.progressBarSearch.visibility = View.GONE
+                    binding.progressBarSearch.isVisible = false
                     showHistory()
                     true
                 }
@@ -191,11 +192,11 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrBlank()) {
-                    binding.clearIcon.visibility = View.GONE
+                    binding.clearIcon.isVisible = false
                     updateVisibility()
                     showHistory()
                 } else {
-                    binding.clearIcon.visibility = View.VISIBLE
+                    binding.clearIcon.isVisible = true
                     viewModel.searchDebounce(s.toString())
                 }
             }
@@ -212,10 +213,10 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     }
 
     private fun stopSearch() {
-        binding.recyclerViewTracksList.visibility = View.GONE
-        binding.trackListLayout.visibility = View.GONE
+        binding.recyclerViewTracksList.isVisible = false
+        binding.trackListLayout.isVisible = false
         binding.editTextSearch.requestFocus()
-        binding.historyLayout.visibility = View.VISIBLE
+        binding.historyLayout.isVisible = true
     }
 
     private fun hideKeyboard() {
@@ -239,52 +240,52 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
         binding.editTextSearch.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && viewModel.showHistoryList().isNotEmpty()) {
-                binding.historyLayout.visibility = View.VISIBLE
-                binding.historyList.visibility = View.VISIBLE
-                binding.titleHistory.visibility = View.VISIBLE
-                binding.clearHistory.visibility = View.VISIBLE
+                binding.historyLayout.isVisible = true
+                binding.historyList.isVisible = true
+                binding.titleHistory.isVisible = true
+                binding.clearHistory.isVisible = true
             } else {
-                binding.historyLayout.visibility = View.GONE
-                binding.historyList.visibility = View.GONE
-                binding.titleHistory.visibility = View.GONE
-                binding.clearHistory.visibility = View.GONE
+                binding.historyLayout.isVisible = false
+                binding.historyList.isVisible = false
+                binding.titleHistory.isVisible = false
+                binding.clearHistory.isVisible = false
             }
         }
     }
 
     private fun placeholderOrResult(errorType: ResponseErrorType) {
         if (binding.editTextSearch.text.isNotEmpty()) {
-            binding.trackListLayout.visibility = View.GONE
-            binding.update.visibility = View.GONE
-            binding.errorMessagePlaceholder.visibility = View.GONE
-            binding.recyclerViewTracksList.visibility = View.GONE
-            binding.progressBarSearch.visibility = View.VISIBLE
-            binding.historyLayout.visibility = View.GONE
+            binding.trackListLayout.isVisible = false
+            binding.update.isVisible = false
+            binding.errorMessagePlaceholder.isVisible = false
+            binding.recyclerViewTracksList.isVisible = false
+            binding.progressBarSearch.isVisible = true
+            binding.historyLayout.isVisible = false
 
             when (errorType) {
                 ResponseErrorType.NO_INTERNET -> {
-                    binding.trackListLayout.visibility = View.VISIBLE
-                    binding.imgPlaceholder.visibility = View.VISIBLE
-                    binding.errorMessagePlaceholder.visibility = View.VISIBLE
-                    binding.update.visibility = View.VISIBLE
+                    binding.trackListLayout.isVisible = true
+                    binding.imgPlaceholder.isVisible = true
+                    binding.errorMessagePlaceholder.isVisible = true
+                    binding.update.isVisible = true
 
                     hideKeyboard()
 
-                    binding.recyclerViewTracksList.visibility = View.GONE
-                    binding.progressBarSearch.visibility = View.GONE
+                    binding.recyclerViewTracksList.isVisible = false
+                    binding.progressBarSearch.isVisible = false
 
                     binding.imgPlaceholder.setImageResource(R.drawable.placeholder_nointernet_day)
                     binding.errorMessagePlaceholder.text = getString(R.string.no_internet)
                 }
                 ResponseErrorType.NOTHING_FOUND -> {
-                    binding.trackListLayout.visibility = View.VISIBLE
-                    binding.imgPlaceholder.visibility = View.VISIBLE
-                    binding.errorMessagePlaceholder.visibility = View.VISIBLE
+                    binding.trackListLayout.isVisible = true
+                    binding.imgPlaceholder.isVisible = true
+                    binding.errorMessagePlaceholder.isVisible = true
 
-                    binding.progressBarSearch.visibility = View.GONE
-                    binding.recyclerViewTracksList.visibility = View.GONE
-                    binding.update.visibility = View.GONE
-                    binding.historyLayout.visibility = View.GONE
+                    binding.progressBarSearch.isVisible = false
+                    binding.recyclerViewTracksList.isVisible = false
+                    binding.update.isVisible = false
+                    binding.historyLayout.isVisible = false
 
                     binding.imgPlaceholder.setImageResource(R.drawable.placeholder_nothing_find_day)
                     binding.errorMessagePlaceholder.text = getString(R.string.nothing_found)
@@ -296,17 +297,18 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private fun showStateResult(state: UiState) {
         when (state) {
             is UiState.Loading -> {
-                binding.progressBarSearch.visibility = View.VISIBLE
+                binding.progressBarSearch.isVisible = true
+                binding.historyLayout.isVisible = false
             }
             is UiState.SearchContent -> {
-                binding.progressBarSearch.visibility = View.GONE
+                binding.progressBarSearch.isVisible = false
                 showResults(state.data)
             }
             is UiState.HistoryContent -> {
                 showHistory()
             }
             is UiState.Error -> {
-                binding.progressBarSearch.visibility = View.GONE
+                binding.progressBarSearch.isVisible = false
                 placeholderOrResult(state.error)
             }
         }
@@ -314,16 +316,16 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showResults(trackList: List<Track>) {
-        binding.historyLayout.visibility = View.GONE
+        binding.historyLayout.isVisible = false
         adapter.newTracks(trackList)
         hideKeyboard()
-        binding.recyclerViewTracksList.visibility = View.VISIBLE
-        binding.trackListLayout.visibility = View.VISIBLE
+        binding.recyclerViewTracksList.isVisible = true
+        binding.trackListLayout.isVisible = true
 
-        binding.imgPlaceholder.visibility = View.GONE
-        binding.errorMessagePlaceholder.visibility = View.GONE
-        binding.update.visibility = View.GONE
-        binding.progressBarSearch.visibility = View.GONE
+        binding.imgPlaceholder.isVisible = false
+        binding.errorMessagePlaceholder.isVisible = false
+        binding.update.isVisible = false
+        binding.progressBarSearch.isVisible = false
     }
 
     private fun clickDebounce(): Boolean {

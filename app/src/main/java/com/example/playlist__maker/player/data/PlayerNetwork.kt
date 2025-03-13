@@ -1,7 +1,7 @@
 package com.example.playlist__maker.player.data
 
 import android.media.MediaPlayer
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 
 class PlayerNetwork(
