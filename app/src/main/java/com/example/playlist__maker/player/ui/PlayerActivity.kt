@@ -15,7 +15,6 @@ import com.example.playlist__maker.utils.PlayState
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.google.gson.Gson
-import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -27,8 +26,9 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var track: Track
     private val viewModel by viewModel<PlayerViewModel>()
 
-    private val trackObserver = Observer<Long> { trackPosition ->
-        binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackPosition)
+    private val trackObserver = Observer<PlayerViewModel.PlayerUiState> { uiState ->
+        binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(uiState.currentPosition)
+        updatePlayButtonState(uiState.playState)
     }
 
     private var imageState: Map<PlayState, Int> = mapOf(
@@ -36,8 +36,6 @@ class PlayerActivity : AppCompatActivity() {
         PlayState.Paused to R.drawable.player_play,
         PlayState.Prepared to R.drawable.player_play
     )
-
-    private var updateJob: Job? = null
 
     private fun updateTrackInfo() {
         binding.trackName.text = track.trackName
@@ -83,23 +81,18 @@ class PlayerActivity : AppCompatActivity() {
         preparePlayer()
         exit()
 
-        binding.playerPlayPause.setOnClickListener {
-            val stateModel = viewModel.getState()
-            var newStateModel: PlayState = PlayState.Paused
+        viewModel.uiState.observe(this, trackObserver)
 
-            newStateModel = when (stateModel) {
+        binding.playerPlayPause.setOnClickListener {
+            val currentState = viewModel.getState()
+            val newState = when (currentState) {
                 PlayState.Playing -> PlayState.Paused
                 PlayState.Paused -> PlayState.Playing
                 PlayState.Prepared -> PlayState.Playing
             }
-
-            updatePlayButtonState(newStateModel)
-            viewModel.changeState(newStateModel)
-            updateCurrentTime()
+            viewModel.changeState(newState)
         }
     }
-
-
 
     private fun exit() {
         binding.playerToolbar.setOnClickListener {
@@ -124,23 +117,9 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerPlayPause.setImageResource(imageState[state]!!)
     }
 
-
-    private fun updateCurrentTime() {
-        updateJob?.cancel()
-        updateJob = CoroutineScope(Dispatchers.Main).launch {
-            while (true) {
-                val state = viewModel.getState()
-                updatePlayButtonState(state)
-                viewModel.getCurrentPosition().observe(this@PlayerActivity, trackObserver)
-                delay(300)
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         viewModel.exit()
-        updateJob?.cancel()
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {

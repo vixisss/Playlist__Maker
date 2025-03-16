@@ -5,7 +5,7 @@ import com.example.playlist__maker.utils.PlayState
 
 
 class PlayerNetwork(
-    private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayer: MediaPlayer?
 ) {
     private var onCompletionListener: (() -> Unit)? = null
 
@@ -19,7 +19,6 @@ class PlayerNetwork(
 
     fun prepare(url: String) {
         release()
-
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setDataSource(url)
         mediaPlayer?.prepareAsync()

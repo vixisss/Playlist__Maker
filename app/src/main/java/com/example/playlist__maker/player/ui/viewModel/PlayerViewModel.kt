@@ -1,25 +1,44 @@
 package com.example.playlist__maker.player.ui.viewModel
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.utils.PlayState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor
 ) : ViewModel() {
 
-    private val state = MutableLiveData(PlayState.Prepared)
+    data class PlayerUiState(
+        val playState: PlayState,
+        val currentPosition: Long
+    )
+
+    private val _uiState = MutableLiveData<PlayerUiState>()
+    val uiState: LiveData<PlayerUiState> get() = _uiState
+
     private var urlTrack: String = ""
+    private var updateJob: Job? = null
+
+    init {
+        _uiState.value = PlayerUiState(PlayState.Prepared, 0L)
+        playerInteractor.setOnCompletionListener {
+            _uiState.postValue(PlayerUiState(PlayState.Paused, playerInteractor.getCurrentPosition()))
+        }
+    }
 
     fun getState(): PlayState {
-        return state.value ?: PlayState.Prepared
+        return _uiState.value?.playState ?: PlayState.Prepared
     }
 
     fun exit() {
         playerInteractor.exit()
+        updateJob?.cancel()
     }
 
     fun changeState(newState: PlayState) {
@@ -28,12 +47,12 @@ class PlayerViewModel(
             PlayState.Paused -> pause()
             PlayState.Prepared -> prepare()
         }
-        state.value = newState
+        _uiState.value = _uiState.value?.copy(playState = newState)
     }
 
     private fun prepare() {
         playerInteractor.prepare(urlTrack)
-        state.value = PlayState.Prepared
+        _uiState.value = _uiState.value?.copy(playState = PlayState.Prepared)
     }
 
     fun setUrlTrack(url: String?) {
@@ -48,26 +67,34 @@ class PlayerViewModel(
         } else {
             playerInteractor.start()
         }
-        state.value = PlayState.Playing
+        _uiState.value = _uiState.value?.copy(playState = PlayState.Playing)
+        startUpdatingCurrentPosition()
     }
 
     private fun pause() {
         playerInteractor.pause()
-        state.value = PlayState.Paused
+        _uiState.value = _uiState.value?.copy(playState = PlayState.Paused)
+        stopUpdatingCurrentPosition()
     }
 
-    fun getCurrentPosition(): LiveData<Long> {
-        return MutableLiveData(playerInteractor.getCurrentPosition())
+    private fun startUpdatingCurrentPosition() {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
+            while (true) {
+                val currentPosition = playerInteractor.getCurrentPosition()
+                _uiState.value = _uiState.value?.copy(currentPosition = currentPosition)
+                delay(300)
+            }
+        }
+    }
+
+    private fun stopUpdatingCurrentPosition() {
+        updateJob?.cancel()
     }
 
     override fun onCleared() {
         super.onCleared()
         playerInteractor.release()
-    }
-
-    init {
-        playerInteractor.setOnCompletionListener {
-            state.postValue(PlayState.Paused)
-        }
+        updateJob?.cancel()
     }
 }

@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
 
-    single { PlayerNetwork() }
+    single { PlayerNetwork(mediaPlayer = null) }
     single { History(get()) }
     single { TracksRepositoryImpl(get()) }
 

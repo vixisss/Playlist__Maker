@@ -42,7 +42,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     private val viewModel by viewModel<SearchViewModel>()
     private var clickDebounceJob: Job? = null
-    private var addHistoryJob: Job? = null
 
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var adapter: TrackAdapter
@@ -140,11 +139,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             val json = gson.toJson(track)
             layoutIntent.putExtra("track", json)
             startActivity(layoutIntent)
-        }
-
-
-        addHistoryJob = lifecycleScope.launch {
-            delay(500) // Задержка в 500мс
             viewModel.addTrackToHistory(track)
             historyAdapter.newTracks(viewModel.showHistoryList())
         }
