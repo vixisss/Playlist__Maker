@@ -24,9 +24,9 @@ class SearchViewModel(
     }
 
     private var latestSearchText: String? = null
-    private var tracksState = MutableLiveData<UiState>()
+    private val tracksState = MutableLiveData<UiState>()
+    private val historyState = MutableLiveData<UiState.HistoryContent>()
     private var searchJob: Job? = null
-
 
     private fun makeRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
@@ -36,30 +36,34 @@ class SearchViewModel(
                     .searchTracks(newSearchText)
                     .collect { pair ->
                         val (foundTracks, httpStatus) = pair
-                        when(httpStatus){
+                        when (httpStatus) {
                             500 -> {
                                 tracksState.postValue(
                                     UiState.Error(
-                                    error = ResponseErrorType.NO_INTERNET
-                                ))
+                                        error = ResponseErrorType.NO_INTERNET
+                                    )
+                                )
                             }
                             404 -> {
                                 tracksState.postValue(
                                     UiState.Error(
-                                    error = ResponseErrorType.NOTHING_FOUND
-                                ))
+                                        error = ResponseErrorType.NOTHING_FOUND
+                                    )
+                                )
                             }
                             200 -> {
-                                if (foundTracks != null){
+                                if (foundTracks != null) {
                                     tracksState.postValue(
                                         UiState.SearchContent(
-                                        data = foundTracks
-                                    ))
+                                            data = foundTracks
+                                        )
+                                    )
                                 } else {
                                     tracksState.postValue(
                                         UiState.Error(
-                                        error = ResponseErrorType.NOTHING_FOUND
-                                    ))
+                                            error = ResponseErrorType.NOTHING_FOUND
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -77,6 +81,7 @@ class SearchViewModel(
             }
         }
     }
+
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
             return
@@ -94,15 +99,25 @@ class SearchViewModel(
     }
 
     fun getTracksState(): LiveData<UiState> = tracksState
+    fun getHistoryState(): LiveData<UiState.HistoryContent> = historyState
 
     fun addTrackToHistory(track: Track) {
         historyInteractor.addTrackToHistory(track)
+        updateHistoryState()
     }
 
-    fun showHistoryList() = historyInteractor.showHistoryList()
+    fun showHistoryList() {
+        updateHistoryState()
+    }
+
+    private fun updateHistoryState() {
+        val historyList = historyInteractor.showHistoryList()
+        historyState.postValue(UiState.HistoryContent(historyList))
+    }
 
     fun clearHistory() {
         historyInteractor.clearHistory()
+        updateHistoryState()
     }
 
     override fun onCleared() {

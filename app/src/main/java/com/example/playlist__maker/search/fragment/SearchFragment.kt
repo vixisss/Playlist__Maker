@@ -33,6 +33,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 
+
 class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -66,24 +67,31 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         search()
         clearHistoryFun()
         setupDeleteKeyListener()
-        showHistory()
+
+        binding.editTextSearch.requestFocus()
 
         if (savedInstanceState == null) {
             requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         }
 
+        // Наблюдаем за состоянием истории
+        viewModel.getHistoryState().observe(viewLifecycleOwner) { state ->
+            showHistory(state.data)
+        }
+
+        // Наблюдаем за состоянием поиска
         viewModel.getTracksState().observe(viewLifecycleOwner) { state ->
             showStateResult(state)
         }
     }
 
-    private fun showHistory() {
-        if (viewModel.showHistoryList().isNotEmpty()) {
+    private fun showHistory(historyList: List<Track>) {
+        if (historyList.isNotEmpty() && binding.editTextSearch.text.trim().isEmpty()) {
             binding.historyLayout.isVisible = true
             binding.historyList.isVisible = true
             binding.titleHistory.isVisible = true
             binding.clearHistory.isVisible = true
-            historyAdapter.newTracks(viewModel.showHistoryList())
+            historyAdapter.newTracks(historyList)
         } else {
             binding.historyLayout.isVisible = false
             binding.historyList.isVisible = false
@@ -95,14 +103,14 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     @SuppressLint("CommitPrefEdits")
     private fun clearHistoryFun() {
-        historyAdapter = TrackAdapter(viewModel.showHistoryList(), this)
+        historyAdapter = TrackAdapter(emptyList(), this)
 
         binding.historyList.adapter = historyAdapter
         binding.historyList.layoutManager = LinearLayoutManager(requireContext())
 
         binding.clearHistory.setOnClickListener {
             requireContext().getSharedPreferences(HISTORY_PREFERENCES, Context.MODE_PRIVATE)
-                .edit() {
+                .edit {
                     clear()
                 }
 
@@ -118,11 +126,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             binding.trackListLayout.isVisible = false
             binding.recyclerViewTracksList.isVisible = false
             binding.update.isVisible = false
-            if (viewModel.showHistoryList().isEmpty()) {
-                binding.historyLayout.isVisible = false
-            } else {
-                showHistory()
-            }
+            viewModel.showHistoryList()
         } else {
             binding.trackListLayout.isVisible = false
             binding.recyclerViewTracksList.isVisible = true
@@ -140,7 +144,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             layoutIntent.putExtra("track", json)
             startActivity(layoutIntent)
             viewModel.addTrackToHistory(track)
-            historyAdapter.newTracks(viewModel.showHistoryList())
         }
     }
 
@@ -153,7 +156,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                     editable?.delete(text.length - 1, text.length)
                     binding.editTextSearch.setSelection(text.length)
 
-                    showHistory()
+                    viewModel.showHistoryList()
                 }
             }
             true
@@ -173,7 +176,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                     hideKeyboard()
                     stopSearch()
                     binding.progressBarSearch.isVisible = false
-                    showHistory()
+                    viewModel.showHistoryList()
                     true
                 }
                 else -> false
@@ -188,7 +191,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                 if (s.isNullOrBlank()) {
                     binding.clearIcon.isVisible = false
                     updateVisibility()
-                    showHistory()
                 } else {
                     binding.clearIcon.isVisible = true
                     viewModel.searchDebounce(s.toString())
@@ -227,22 +229,13 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             false
         }
 
-
         binding.update.setOnClickListener {
             viewModel.repeatRequest()
         }
 
         binding.editTextSearch.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus && viewModel.showHistoryList().isNotEmpty()) {
-                binding.historyLayout.isVisible = true
-                binding.historyList.isVisible = true
-                binding.titleHistory.isVisible = true
-                binding.clearHistory.isVisible = true
-            } else {
-                binding.historyLayout.isVisible = false
-                binding.historyList.isVisible = false
-                binding.titleHistory.isVisible = false
-                binding.clearHistory.isVisible = false
+            if (hasFocus && binding.editTextSearch.text.trim().isEmpty()) {
+                viewModel.showHistoryList()
             }
         }
     }
@@ -299,7 +292,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                 showResults(state.data)
             }
             is UiState.HistoryContent -> {
-                showHistory()
+                showHistory(state.data)
             }
             is UiState.Error -> {
                 binding.progressBarSearch.isVisible = false
