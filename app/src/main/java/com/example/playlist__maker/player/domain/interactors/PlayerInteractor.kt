@@ -1,6 +1,6 @@
 package com.example.playlist__maker.player.domain.interactors
 
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 interface PlayerInteractor {
     fun prepare(url: String)
@@ -10,6 +10,8 @@ interface PlayerInteractor {
     fun release()
 
     fun getStatePlayer() : PlayState
+
+    fun setOnCompletionListener(listener: () -> Unit)
 
     fun stop()
     fun exit()

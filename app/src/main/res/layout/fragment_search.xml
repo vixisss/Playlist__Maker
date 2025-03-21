@@ -37,7 +37,8 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/search_toolbar">
+        app:layout_constraintTop_toBottomOf="@id/search_toolbar"
+        app:layout_constraintEnd_toEndOf="parent">
 
 
         <EditText
@@ -104,7 +105,8 @@
                 android:layout_width="wrap_content"
 
                 android:layout_height="wrap_content"
-                android:text="@string/historyBtn" />
+                android:text="@string/historyBtn"
+                android:layout_marginBottom="56dp"/>
 
         </LinearLayout>
 

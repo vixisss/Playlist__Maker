@@ -7,7 +7,7 @@ import com.example.playlist__maker.search.data.NetworkClient
 import com.example.playlist__maker.search.data.dto.History
 import com.example.playlist__maker.search.data.dto.ItunesAPI
 import com.example.playlist__maker.search.data.dto.RetrofitBuild
-import com.example.playlist__maker.search.data.impl.TracksRepositoryImpl
+import com.example.playlist__maker.search.domain.repository.TracksRepositoryImpl
 import com.example.playlist__maker.utils.App
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
 
-    single { PlayerNetwork() }
+    single { PlayerNetwork(mediaPlayer = null) }
     single { History(get()) }
     single { TracksRepositoryImpl(get()) }
 

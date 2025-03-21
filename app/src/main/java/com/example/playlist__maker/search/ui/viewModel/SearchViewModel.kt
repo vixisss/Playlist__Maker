@@ -1,18 +1,18 @@
 package com.example.playlist__maker.search.ui.viewModel
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
-import com.example.playlist__maker.search.domain.interactors.TracksInteractor.TrackConsumer
-import com.example.playlist__maker.search.domain.models.UiState
+import com.example.playlist__maker.utils.UiState
 import com.example.playlist__maker.search.domain.models.Track
-import com.example.playlist__maker.search.ui.model.ResponseErrorType
-import com.example.playlist__maker.utils.ResponseCode
+import com.example.playlist__maker.utils.ResponseErrorType
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -20,75 +20,108 @@ class SearchViewModel(
 ) : ViewModel() {
 
     companion object {
-        private val SEARCH_REQUEST_TOKEN = Any()
         private const val SEARCH_DEBOUNCE_DELAY = 2_000L
     }
 
     private var latestSearchText: String? = null
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private var tracksState = MutableLiveData<UiState>()
-
-    private fun removeCallbacksAndMessages() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
+    private val tracksState = MutableLiveData<UiState>()
+    private val historyState = MutableLiveData<UiState.HistoryContent>()
+    private var searchJob: Job? = null
 
     private fun makeRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
             tracksState.postValue(UiState.Loading)
-            tracksInteractor.searchTracks(newSearchText, object : TrackConsumer {
-                override fun consume(foundTrack: ResponseCode<List<Track>>) {
-                    when (foundTrack) {
-                        is ResponseCode.ServerError -> {
-                            tracksState.postValue(UiState.Error(ResponseErrorType.NO_INTERNET))
-                        }
-                        is ResponseCode.ClientError -> {
-                            tracksState.postValue(UiState.Error(ResponseErrorType.NOTHING_FOUND))
-                        }
-                        is ResponseCode.Success -> {
-                            tracksState.postValue(UiState.SearchContent(data = foundTrack.data))
+            viewModelScope.launch {
+                tracksInteractor
+                    .searchTracks(newSearchText)
+                    .collect { pair ->
+                        val (foundTracks, httpStatus) = pair
+                        when (httpStatus) {
+                            500 -> {
+                                tracksState.postValue(
+                                    UiState.Error(
+                                        error = ResponseErrorType.NO_INTERNET
+                                    )
+                                )
+                            }
+                            404 -> {
+                                tracksState.postValue(
+                                    UiState.Error(
+                                        error = ResponseErrorType.NOTHING_FOUND
+                                    )
+                                )
+                            }
+                            200 -> {
+                                if (foundTracks != null) {
+                                    tracksState.postValue(
+                                        UiState.SearchContent(
+                                            data = foundTracks
+                                        )
+                                    )
+                                } else {
+                                    tracksState.postValue(
+                                        UiState.Error(
+                                            error = ResponseErrorType.NOTHING_FOUND
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-            })
+            }
         }
     }
 
     fun repeatRequest() {
-        removeCallbacksAndMessages()
-        makeRequest(latestSearchText ?: "")
+        latestSearchText?.let { searchText ->
+            searchJob?.cancel()
+            viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                makeRequest(searchText)
+            }
+        }
     }
+
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
             return
         }
         latestSearchText = changedText
+        searchJob?.cancel()
 
-        removeCallbacksAndMessages()
-        val searchRunnable = Runnable { makeRequest(changedText) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+
+            if (isActive) {
+                makeRequest(changedText)
+            }
+        }
     }
 
     fun getTracksState(): LiveData<UiState> = tracksState
+    fun getHistoryState(): LiveData<UiState.HistoryContent> = historyState
 
     fun addTrackToHistory(track: Track) {
         historyInteractor.addTrackToHistory(track)
+        updateHistoryState()
     }
 
-    fun showHistoryList() = historyInteractor.showHistoryList()
+    fun showHistoryList() {
+        updateHistoryState()
+    }
+
+    private fun updateHistoryState() {
+        val historyList = historyInteractor.showHistoryList()
+        historyState.postValue(UiState.HistoryContent(historyList))
+    }
 
     fun clearHistory() {
         historyInteractor.clearHistory()
+        updateHistoryState()
     }
 
     override fun onCleared() {
         super.onCleared()
-        removeCallbacksAndMessages()
+        searchJob?.cancel()
     }
 }
