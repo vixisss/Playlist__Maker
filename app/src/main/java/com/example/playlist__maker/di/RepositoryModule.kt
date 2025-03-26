@@ -1,5 +1,8 @@
 package com.example.playlist__maker.di
 
+import com.example.playlist__maker.db.data.TrackFavRepositoryImpl
+import com.example.playlist__maker.db.data.MediaFavDbConvertor
+import com.example.playlist__maker.db.domain.repository.TrackFavRepository
 import com.example.playlist__maker.search.domain.repository.TracksRepository
 import com.example.playlist__maker.search.domain.repository.TracksRepositoryImpl
 import com.example.playlist__maker.settings.data.AppSwitcher
@@ -12,7 +15,7 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
     single <TracksRepository> {
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     single <AppSwitcherRepository> {
@@ -21,5 +24,11 @@ val repositoryModule = module {
 
     single <ExternalNavigator> {
         ExternalNavigatorImpl(androidContext())
+    }
+
+    factory { MediaFavDbConvertor() }
+
+    single<TrackFavRepository> {
+        TrackFavRepositoryImpl(get(), get())
     }
 }

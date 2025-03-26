@@ -1,9 +1,14 @@
-package com.example.playlist__maker.search.data.dto
+package com.example.playlist__maker.db.data
 
-data class TrackDto(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "mediaFav_table")
+data class MediaFavEntity (
+    @PrimaryKey
     val trackId: String,
-    val trackName: String = "",
-    val artistName: String,
+    val trackName: String,
+    val artistName: String?,
     val trackTime: String,
     val trackTimeMillis: Int,
     val artworkUrl100: String = "",
@@ -13,6 +18,4 @@ data class TrackDto(
     val primaryGenreName: String,
     val country: String?,
     val previewUrl: String?
-
 )
-

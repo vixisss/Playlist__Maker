@@ -2,6 +2,8 @@ package com.example.playlist__maker.di
 
 import android.content.Context.MODE_PRIVATE
 import android.media.MediaPlayer
+import androidx.room.Room
+import com.example.playlist__maker.db.data.AppDatabase
 import com.example.playlist__maker.player.data.PlayerNetwork
 import com.example.playlist__maker.search.data.NetworkClient
 import com.example.playlist__maker.search.data.dto.History
@@ -19,7 +21,7 @@ val dataModule = module {
 
     single { PlayerNetwork(mediaPlayer = null) }
     single { History(get()) }
-    single { TracksRepositoryImpl(get()) }
+    single { TracksRepositoryImpl(get(), get()) }
 
     single<ItunesAPI> {
         Retrofit.Builder()
@@ -36,6 +38,11 @@ val dataModule = module {
 
     single<NetworkClient> {
         RetrofitBuild(get())
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
     }
 
 

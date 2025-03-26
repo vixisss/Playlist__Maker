@@ -1,5 +1,6 @@
 package com.example.playlist__maker.search.domain.interactors.impl
 
+import com.example.playlist__maker.db.data.AppDatabase
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.domain.repository.TracksRepository
