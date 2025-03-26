@@ -16,16 +16,16 @@ class TrackFavRepositoryImpl(
 
     override suspend fun addToFavorite(track: Track) {
         withContext(Dispatchers.IO) {
-            println("Добавляем трек в избранное: ${track.trackId}")       //delete
             appDatabase.mediaFavDao().addTrackInFav(convertor.map(track))
-            println("Трек добавлен. Проверяем наличие в БД...")           //delete
-            val allTracks = appDatabase.mediaFavDao().getTrackFav()       //delete
-            println("Треков в БД: ${allTracks.size}")                     //delete
+            FavoriteManager.notifyFavoriteChanged(track.trackId, true)
         }
     }
 
     override suspend fun deleteFromFavorites(track: Track) {
-        appDatabase.mediaFavDao().deleteTrackInFav(convertor.map(track))
+        withContext(Dispatchers.IO) {
+            appDatabase.mediaFavDao().deleteTrackInFav(convertor.map(track))
+            FavoriteManager.notifyFavoriteChanged(track.trackId, false)
+        }
     }
 
     override fun getFavTracks(): Flow<ResponseCode<List<Track>>> = flow {

@@ -14,51 +14,58 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val trackFavInteractor: TrackFavInteractor // Добавляем интерактор для избранных треков
+    private val trackFavInteractor: TrackFavInteractor
 ) : ViewModel() {
 
     data class PlayerUiState(
         val playState: PlayState,
         val currentPosition: Long,
-        val isFavorite: Boolean = false // Добавляем состояние для кнопки "Нравится"
+        val isFavorite: Boolean = false
     )
 
-    private val _uiState = MutableLiveData<PlayerUiState>()
-    val uiState: LiveData<PlayerUiState> get() = _uiState
+    private val _uiState = MutableLiveData<PlayerUiState>().apply {
+        value = PlayerUiState(PlayState.Prepared, 0L)
+    }
+    val uiState: LiveData<PlayerUiState> = _uiState
 
     private var urlTrack: String = ""
     private var updateJob: Job? = null
-    private var currentTrack: Track? = null // Текущий трек
+    private var currentTrack: Track? = null
 
     init {
-        _uiState.value = PlayerUiState(PlayState.Prepared, 0L)
         playerInteractor.setOnCompletionListener {
-            _uiState.postValue(PlayerUiState(PlayState.Paused, playerInteractor.getCurrentPosition()))
+            _uiState.postValue(
+                PlayerUiState(
+                    PlayState.Paused,
+                    playerInteractor.getCurrentPosition(),
+                    _uiState.value?.isFavorite ?: false
+                )
+            )
         }
     }
 
-    // Устанавливаем текущий трек
     fun setCurrentTrack(track: Track) {
         currentTrack = track
-        _uiState.value = _uiState.value?.copy(isFavorite = track.isFavorite)
+        _uiState.value = _uiState.value?.copy(
+            isFavorite = track.isFavorite
+        )
     }
 
-    // Обработка нажатия на кнопку "Нравится"
     fun onFavoriteClicked() {
         val track = currentTrack ?: return
         viewModelScope.launch {
-            if (track.isFavorite) {
-                trackFavInteractor.deleteFromFavorites(track)
-            } else {
+            val newFavoriteState = !track.isFavorite
+            if (newFavoriteState) {
                 trackFavInteractor.addToFavorite(track)
+            } else {
+                trackFavInteractor.deleteFromFavorites(track)
             }
-            // Обновляем состояние
-            _uiState.value = _uiState.value?.copy(isFavorite = !track.isFavorite)
-            track.isFavorite = !track.isFavorite
+            // Обновляем локальное состояние
+            _uiState.value = _uiState.value?.copy(isFavorite = newFavoriteState)
+            track.isFavorite = newFavoriteState
         }
     }
 
-    // Остальные методы остаются без изменений
     fun getState(): PlayState {
         return _uiState.value?.playState ?: PlayState.Prepared
     }

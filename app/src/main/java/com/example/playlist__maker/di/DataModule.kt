@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 val dataModule = module {
 
     single { PlayerNetwork(mediaPlayer = null) }
-    single { History(get()) }
+    single { History(get(), get()) }
     single { TracksRepositoryImpl(get(), get()) }
 
     single<ItunesAPI> {
