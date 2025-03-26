@@ -1,7 +1,9 @@
 package com.example.playlist__maker.db.data
 
+import com.example.playlist__maker.R
 import com.example.playlist__maker.db.domain.repository.TrackFavRepository
 import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.ResponseCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,25 +14,43 @@ class TrackFavRepositoryImpl(
     private val convertor: MediaFavDbConvertor
 ) : TrackFavRepository {
 
-    override suspend fun addToFavorite(track: Track) = appDatabase.mediaFavDao().addTrackInFav(convertor.map(track))
+    override suspend fun addToFavorite(track: Track) {
+        withContext(Dispatchers.IO) {
+            println("Добавляем трек в избранное: ${track.trackId}")       //delete
+            appDatabase.mediaFavDao().addTrackInFav(convertor.map(track))
+            println("Трек добавлен. Проверяем наличие в БД...")           //delete
+            val allTracks = appDatabase.mediaFavDao().getTrackFav()       //delete
+            println("Треков в БД: ${allTracks.size}")                     //delete
+        }
+    }
 
     override suspend fun deleteFromFavorites(track: Track) {
         appDatabase.mediaFavDao().deleteTrackInFav(convertor.map(track))
     }
 
-    override fun getFavTracks(): Flow<List<Track>> = flow {
-        var tracks: List<Track>
-        withContext(Dispatchers.IO) {
-            val tracksEntity = appDatabase.mediaFavDao().getTrackFav()
-            tracks = convertFromTrackEntity(tracksEntity)
-            tracks.forEach {
-                it.isFavorite = true
-            }
-        }
-        emit(tracks)
+    override fun getFavTracks(): Flow<ResponseCode<List<Track>>> = flow {
+        val tracks = appDatabase.mediaFavDao().getTrackFav()
+
+        if (tracks.isEmpty())
+            emit(ResponseCode.ClientError(R.string.nothing_found))
+        else
+            emit(ResponseCode.Success(convertListToList(tracks), status = 200))
     }
 
-    private fun convertFromTrackEntity(tracks: List<MediaFavEntity>): List<Track> {
-        return tracks.map { track -> convertor.map(track) }
+    override suspend fun isTrackFavorite(trackId: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            appDatabase.mediaFavDao().getTrackById(trackId) != null
+        }
+    }
+
+    private fun convertListToList(tracks: List<MediaFavEntity>)
+            : List<Track> {
+        return tracks.map { track -> convertor.map(track)}
+    }
+
+    override suspend fun getFavTrackIds(): List<String> {
+        return withContext(Dispatchers.IO) {
+            appDatabase.mediaFavDao().getFavTrackId()
+        }
     }
 }

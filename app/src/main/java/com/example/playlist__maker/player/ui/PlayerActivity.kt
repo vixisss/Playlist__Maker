@@ -127,6 +127,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun updateFavoriteButtonState(isFavorite: Boolean) {
         val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
         binding.playerLike.setImageResource(iconRes)
+        track.isFavorite = isFavorite // Обновляем состояние трека
     }
 
     override fun onDestroy() {

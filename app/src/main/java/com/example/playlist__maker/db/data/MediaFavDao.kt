@@ -25,4 +25,7 @@ interface MediaFavDao {
     // Получение списка идентификаторов всех избранных треков
     @Query("SELECT trackId FROM mediaFav_table")
     suspend fun getFavTrackId(): List<String>
+
+    @Query("SELECT * FROM mediaFav_table WHERE trackId = :trackId LIMIT 1")
+    suspend fun getTrackById(trackId: String): MediaFavEntity?
 }

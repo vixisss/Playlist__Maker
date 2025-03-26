@@ -25,14 +25,15 @@ class MediaFavDbConvertor {
             mediaFavEntity.trackId,
             mediaFavEntity.trackName,
             mediaFavEntity.trackTime,
-            mediaFavEntity.artistName!!,
+            mediaFavEntity.artistName.toString(),
             mediaFavEntity.trackTimeMillis,
             mediaFavEntity.artworkUrl100,
             mediaFavEntity.collectionName,
             mediaFavEntity.releaseDate,
             mediaFavEntity.primaryGenreName,
             mediaFavEntity.country,
-            mediaFavEntity.previewUrl
+            mediaFavEntity.previewUrl,
+            isFavorite = true
         )
     }
 }

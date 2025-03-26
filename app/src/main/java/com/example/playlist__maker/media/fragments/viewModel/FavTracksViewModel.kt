@@ -1,39 +1,63 @@
 package com.example.playlist__maker.media.fragments.viewModel
 
+
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlist__maker.R
 import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
+import com.example.playlist__maker.media.state.FavState
 import com.example.playlist__maker.search.domain.models.Track
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FavTracksViewModel(
-    private val trackFavInteractor: TrackFavInteractor
+    private val likeTrackListInteractor: TrackFavInteractor,
+    private val context: Context
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<FavoritesUiState>()
-    val uiState: LiveData<FavoritesUiState> get() = _uiState
+    private val state = MutableLiveData<FavState>()
 
     init {
-        loadFavorites()
+        loadData()
     }
-
-    private fun loadFavorites() {
+    fun getScreenState(): LiveData<FavState> {
+        return state
+    }
+    fun loadData() {
         viewModelScope.launch {
-            trackFavInteractor.getFavTracks().collect { tracks ->
-                _uiState.value = if (tracks.isEmpty()) {
-                    FavoritesUiState.Empty
-                } else {
-                    FavoritesUiState.Success(tracks)
-                }
+            withContext(Dispatchers.IO) {
+                likeTrackListInteractor.getFavTracks()
+                    .collect() { pair ->
+                        processResult(pair.first, pair.second)
+                    }
             }
         }
     }
 
-    sealed class FavoritesUiState {
-        object Empty : FavoritesUiState()
-        data class Success(val tracks: List<Track>) : FavoritesUiState()
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
+
+        when {
+            errorMessage != null -> {
+                val error = FavState.Error(
+                    message = context.getString(
+                        R.string.myEmail
+                    )
+                )
+                state.postValue(error)
+            }
+
+            else -> {
+                val content = FavState.Content(data = tracks)
+                state.postValue(content)
+            }
+        }
     }
 }
