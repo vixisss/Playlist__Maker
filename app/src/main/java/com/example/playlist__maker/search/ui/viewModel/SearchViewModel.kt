@@ -25,7 +25,10 @@ class SearchViewModel(
     }
 
     init {
-        observeFavoriteChanges()
+        viewModelScope.launch {
+            delay(300)
+            observeFavoriteChanges()
+        }
     }
 
     private var latestSearchText: String? = null
