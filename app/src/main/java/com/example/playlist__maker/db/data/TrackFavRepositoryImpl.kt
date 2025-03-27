@@ -29,7 +29,9 @@ class TrackFavRepositoryImpl(
     }
 
     override fun getFavTracks(): Flow<ResponseCode<List<Track>>> = flow {
-        val tracks = appDatabase.mediaFavDao().getTrackFav()
+        val tracks = withContext(Dispatchers.IO) {
+            appDatabase.mediaFavDao().getTrackFav().reversed()
+        }
 
         if (tracks.isEmpty())
             emit(ResponseCode.ClientError(R.string.nothing_found))

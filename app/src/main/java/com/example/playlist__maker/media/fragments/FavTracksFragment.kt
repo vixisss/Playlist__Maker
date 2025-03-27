@@ -6,12 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist__maker.databinding.FragmentFavTracksBinding
 import com.example.playlist__maker.media.fragments.viewModel.FavTracksViewModel
 import com.example.playlist__maker.media.state.FavState
@@ -19,14 +17,20 @@ import com.example.playlist__maker.player.ui.PlayerActivity
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     private lateinit var adapter: TrackAdapter
     private var trackList: ArrayList<Track> = arrayListOf()
+    private var isClickAllowed = true
+    private var clickDebounceJob: Job? = null
 
     companion object {
         fun newInstance() = FavTracksFragment()
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
     private var _binding: FragmentFavTracksBinding? = null
     private val binding
@@ -46,16 +50,8 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
         binding.mediaFavTracksLayout.visibility = View.VISIBLE
         binding.mediaPlaceholderFavTracks.visibility = View.VISIBLE
+        binding.favTracksList.isVisible = true
         showRecycler()
-
-
-        // для поиска
-        val rvItems: RecyclerView = binding.favTracksList
-        rvItems.apply {
-            adapter = adapter
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        }
 
         // подписываемся на состояние SearchViewModel
         viewModel.getScreenState().observe(viewLifecycleOwner) { state ->
@@ -64,6 +60,8 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
                     showContent(state.data)
                     binding.placeholderText.isVisible = false
                     binding.mediaPlaceholderFavTracks.isVisible = false
+                    binding.favTracksList.isVisible = true
+                    showRecycler()
                 }
 
                 is FavState.Error -> {
@@ -80,18 +78,15 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
         binding.placeholderText.isVisible = true
         binding.mediaPlaceholderFavTracks.isVisible = true
-
-
-        var recyclerView: RecyclerView = binding.favTracksList
-        recyclerView.visibility = View.GONE
     }
 
     private fun showContent(data: List<Track>) {
         trackList.clear()
         trackList.addAll(data)
-        adapter.updateList(trackList) // Используйте ваш метод обновления в адаптере
+        adapter.updateList(trackList)
 
         binding.mediaPlaceholderFavTracks.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+        binding.placeholderText.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
         binding.favTracksList.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
     }
 
@@ -112,13 +107,25 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     }
 
     override fun onClick(track: Track) {
-        TODO("Not yet implemented")
-        val layoutIntent = Intent(requireContext(), PlayerActivity::class.java)
-        val gson = Gson()
-        val json = gson.toJson(track)
-        layoutIntent.putExtra("track", json)
-        startActivity(layoutIntent)
-        adapter
+        if (clickDebounce()) {
+            val layoutIntent = Intent(requireContext(), PlayerActivity::class.java)
+            val gson = Gson()
+            val json = gson.toJson(track)
+            layoutIntent.putExtra("track", json)
+            startActivity(layoutIntent)
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            clickDebounceJob = lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
+        }
+        return current
     }
 
 

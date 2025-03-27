@@ -18,8 +18,7 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
-    private val historyInteractor: HistoryInteractor,
-    private val trackFavInteractor: TrackFavInteractor
+    private val historyInteractor: HistoryInteractor
 ) : ViewModel() {
 
     companion object {
