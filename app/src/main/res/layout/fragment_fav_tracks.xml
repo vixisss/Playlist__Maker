@@ -14,7 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/margin86"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/placeholderText"
@@ -25,7 +26,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mediaPlaceholderFavTracks"
-        style="@style/mediaFavTracks"/>
+        style="@style/mediaFavTracks"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layoutFaVTracks"
@@ -34,7 +36,8 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/margin16">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favTracksList"

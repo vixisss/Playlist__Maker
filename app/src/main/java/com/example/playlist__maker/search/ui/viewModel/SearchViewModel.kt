@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.db.data.FavoriteManager
-import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
 import com.example.playlist__maker.utils.UiState
@@ -34,10 +33,6 @@ class SearchViewModel(
     private val historyState = MutableLiveData<UiState.HistoryContent>()
     private var searchJob: Job? = null
 
-
-    private val _syncFavoriteEvent = MutableLiveData<Pair<String, Boolean>>()
-    val syncFavoriteEvent: LiveData<Pair<String, Boolean>> = _syncFavoriteEvent
-
     private fun observeFavoriteChanges() {
         FavoriteManager.favoriteUpdates.observeForever { (trackId, isFavorite) ->
             updateTrackFavoriteState(trackId, isFavorite)
@@ -45,15 +40,12 @@ class SearchViewModel(
     }
 
     fun updateTrackFavoriteState(trackId: String, isFavorite: Boolean) {
-        // Обновляем поиск
         (tracksState.value as? UiState.SearchContent)?.let { state ->
             val updatedTracks = state.data.map { track ->
                 if (track.trackId == trackId) track.copy(isFavorite = isFavorite) else track
             }
             tracksState.postValue(UiState.SearchContent(updatedTracks))
         }
-
-        // Обновляем историю
         historyInteractor.updateFavoriteStatus(trackId, isFavorite)
     }
 

@@ -9,5 +9,4 @@ interface TrackFavRepository {
     suspend fun deleteFromFavorites(track: Track)
     fun getFavTracks(): Flow<ResponseCode<List<Track>>>
     suspend fun isTrackFavorite(trackId: String): Boolean
-    suspend fun getFavTrackIds(): List<String> // Добавляем новый метод
 }

@@ -4,19 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation_graph"
     app:startDestination="@id/mediaFragment">
+
     <fragment
         android:id="@+id/mediaFragment"
         android:name="com.example.playlist__maker.media.fragments.MediaFragment"
-        android:label="fragment_mediateka"
+        android:label="fragment_media"
         tools:layout="@layout/fragment_media" >
+        <action
+            android:id="@+id/action_mediaFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
     </fragment>
+
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.playlist__maker.search.fragment.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_searchFragment_to_playerActivity3"
+            android:id="@+id/action_searchFragment_to_playerFragment"
             app:destination="@id/playerActivity" />
     </fragment>
 
@@ -30,7 +35,8 @@
         android:id="@+id/playerActivity"
         android:name="com.example.playlist__maker.player.ui.PlayerActivity"
         android:label="PlayerActivity"
-        tools:layout="@layout/activity_player">
+        tools:layout="@layout/activity_player"
+        app:launchSingleTop="false" >
     <argument
         android:name="item"
         app:argType="com.example.playlist__maker.search.domain.models.Track" />
@@ -39,13 +45,5 @@
 <!--    <argument-->
 <!--        android:name="item"-->
 <!--        app:argType="com.example.playlist__maker.search.domain.models.Track" />-->
-    <fragment
-        android:id="@+id/favTracksFragment"
-        tools:layout="@layout/fragment_fav_tracks"
-        android:name="com.example.playlist__maker.media.fragments.FavTracksFragment"
-        android:label="FavTracksFragment" >
-        <action
-            android:id="@+id/action_favTracksFragment_to_playerActivity"
-            app:destination="@id/playerActivity" />
-    </fragment>
+
 </navigation>

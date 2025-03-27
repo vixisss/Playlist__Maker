@@ -116,6 +116,7 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         }
     }
 
+
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
@@ -127,6 +128,4 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         }
         return current
     }
-
-
 }
