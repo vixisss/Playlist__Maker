@@ -1,6 +1,6 @@
 [versions]
 activityVersion = "1.9.2"
-agp = "8.8.0"
+agp = "8.9.0"
 androidxCoreKtxVersion = "1.12.0"
 androidxJunit = "1.2.1"
 appcompatVersion = "1.7.0"
