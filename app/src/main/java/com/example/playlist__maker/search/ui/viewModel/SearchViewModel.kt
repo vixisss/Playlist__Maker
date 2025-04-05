@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlist__maker.db.data.FavoriteManager
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor
 import com.example.playlist__maker.search.domain.interactors.TracksInteractor
 import com.example.playlist__maker.utils.UiState
@@ -23,52 +24,54 @@ class SearchViewModel(
         private const val SEARCH_DEBOUNCE_DELAY = 2_000L
     }
 
+    init {
+        viewModelScope.launch {
+            delay(300)
+            observeFavoriteChanges()
+        }
+    }
+
     private var latestSearchText: String? = null
     private val tracksState = MutableLiveData<UiState>()
     private val historyState = MutableLiveData<UiState.HistoryContent>()
     private var searchJob: Job? = null
 
+    private fun observeFavoriteChanges() {
+        FavoriteManager.favoriteUpdates.observeForever { (trackId, isFavorite) ->
+            updateTrackFavoriteState(trackId, isFavorite)
+        }
+    }
+
+    fun updateTrackFavoriteState(trackId: String, isFavorite: Boolean) {
+        (tracksState.value as? UiState.SearchContent)?.let { state ->
+            val updatedTracks = state.data.map { track ->
+                if (track.trackId == trackId) track.copy(isFavorite = isFavorite) else track
+            }
+            tracksState.postValue(UiState.SearchContent(updatedTracks))
+        }
+        historyInteractor.updateFavoriteStatus(trackId, isFavorite)
+    }
+
+
     private fun makeRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
             tracksState.postValue(UiState.Loading)
             viewModelScope.launch {
-                tracksInteractor
-                    .searchTracks(newSearchText)
-                    .collect { pair ->
-                        val (foundTracks, httpStatus) = pair
-                        when (httpStatus) {
-                            500 -> {
-                                tracksState.postValue(
-                                    UiState.Error(
-                                        error = ResponseErrorType.NO_INTERNET
-                                    )
-                                )
-                            }
-                            404 -> {
-                                tracksState.postValue(
-                                    UiState.Error(
-                                        error = ResponseErrorType.NOTHING_FOUND
-                                    )
-                                )
-                            }
-                            200 -> {
-                                if (foundTracks != null) {
-                                    tracksState.postValue(
-                                        UiState.SearchContent(
-                                            data = foundTracks
-                                        )
-                                    )
-                                } else {
-                                    tracksState.postValue(
-                                        UiState.Error(
-                                            error = ResponseErrorType.NOTHING_FOUND
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
+                tracksInteractor.searchTracks(newSearchText).collect { pair ->
+                    handleSearchResponse(pair)
+                }
             }
+        }
+    }
+
+    private fun handleSearchResponse(pair: Pair<List<Track>?, Int>) {
+        val (foundTracks, httpStatus) = pair
+        when (httpStatus) {
+            500 -> tracksState.postValue(UiState.Error(ResponseErrorType.NO_INTERNET))
+            404 -> tracksState.postValue(UiState.Error(ResponseErrorType.NOTHING_FOUND))
+            200 -> foundTracks?.let {
+                tracksState.postValue(UiState.SearchContent(data = it))
+            } ?: tracksState.postValue(UiState.Error(ResponseErrorType.NOTHING_FOUND))
         }
     }
 

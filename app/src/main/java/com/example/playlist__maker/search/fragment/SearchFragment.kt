@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.core.content.edit
 import androidx.core.view.isVisible
+import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 
 
 class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
@@ -203,16 +204,22 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     }
 
     private fun showRecycler() {
-        adapter = TrackAdapter(emptyList(), this)
-        binding.recyclerViewTracksList.adapter = adapter
-        binding.recyclerViewTracksList.layoutManager = LinearLayoutManager(requireContext())
+        if(binding.editTextSearch.text.isEmpty()){
+            adapter = TrackAdapter(emptyList(), this)
+            binding.recyclerViewTracksList.adapter = adapter
+            binding.recyclerViewTracksList.layoutManager = LinearLayoutManager(requireContext())
+        }
+
     }
 
     private fun stopSearch() {
-        binding.recyclerViewTracksList.isVisible = false
-        binding.trackListLayout.isVisible = false
-        binding.editTextSearch.requestFocus()
-        binding.historyLayout.isVisible = true
+        if(binding.editTextSearch.text.isEmpty()){
+            binding.recyclerViewTracksList.isVisible = false
+            binding.trackListLayout.isVisible = false
+            binding.editTextSearch.requestFocus()
+            binding.historyLayout.isVisible = true
+        }
+
     }
 
     private fun hideKeyboard() {
@@ -224,6 +231,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         binding.editTextSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.repeatRequest()
+                binding.editTextSearch.clearFocus()
                 true
             }
             false
@@ -313,6 +321,7 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         binding.errorMessagePlaceholder.isVisible = false
         binding.update.isVisible = false
         binding.progressBarSearch.isVisible = false
+        stopSearch()
     }
 
     private fun clickDebounce(): Boolean {

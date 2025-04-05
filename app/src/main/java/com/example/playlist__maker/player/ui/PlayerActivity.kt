@@ -29,6 +29,7 @@ class PlayerActivity : AppCompatActivity() {
     private val trackObserver = Observer<PlayerViewModel.PlayerUiState> { uiState ->
         binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(uiState.currentPosition)
         updatePlayButtonState(uiState.playState)
+        updateFavoriteButtonState(uiState.isFavorite) // Обновляем состояние кнопки "Нравится"
     }
 
     private var imageState: Map<PlayState, Int> = mapOf(
@@ -65,6 +66,7 @@ class PlayerActivity : AppCompatActivity() {
 
         updateTrackInfo()
         updateAlbumArtwork()
+        viewModel.setCurrentTrack(track) // Устанавливаем текущий трек в ViewModel
     }
 
     private fun updateCollectionAlbumVisibility() {
@@ -92,6 +94,11 @@ class PlayerActivity : AppCompatActivity() {
             }
             viewModel.changeState(newState)
         }
+
+        // Обработка нажатия на кнопку "Нравится"
+        binding.playerLike.setOnClickListener {
+            viewModel.onFavoriteClicked()
+        }
     }
 
     private fun exit() {
@@ -115,6 +122,12 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun updatePlayButtonState(state: PlayState?) {
         binding.playerPlayPause.setImageResource(imageState[state]!!)
+    }
+
+    private fun updateFavoriteButtonState(isFavorite: Boolean) {
+        val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
+        binding.playerLike.setImageResource(iconRes)
+        track.isFavorite = isFavorite // Обновляем состояние трека
     }
 
     override fun onDestroy() {
