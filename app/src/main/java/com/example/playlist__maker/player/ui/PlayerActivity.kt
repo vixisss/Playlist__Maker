@@ -81,7 +81,6 @@ class PlayerActivity : AppCompatActivity() {
 
         showPlayer()
         preparePlayer()
-        exit()
 
         viewModel.uiState.observe(this, trackObserver)
 
@@ -101,11 +100,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun exit() {
-        binding.playerToolbar.setOnClickListener {
-            finish()
-        }
-    }
 
     private fun preparePlayer() {
         binding.time.text = "00:00"

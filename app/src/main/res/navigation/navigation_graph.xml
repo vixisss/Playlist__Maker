@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_mediaFragment_to_playerActivity"
             app:destination="@id/playerActivity" />
+        <action
+            android:id="@+id/action_mediaFragment_to_createPlaylistFragment2"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
 
     <fragment
@@ -41,9 +44,11 @@
         android:name="item"
         app:argType="com.example.playlist__maker.search.domain.models.Track" />
 </activity>
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        tools:layout="@layout/fragment_create_playlist"
+        android:name="com.example.playlist__maker.media.fragments.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment" />
 
-<!--    <argument-->
-<!--        android:name="item"-->
-<!--        app:argType="com.example.playlist__maker.search.domain.models.Track" />-->
 
 </navigation>
