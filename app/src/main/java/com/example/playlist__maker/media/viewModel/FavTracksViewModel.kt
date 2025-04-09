@@ -1,4 +1,4 @@
-package com.example.playlist__maker.media.fragments.viewModel
+package com.example.playlist__maker.media.viewModel
 
 
 import android.content.Context

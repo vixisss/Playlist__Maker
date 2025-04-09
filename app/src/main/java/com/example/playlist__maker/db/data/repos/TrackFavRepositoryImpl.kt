@@ -1,6 +1,10 @@
-package com.example.playlist__maker.db.data
+package com.example.playlist__maker.db.data.repos
 
 import com.example.playlist__maker.R
+import com.example.playlist__maker.db.data.AppDatabase
+import com.example.playlist__maker.db.data.tracks.MediaFavDbConvertor
+import com.example.playlist__maker.db.data.tracks.FavoriteManager
+import com.example.playlist__maker.db.data.tracks.MediaFavEntity
 import com.example.playlist__maker.db.domain.repository.TrackFavRepository
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.utils.ResponseCode

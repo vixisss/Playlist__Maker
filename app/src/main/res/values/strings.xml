@@ -32,4 +32,7 @@
 
     <string name="favTracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+
+    <string name="playlist_created_message">Плейлист %s создан</string>
+    <string name="playlist_creation_error">Ошибка при создании плейлиста</string>
 </resources>

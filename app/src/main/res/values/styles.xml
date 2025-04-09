@@ -185,5 +185,9 @@
         <item name="lineHeight">16.41sp</item>
     </style>
 
+    <style name="AlbumImage">
+        <item name="cornerRadius">@dimen/margin8</item>
+    </style>
+
 
 </resources>

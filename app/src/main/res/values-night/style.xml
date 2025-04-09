@@ -81,9 +81,9 @@
     </style>
 
     <style name="ToolbarStylePlaylist">
-        <item name="android:titleTextColor">@color/night_theme</item>
+        <item name="android:titleTextColor">@color/white</item>
         <item name="android:titleTextAppearance">@style/MainTextStyle</item>
-        <item name="android:navigationIcon">@drawable/light_mode</item>
+        <item name="android:navigationIcon">@drawable/light_mode_night</item>
     </style>
 
 
@@ -179,5 +179,9 @@
         <item name="android:textSize">@dimen/text14</item>
         <item name="android:textFontWeight">500</item>
         <item name="lineHeight">16.41sp</item>
+    </style>
+
+    <style name="AlbumImage">
+        <item name="cornerRadius">@dimen/margin8</item>
     </style>
 </resources>

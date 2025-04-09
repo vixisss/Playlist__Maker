@@ -21,7 +21,11 @@ retrofit = "2.9.0"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 roomRuntimeVersion = "2.6.1"
+rxandroidVersion = "3.0.2"
+rxjavaVersion = "3.1.6"
+rxpermissionsVersion = "0.12"
 viewpager2 = "1.1.0"
+room = "2.6.1"
 
 [libraries]
 androidx-activity-v192 = { module = "androidx.activity:activity", version.ref = "activityVersion" }
@@ -49,6 +53,9 @@ material-v1120 = { module = "com.google.android.material:material", version.ref 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-room-migration = { group = "androidx.room", name = "room-migration", version.ref = "room" }
+rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroidVersion" }
+rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjavaVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

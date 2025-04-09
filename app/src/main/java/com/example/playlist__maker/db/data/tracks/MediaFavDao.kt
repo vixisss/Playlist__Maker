@@ -1,17 +1,17 @@
-package com.example.playlist__maker.db.data
+package com.example.playlist__maker.db.data.tracks
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
+import com.example.playlist__maker.db.data.tracks.MediaFavEntity
 
 @Dao
 interface MediaFavDao {
 
     // Добавление трека в избранное
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun addTrackInFav(media: MediaFavEntity)
 
     // Удаление трека из избранного

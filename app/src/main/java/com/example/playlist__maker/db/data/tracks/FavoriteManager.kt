@@ -1,4 +1,4 @@
-package com.example.playlist__maker.db.data
+package com.example.playlist__maker.db.data.tracks
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

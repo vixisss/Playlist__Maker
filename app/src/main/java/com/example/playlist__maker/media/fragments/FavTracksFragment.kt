@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist__maker.databinding.FragmentFavTracksBinding
-import com.example.playlist__maker.media.fragments.viewModel.FavTracksViewModel
+import com.example.playlist__maker.media.viewModel.FavTracksViewModel
 import com.example.playlist__maker.media.state.FavState
 import com.example.playlist__maker.player.ui.PlayerActivity
 import com.example.playlist__maker.search.domain.models.Track

@@ -1,21 +1,63 @@
 package com.example.playlist__maker.media.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentCreatePlaylistBinding
+import com.example.playlist__maker.db.domain.models.Playlist
+import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
 class CreatePlaylistFragment : Fragment() {
     private var _binding: FragmentCreatePlaylistBinding? = null
     private val binding get() = _binding!!
+    private var imageUri: Uri? = null
+    private val viewModel by viewModel<PlaylistViewModel>()
+
+    private val pickAlbumImage =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if(uri != null){
+                imageUri = uri
+
+                binding.setAlbumImage.isVisible = true
+                binding.iconAddPhoto.isVisible = false
+
+                Glide.with(this)
+                    .load(imageUri)
+                    .transform(RoundedCorners(dpToPx(8F, this)))
+                    .error(R.drawable.big_placeholder)
+                    .into(binding.setAlbumImage)
+
+                binding.setAlbumImage.setImageURI(uri)
+
+                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                requireContext().contentResolver.takePersistableUriPermission(uri, flag)
+            } else{
+                binding.setAlbumImage.isVisible = false
+                binding.iconAddPhoto.isVisible = true
+            }
+
+        }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,14 +71,58 @@ class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         exit()
         setupTextWatchers()
         updateInitialState()
+
+        binding.iconAddPhoto.setOnClickListener {
+            pickAlbumImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        binding.createPlaylistButton.setOnClickListener {
+            createPlaylist()
+        }
     }
+
+
+    private fun createPlaylist() {
+        val name = binding.editTextTitle.text.toString()
+        if (name.isBlank()) return
+
+        val description = binding.editTextMessage.text?.toString() ?: ""
+        val coverUri = imageUri?.toString()
+
+        val playlist = Playlist(
+            name = name,
+            description = description,
+            coverPath = coverUri,
+            tracksIdJson = "[]", // Пустой JSON массив для треков
+            tracksCount = 0
+        )
+
+
+        viewModel.createPlaylist(playlist)
+        Toast.makeText(requireContext(),"Плейлист успешно создан!", Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack()
+
+    }
+
+
+
 
     private fun exit() {
         binding.toolbarCreatePlayList.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Завершить создание плейлиста?")
+                .setMessage("Все несохраненные данные будут потеряны")
+                .setNegativeButton("Отмена") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("Завершить") { dialog, which ->
+                    findNavController().popBackStack()
+                }
+                .show()
         }
     }
 
@@ -56,7 +142,7 @@ class CreatePlaylistFragment : Fragment() {
         with(binding) {
             editTextTitle.background = chooseBorderColor(editTextTitle.text.isNullOrEmpty())
             editTextMessage.background = chooseBorderColor(editTextMessage.text.isNullOrEmpty())
-            updateButtonState()
+            isButtonEnable()
         }
     }
 
@@ -71,7 +157,7 @@ class CreatePlaylistFragment : Fragment() {
             borderTitle.isVisible = hasTitleText
             borderMessage.isVisible = hasMessageText
 
-            updateButtonState()
+            isButtonEnable()
         }
     }
 
@@ -83,16 +169,18 @@ class CreatePlaylistFragment : Fragment() {
         )
     }
 
-    private fun updateButtonState() {
-        val isButtonEnabled = !binding.editTextTitle.text.isNullOrEmpty()
+    private fun isButtonEnable(){
+        binding.createPlaylistButton.isEnabled = !binding.editTextTitle.text.isNullOrBlank()
+    }
 
-        binding.createPlaylistTV.apply {
-            setBackgroundResource(
-                if (isButtonEnabled) R.drawable.btn_create_playlist_enable
-                else R.drawable.btn_create_playlist
-            )
-            isEnabled = isButtonEnabled
-        }
+
+
+    private fun dpToPx(dp: Float, context: CreatePlaylistFragment): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
     }
 
     override fun onDestroyView() {
