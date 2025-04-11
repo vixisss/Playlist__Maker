@@ -1,22 +1,33 @@
 package com.example.playlist__maker.media.viewModel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.example.playlist__maker.db.data.AppDatabase
 import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
 import com.example.playlist__maker.db.domain.models.Playlist
 import com.example.playlist__maker.db.domain.repository.PlaylistRepository
+import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel.PlayerUiState
+import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.PlayState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
     private val playlistRepository: PlaylistRepository
 ) : ViewModel() {
 
+    data class TrackInPlaylist(
+        val contains: Boolean
+    )
+
+    private val _uiState = MutableLiveData<TrackInPlaylist>(TrackInPlaylist(false))
+    val uiState: LiveData<TrackInPlaylist> = _uiState
+
     private val _playlistCreated = MutableLiveData<Boolean>()
-    val playlistCreated: LiveData<Boolean> = _playlistCreated
 
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
@@ -42,8 +53,22 @@ class PlaylistViewModel(
                 }
                 _playlists.value = playlists
             } catch (e: Exception) {
-                // Handle error
             }
         }
     }
+
+    fun addTrackToPlaylist(playlistId: Long, track: Track) {
+        viewModelScope.launch {
+            try {
+                playlistRepository.addTrackToPlaylist(playlistId, track)
+                loadPlaylists()
+                _uiState.value = _uiState.value?.copy(contains = true)
+            // Обновляем список плейлистов
+                // Можно добавить уведомление об успехе
+            } catch (e: Exception) { }
+        }
+   }
+
+
+
 }

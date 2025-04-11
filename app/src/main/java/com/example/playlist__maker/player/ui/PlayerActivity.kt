@@ -1,20 +1,30 @@
 package com.example.playlist__maker.player.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.ActivityPlayerBinding
-import com.example.playlist__maker.utils.PlayState
+import com.example.playlist__maker.db.domain.models.Playlist
+import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.example.playlist__maker.player.ui.adapters.TrackInPlaylistAdapter
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.PlayState
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -25,11 +35,20 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
     private val viewModel by viewModel<PlayerViewModel>()
+    private val viewModelPlaylist by viewModel<PlaylistViewModel>()
+    private lateinit var playlistsAdapter: TrackInPlaylistAdapter
 
     private val trackObserver = Observer<PlayerViewModel.PlayerUiState> { uiState ->
         binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(uiState.currentPosition)
         updatePlayButtonState(uiState.playState)
-        updateFavoriteButtonState(uiState.isFavorite) // Обновляем состояние кнопки "Нравится"
+        updateFavoriteButtonState(uiState.isFavorite)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private val playlistsObserver = Observer<List<Playlist>> { playlists ->
+        playlistsAdapter.playlists = playlists
+        playlistsAdapter.notifyDataSetChanged()
+
     }
 
     private var imageState: Map<PlayState, Int> = mapOf(
@@ -38,6 +57,63 @@ class PlayerActivity : AppCompatActivity() {
         PlayState.Prepared to R.drawable.player_play
     )
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        showPlayer()
+        preparePlayer()
+        setupBottomSheet()
+        setupRecyclerView()
+
+
+        viewModel.uiState.observe(this, trackObserver)
+        viewModelPlaylist.playlists.observe(this, playlistsObserver)
+
+        binding.playerPlayPause.setOnClickListener {
+            val currentState = viewModel.getState()
+            val newState = when (currentState) {
+                PlayState.Playing -> PlayState.Paused
+                PlayState.Paused -> PlayState.Playing
+                PlayState.Prepared -> PlayState.Playing
+            }
+            viewModel.changeState(newState)
+        }
+
+        binding.playerLike.setOnClickListener {
+            viewModel.onFavoriteClicked()
+        }
+
+        binding.playerAddTrack.setOnClickListener {
+            viewModelPlaylist.loadPlaylists()
+            binding.playlistsBottomSheet.visibility = View.VISIBLE
+            BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    private fun setupRecyclerView() {
+        playlistsAdapter = TrackInPlaylistAdapter(emptyList()) { playlist ->
+            viewModelPlaylist.addTrackToPlaylist(playlist.id, track)
+            Toast.makeText(this, "Трек добавлен в ${playlist.name}", Toast.LENGTH_SHORT).show()
+            BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.recycleListPlaylists.apply {
+            layoutManager = LinearLayoutManager(this@PlayerActivity)
+            adapter = playlistsAdapter
+        }
+    }
+
+    private fun setupBottomSheet() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsBottomSheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        binding.playerAddTrack.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
     private fun updateTrackInfo() {
         binding.trackName.text = track.trackName
         binding.artistName.text = track.collectionName
@@ -45,7 +121,6 @@ class PlayerActivity : AppCompatActivity() {
         binding.primaryGenreName.text = track.primaryGenreName
         binding.country.text = track.country
         binding.releaseDate.text = track.releaseDate.substringBefore('-')
-
         updateCollectionAlbumVisibility()
     }
 
@@ -66,40 +141,13 @@ class PlayerActivity : AppCompatActivity() {
 
         updateTrackInfo()
         updateAlbumArtwork()
-        viewModel.setCurrentTrack(track) // Устанавливаем текущий трек в ViewModel
+        viewModel.setCurrentTrack(track)
     }
 
     private fun updateCollectionAlbumVisibility() {
         binding.collectionName.visibility = if (track.collectionName.isNotEmpty()) View.VISIBLE else View.GONE
         binding.playerAlbum.visibility = if (track.collectionName.isNotEmpty()) View.VISIBLE else View.GONE
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        showPlayer()
-        preparePlayer()
-
-        viewModel.uiState.observe(this, trackObserver)
-
-        binding.playerPlayPause.setOnClickListener {
-            val currentState = viewModel.getState()
-            val newState = when (currentState) {
-                PlayState.Playing -> PlayState.Paused
-                PlayState.Paused -> PlayState.Playing
-                PlayState.Prepared -> PlayState.Playing
-            }
-            viewModel.changeState(newState)
-        }
-
-        // Обработка нажатия на кнопку "Нравится"
-        binding.playerLike.setOnClickListener {
-            viewModel.onFavoriteClicked()
-        }
-    }
-
 
     private fun preparePlayer() {
         binding.time.text = "00:00"
@@ -121,8 +169,10 @@ class PlayerActivity : AppCompatActivity() {
     private fun updateFavoriteButtonState(isFavorite: Boolean) {
         val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
         binding.playerLike.setImageResource(iconRes)
-        track.isFavorite = isFavorite // Обновляем состояние трека
+        track.isFavorite = isFavorite
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()

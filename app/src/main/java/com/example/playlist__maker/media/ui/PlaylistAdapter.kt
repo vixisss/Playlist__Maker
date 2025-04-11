@@ -18,7 +18,18 @@ class PlaylistViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(playlist: Playlist) {
         title.text = playlist.name
-        description.text = "${playlist.tracksCount} треков"
+
+
+        val count = playlist.tracksCount
+
+        val word = when {
+            count % 100 in 11..14 -> "треков"
+            count % 10 == 1 -> "трек"
+            count % 10 in 2..4 -> "трека"
+            else -> "треков"
+        }
+
+        description.text = "${playlist.tracksCount} $word"
 
         // Загрузка обложки или заглушки
         if (!playlist.coverPath.isNullOrEmpty()) {
@@ -34,8 +45,7 @@ class PlaylistViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 }
 
 class PlaylistAdapter(
-    var playlists: List<Playlist>,
-    private val onPlaylistClick: (Playlist) -> Unit
+    var playlists: List<Playlist>
 ) : RecyclerView.Adapter<PlaylistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -46,7 +56,6 @@ class PlaylistAdapter(
 
     override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
         holder.bind(playlists[position])
-        holder.itemView.setOnClickListener { onPlaylistClick(playlists[position]) }
     }
 
     override fun getItemCount(): Int = playlists.size

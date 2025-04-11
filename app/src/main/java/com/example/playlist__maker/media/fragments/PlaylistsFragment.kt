@@ -1,20 +1,18 @@
 package com.example.playlist__maker.media.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentPlaylistsBinding
 import com.example.playlist__maker.media.ui.PlaylistAdapter
 import com.example.playlist__maker.media.viewModel.PlaylistViewModel
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -48,14 +46,13 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = PlaylistAdapter(emptyList()) { playlist ->
-            // Обработка клика по плейлисту (можно добавить позже)
-        }
+        adapter = PlaylistAdapter(emptyList())
 
         binding.recyclerViewPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerViewPlaylists.adapter = adapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setupObservers() {
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
             if (playlists.isEmpty()) {

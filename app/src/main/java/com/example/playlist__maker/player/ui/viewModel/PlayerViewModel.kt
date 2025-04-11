@@ -60,7 +60,6 @@ class PlayerViewModel(
             } else {
                 trackFavInteractor.deleteFromFavorites(track)
             }
-            // Обновляем локальное состояние
             _uiState.value = _uiState.value?.copy(isFavorite = newFavoriteState)
             track.isFavorite = newFavoriteState
         }
