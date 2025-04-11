@@ -1,7 +1,6 @@
 package com.example.playlist__maker.media.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +8,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentFavTracksBinding
 import com.example.playlist__maker.media.viewModel.FavTracksViewModel
 import com.example.playlist__maker.media.state.FavState
-import com.example.playlist__maker.player.ui.PlayerActivity
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
 import com.google.gson.Gson
@@ -108,11 +108,11 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     override fun onClick(track: Track) {
         if (clickDebounce()) {
-            val layoutIntent = Intent(requireContext(), PlayerActivity::class.java)
-            val gson = Gson()
-            val json = gson.toJson(track)
-            layoutIntent.putExtra("track", json)
-            startActivity(layoutIntent)
+            val args = Bundle().apply {
+                val gson = Gson()
+                putString("track", gson.toJson(track))
+            }
+            findNavController().navigate(R.id.action_mediaFragment_to_playerFragment, args)
         }
     }
 

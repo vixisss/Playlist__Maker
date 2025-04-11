@@ -29,7 +29,7 @@ class RootActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.createPlaylistFragment -> setBottomNavigationVisibility(false) // Скрываем для экрана создания плейлиста
-                R.id.playerActivity -> setBottomNavigationVisibility(false) // Скрываем для экрана создания плейлиста
+                 // Скрываем для экрана создания плейлиста
                 else -> setBottomNavigationVisibility(true) // Показываем для остальных
             }
         }

@@ -2,7 +2,6 @@ package com.example.playlist__maker.search.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentSearchBinding
-import com.example.playlist__maker.player.ui.PlayerActivity
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.utils.UiState
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
@@ -32,7 +30,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.core.content.edit
 import androidx.core.view.isVisible
-import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
+import androidx.navigation.fragment.findNavController
 
 
 class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
@@ -75,12 +73,11 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
             requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         }
 
-        // Наблюдаем за состоянием истории
+
         viewModel.getHistoryState().observe(viewLifecycleOwner) { state ->
             showHistory(state.data)
         }
 
-        // Наблюдаем за состоянием поиска
         viewModel.getTracksState().observe(viewLifecycleOwner) { state ->
             showStateResult(state)
         }
@@ -139,12 +136,17 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
     override fun onClick(track: Track) {
         if (clickDebounce()) {
-            val layoutIntent = Intent(requireContext(), PlayerActivity::class.java)
-            val gson = Gson()
-            val json = gson.toJson(track)
-            layoutIntent.putExtra("track", json)
-            startActivity(layoutIntent)
-            viewModel.addTrackToHistory(track)
+            lifecycleScope.launch {
+                viewModel.addTrackToHistory(track)
+
+                val args = Bundle().apply {
+                    putString("track", Gson().toJson(track))
+                }
+                findNavController().navigate(R.id.action_searchFragment_to_playerFragment, args)
+
+                isClickAllowed = true
+                clickDebounceJob?.cancel()
+            }
         }
     }
 
@@ -325,15 +327,15 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
     }
 
     private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            clickDebounceJob = lifecycleScope.launch {
-                delay(CLICK_DEBOUNCE_DELAY)
-                isClickAllowed = true
-            }
+        if (!isClickAllowed) return false
+
+        isClickAllowed = false
+        clickDebounceJob?.cancel()
+        clickDebounceJob = lifecycleScope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
+            isClickAllowed = true
         }
-        return current
+        return true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

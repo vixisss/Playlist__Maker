@@ -20,13 +20,6 @@ class PlaylistViewModel(
     private val playlistRepository: PlaylistRepository
 ) : ViewModel() {
 
-    data class TrackInPlaylist(
-        val contains: Boolean
-    )
-
-    private val _uiState = MutableLiveData<TrackInPlaylist>(TrackInPlaylist(false))
-    val uiState: LiveData<TrackInPlaylist> = _uiState
-
     private val _playlistCreated = MutableLiveData<Boolean>()
 
     private val _playlists = MutableLiveData<List<Playlist>>()
@@ -61,13 +54,11 @@ class PlaylistViewModel(
         viewModelScope.launch {
             try {
                 playlistRepository.addTrackToPlaylist(playlistId, track)
-                loadPlaylists()
-                _uiState.value = _uiState.value?.copy(contains = true)
-            // Обновляем список плейлистов
-                // Можно добавить уведомление об успехе
-            } catch (e: Exception) { }
+
+            } catch (e: Exception) {
+            }
         }
-   }
+    }
 
 
 

@@ -1,5 +1,6 @@
-package com.example.playlist__maker.db.domain.interactor
+package com.example.playlist__maker.db.domain.interactorImpl
 
+import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
 import com.example.playlist__maker.db.domain.repository.TrackFavRepository
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.utils.ResponseCode
