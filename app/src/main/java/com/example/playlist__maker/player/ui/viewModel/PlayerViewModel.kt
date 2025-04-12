@@ -84,24 +84,45 @@ class PlayerViewModel(
     }
 
     private fun prepare() {
+        playerInteractor.release()
         playerInteractor.prepare(urlTrack)
         _uiState.value = _uiState.value?.copy(playState = PlayState.Prepared)
     }
 
     fun setUrlTrack(url: String?) {
-        if (url != null) {
-            urlTrack = url
+        url?.let {
+            urlTrack = it
+            playerInteractor.release()
         }
     }
 
     private fun start() {
-        if (playerInteractor.getCurrentPosition() == -1L) {
+        try {
+            when {
+                playerInteractor.getCurrentPosition() == -1L -> {
+                    playerInteractor.prepare(urlTrack)
+                }
+
+                playerInteractor.getStatePlayer() != PlayState.Playing -> {
+                    playerInteractor.start()
+                }
+            }
+
+            _uiState.value = _uiState.value?.copy(
+                playState = PlayState.Playing,
+                currentPosition = playerInteractor.getCurrentPosition().coerceAtLeast(0L)
+            )
+
+            startUpdatingCurrentPosition()
+        } catch (e: IllegalStateException) {
+            _uiState.value = _uiState.value?.copy(
+                playState = PlayState.Paused,
+                currentPosition = 0L
+            )
+
+            playerInteractor.release()
             playerInteractor.prepare(urlTrack)
-        } else {
-            playerInteractor.start()
         }
-        _uiState.value = _uiState.value?.copy(playState = PlayState.Playing)
-        startUpdatingCurrentPosition()
     }
 
     private fun pause() {

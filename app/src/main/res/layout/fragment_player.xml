@@ -10,20 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/artworkUrl100"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-
-            android:layout_margin="@dimen/margin24"
-
-            android:src="@drawable/big_placeholder"
-            app:layout_constraintBottom_toTopOf="@+id/trackName"
-
+        <Toolbar
+            android:id="@+id/toolbarPlayer"
+            style="@style/ToolbarStylePlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearArtwork"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/margin24"
+            android:layout_marginEnd="@dimen/margin24"
+            android:layout_marginBottom="@dimen/margin24"
+
+            app:layout_constraintDimensionRatio="1:1"
+
+            app:layout_constraintBottom_toTopOf="@+id/trackName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarPlayer">
+
+            <ImageView
+                android:id="@+id/artworkUrl100"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:src="@drawable/big_placeholder"
+                app:layout_constraintBottom_toTopOf="@+id/trackName"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/trackName"
@@ -31,17 +53,19 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin26"
 
-            android:text="Yesterday (Remastered 2009)"
-            android:textFontWeight="400"
-            android:maxLines="1"
-            android:ellipsize="end"
-
-
             android:layout_marginBottom="@dimen/margin12"
             android:layout_marginStart="@dimen/margin24"
+            android:layout_marginEnd="@dimen/margin24"
 
-            app:layout_constraintStart_toStartOf="@+id/artworkUrl100"
-            app:layout_constraintBottom_toTopOf="@+id/artistName" />
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Yesterday (Remastered 2009)"
+
+
+            android:textFontWeight="400"
+
+            app:layout_constraintBottom_toTopOf="@+id/artistName"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/artistName"
@@ -49,18 +73,18 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin16"
 
-            android:text="The Beatles "
-            android:maxLines="1"
-            android:ellipsize="end"
-
-            android:layout_marginEnd="@dimen/margin16"
-            android:layout_marginStart="@dimen/margin24"
-
-            android:textFontWeight="400"
             android:layout_marginBottom="@dimen/margin30"
+            android:layout_marginStart="@dimen/margin24"
+            android:layout_marginEnd="@dimen/margin24"
 
-            app:layout_constraintStart_toStartOf="@+id/artworkUrl100"
-            app:layout_constraintBottom_toTopOf="@+id/player_play_pause"/>
+            android:ellipsize="end"
+            android:maxLines="1"
+
+            android:text="The Beatles "
+            android:textFontWeight="400"
+
+            app:layout_constraintBottom_toTopOf="@+id/player_play_pause"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/player_add_track"
@@ -71,7 +95,7 @@
             android:src="@drawable/player_add_track"
 
             app:layout_constraintBottom_toBottomOf="@+id/player_play_pause"
-            app:layout_constraintStart_toStartOf="@+id/trackName"
+            app:layout_constraintStart_toStartOf="@+id/linearArtwork"
             app:layout_constraintTop_toTopOf="@+id/player_play_pause" />
 
         <ImageButton
@@ -96,7 +120,7 @@
             android:src="@drawable/player_like"
 
             app:layout_constraintBottom_toBottomOf="@+id/player_play_pause"
-            app:layout_constraintEnd_toEndOf="@+id/artworkUrl100"
+            app:layout_constraintEnd_toEndOf="@+id/linearArtwork"
             app:layout_constraintTop_toTopOf="@+id/player_play_pause" />
 
 
@@ -256,7 +280,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
 
-            android:layout_marginBottom="@dimen/margin30"
+            android:layout_marginBottom="@dimen/margin20"
             android:layout_marginStart="@dimen/margin16"
 
             android:text="Страна"
@@ -273,7 +297,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
 
-            android:layout_marginBottom="@dimen/margin30"
+            android:layout_marginBottom="@dimen/margin20"
             android:layout_marginEnd="@dimen/margin16"
 
             android:gravity="center_vertical"
@@ -299,6 +323,8 @@
         app:behavior_hideable="true"
         app:behavior_peekHeight="505dp"
         android:background="@drawable/bottomsheet_playlist"
+
+        android:visibility="gone"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <!-- Вёрстка Bottom Sheet с кнопкой и списком -->

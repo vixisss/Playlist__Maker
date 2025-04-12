@@ -1,8 +1,8 @@
 package com.example.playlist__maker.root
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlist__maker.R
@@ -14,27 +14,22 @@ class RootActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
         val navController = navHostFragment.navController
-        fun setBottomNavigationVisibility(visible: Boolean) {
-            binding.bottomNavigationView.visibility = if (visible) View.VISIBLE else View.GONE
-        }
 
-        binding.bottomNavigationView.setupWithNavController(navController)
-
-        // Слушаем изменения навигации, чтобы скрывать/показывать BottomNavigationView
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.createPlaylistFragment -> setBottomNavigationVisibility(false) // Скрываем для экрана создания плейлиста
-                 // Скрываем для экрана создания плейлиста
-                else -> setBottomNavigationVisibility(true) // Показываем для остальных
+                R.id.playerFragment -> binding.bottomNavigationView.isVisible = false
+                R.id.createPlaylistFragment -> binding.bottomNavigationView.isVisible = false
+                else -> binding.bottomNavigationView.isVisible = true
             }
+
+            binding.bottomNavigationView.setupWithNavController(navController)
         }
     }
-
-
-
 }

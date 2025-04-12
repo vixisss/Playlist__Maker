@@ -41,7 +41,6 @@ class PlaylistsFragment : Fragment() {
         setupObservers()
         setupClickListeners()
 
-        // Загружаем плейлисты при открытии фрагмента
         viewModel.loadPlaylists()
     }
 
@@ -56,11 +55,9 @@ class PlaylistsFragment : Fragment() {
     private fun setupObservers() {
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
             if (playlists.isEmpty()) {
-                // Показываем заглушку, если плейлистов нет
                 binding.playlistPlaceholderLayout.isVisible = true
                 binding.recyclerViewPlaylists.isVisible = false
             } else {
-                // Показываем список плейлистов
                 binding.playlistPlaceholderLayout.isVisible = false
                 binding.recyclerViewPlaylists.isVisible = true
                 adapter.playlists = playlists

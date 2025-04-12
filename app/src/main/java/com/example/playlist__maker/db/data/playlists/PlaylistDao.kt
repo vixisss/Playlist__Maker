@@ -3,10 +3,8 @@ package com.example.playlist__maker.db.data.playlists
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.playlist__maker.db.data.tracks.MediaFavEntity
 
 @Dao
 interface PlaylistDao {

@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/mediaPlaceholderFavTracks"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/margin120"
+        android:layout_height="@dimen/margin120"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/placeholder_nothing_find_day"
         app:layout_constraintEnd_toEndOf="parent"

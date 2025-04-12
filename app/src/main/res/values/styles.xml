@@ -102,7 +102,7 @@
 
     <style name="ArtistName">
         <item name="fontFamily">@font/ys_display_regular</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">@dimen/text11</item>
 
         <item name="android:textColor">@color/edit_text_lightTheme_text</item>
     </style>
@@ -123,7 +123,7 @@
     </style>
 
     <style name="button_in_noInternet">
-        <item name="cornerRadius">54dp</item>
+        <item name="cornerRadius">@dimen/margin54</item>
         <item name="backgroundTint">@color/night_theme</item>
         <item name="android:layout_marginTop">@dimen/margin24</item>
         <item name="android:layout_gravity">center</item>
@@ -153,7 +153,7 @@
     </style>
 
     <style name="playerAttributes">
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">@dimen/text13</item>
         <item name="android:textColor">@color/night_theme</item>
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>

@@ -25,7 +25,13 @@ class PlayerInteractorImpl(
         context.pause()
     }
 
-    override fun getCurrentPosition(): Long = context.getCurrentPosition()
+    override fun getCurrentPosition(): Long {
+        return try {
+            context.getCurrentPosition()
+        } catch (e: IllegalStateException) {
+            -1L
+        }
+    }
 
     override fun release() {
         context.release()
@@ -36,7 +42,11 @@ class PlayerInteractorImpl(
     }
 
     override fun getStatePlayer(): PlayState {
-        return context.getPlayerState()
+        return try {
+            context.getPlayerState()
+        } catch (e: IllegalStateException) {
+            PlayState.Paused
+        }
     }
 
     override fun setOnCompletionListener(listener: () -> Unit) {

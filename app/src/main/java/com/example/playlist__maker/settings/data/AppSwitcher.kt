@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlist__maker.settings.domain.repository.AppSwitcherRepository
+import androidx.core.content.edit
 
 class AppSwitcher(
     private val app: Application,
@@ -25,9 +26,9 @@ class AppSwitcher(
     }
 
     override fun saveTheme(saveTheme: Boolean) {
-        preferencesShared.edit()
-            .putBoolean(SWITCH_THEME_KEY, saveTheme)
-            .apply()
+        preferencesShared.edit() {
+            putBoolean(SWITCH_THEME_KEY, saveTheme)
+        }
     }
 
     private fun themeFromDevice(): Boolean = app.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES

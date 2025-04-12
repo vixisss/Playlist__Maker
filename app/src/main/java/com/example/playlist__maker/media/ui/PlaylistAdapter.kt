@@ -22,16 +22,12 @@ class PlaylistViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val count = playlist.tracksCount
 
-        val word = when {
-            count % 100 in 11..14 -> "треков"
-            count % 10 == 1 -> "трек"
-            count % 10 in 2..4 -> "трека"
-            else -> "треков"
-        }
+        description.text = itemView.context.resources.getQuantityString(
+            R.plurals.howManyTracks,
+            count,
+            count
+        )
 
-        description.text = "${playlist.tracksCount} $word"
-
-        // Загрузка обложки или заглушки
         if (!playlist.coverPath.isNullOrEmpty()) {
             Glide.with(itemView)
                 .load(playlist.coverPath)

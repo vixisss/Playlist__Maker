@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -71,10 +72,18 @@ class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        exit()
         setupTextWatchers()
         updateInitialState()
+        handleExit()
+        setupListeners()
+    }
+
+
+    private fun setupListeners(){
+        binding.toolbarCreatePlayList.setOnClickListener {
+            exit()
+        }
+
 
         binding.iconAddPhoto.setOnClickListener {
             pickAlbumImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -97,46 +106,52 @@ class CreatePlaylistFragment : Fragment() {
             name = name,
             description = description,
             coverPath = coverUri,
-            tracksIdJson = "[]", // Пустой JSON массив для треков
+            tracksIdJson = "[]",
             tracksCount = 0
         )
 
-
-        viewModel.createPlaylist(playlist)
+        viewModel.createPlaylist(requireContext(), playlist)
         Toast.makeText(requireContext(),"Плейлист успешно создан!", Toast.LENGTH_SHORT).show()
         findNavController().popBackStack()
-
     }
 
 
-
-
-    private fun exit() {
-        binding.toolbarCreatePlayList.setNavigationOnClickListener {
+    private fun exit(){
+        if(binding.editTextTitle.text.isNotEmpty() || binding.editTextMessage.text.isNotEmpty() || imageUri != null) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Завершить создание плейлиста?")
                 .setMessage("Все несохраненные данные будут потеряны")
                 .setNegativeButton("Отмена") { dialog, which ->
                     dialog.dismiss()
                 }
-                .setPositiveButton("Завершить") { dialog, which ->
-                    findNavController().popBackStack()
-                }
-                .show()
-        }
+                    .setPositiveButton("Завершить") { dialog, which ->
+                        findNavController().popBackStack()
+                    }
+                    .show()
+            } else findNavController().popBackStack()
     }
+
+
+    private fun handleExit(){
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                exit()
+            }
+        })
+    }
+
 
     private fun setupTextWatchers() {
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) = updateBorder()
-        }
+            override fun afterTextChanged(s: Editable?) {updateBorder()}
 
+        }
         binding.editTextTitle.addTextChangedListener(textWatcher)
         binding.editTextMessage.addTextChangedListener(textWatcher)
-
     }
+
 
     private fun updateInitialState() {
         with(binding) {
@@ -145,6 +160,7 @@ class CreatePlaylistFragment : Fragment() {
             isButtonEnable()
         }
     }
+
 
     private fun updateBorder() {
         with(binding) {
@@ -161,6 +177,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
+
     private fun chooseBorderColor(isEmpty: Boolean): android.graphics.drawable.Drawable? {
         return ContextCompat.getDrawable(
             requireContext(),
@@ -168,6 +185,7 @@ class CreatePlaylistFragment : Fragment() {
             else R.drawable.border_edittext_playlist_color
         )
     }
+
 
     private fun isButtonEnable(){
         binding.createPlaylistButton.isEnabled = !binding.editTextTitle.text.isNullOrBlank()

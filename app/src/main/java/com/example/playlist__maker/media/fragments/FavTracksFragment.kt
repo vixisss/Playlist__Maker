@@ -99,7 +99,7 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
 
 
     private fun showRecycler() {
-        adapter = TrackAdapter(trackList, this) // Передаем текущий список треков
+        adapter = TrackAdapter(trackList, this)
         binding.favTracksList.apply {
             adapter = this@FavTracksFragment.adapter
             layoutManager = LinearLayoutManager(requireContext())

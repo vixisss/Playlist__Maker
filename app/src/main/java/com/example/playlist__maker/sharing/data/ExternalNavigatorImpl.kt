@@ -8,6 +8,7 @@ import com.example.playlist__maker.sharing.domain.repository.ExternalNavigator
 import com.example.playlist__maker.sharing.domain.models.UriForUserAgree
 import com.example.playlist__maker.sharing.domain.models.EmailData
 import com.example.playlist__maker.sharing.domain.models.UriForShareApp
+import androidx.core.net.toUri
 
 class ExternalNavigatorImpl(
     private val context: Context
@@ -46,7 +47,7 @@ class ExternalNavigatorImpl(
     override fun userAgree() {
         val browserLinkData = makeUriForUserAgree()
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(browserLinkData.url)
+            data = browserLinkData.url.toUri()
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
@@ -55,7 +56,7 @@ class ExternalNavigatorImpl(
     override fun supportHelp() {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             val emailData = makeEmailDataList()
-            data = Uri.parse(emailData.shareIntentData)
+            data = emailData.shareIntentData.toUri()
             putExtra(Intent.EXTRA_EMAIL, emailData.emailAdress)
             putExtra(Intent.EXTRA_SUBJECT, emailData.supportHelpTheme)
             putExtra(Intent.EXTRA_TEXT, emailData.supportHelpBodyLetter)

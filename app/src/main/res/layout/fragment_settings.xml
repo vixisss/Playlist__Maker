@@ -20,7 +20,7 @@
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchTheme"
             android:layout_width="match_parent"
-            android:layout_height="61dp"
+            android:layout_height="@dimen/margin61"
             android:layout_gravity="end"
 
             android:text="@string/night_theme"

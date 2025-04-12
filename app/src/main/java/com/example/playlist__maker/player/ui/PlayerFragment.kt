@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -68,11 +69,14 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.getString("track")?.let { trackString ->
+
             track = Gson().fromJson(trackString, Track::class.java)
             showPlayer()
             preparePlayer()
             setupBottomSheet()
             setupRecyclerView()
+            exit()
+
             viewModelPlaylist.loadPlaylists()
 
             viewModel.uiState.observe(viewLifecycleOwner, trackObserver)
@@ -82,14 +86,19 @@ class PlayerFragment : Fragment() {
 
             binding.playerAddPlaylist.setOnClickListener {
                 findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
-
             }
+
             binding.playerAddTrack.setOnClickListener {
                 viewModelPlaylist.loadPlaylists()
-                binding.playlistsBottomSheet.visibility = View.VISIBLE
-                BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                binding.overlay.isVisible = true
+                binding.playlistsBottomSheet.isVisible = true
+                BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
+    }
+
+    private fun exit() {
+        binding.toolbarPlayer.setOnClickListener { findNavController().popBackStack() }
     }
 
     private fun setupClickListeners() {
@@ -106,9 +115,8 @@ class PlayerFragment : Fragment() {
         binding.playerLike.setOnClickListener {
             viewModel.onFavoriteClicked()
         }
-
-
     }
+
 
     private fun setupRecyclerView() {
         playlistsAdapter = TrackInPlaylistAdapter(emptyList()) { playlist ->
@@ -119,13 +127,13 @@ class PlayerFragment : Fragment() {
 
                 if (tracksInPlaylist.none { it.trackId == track.trackId }) {
                     viewModelPlaylist.addTrackToPlaylist(playlist.id, track)
-                    Toast.makeText(context, "Трек добавлен в ${playlist.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Добавлено в плейлист  ${playlist.name}", Toast.LENGTH_SHORT).show()
                     BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
                 } else {
-                    Toast.makeText(context, "Трек уже в ${playlist.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Трек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Трек уже в ${playlist.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "рек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -135,16 +143,38 @@ class PlayerFragment : Fragment() {
         }
     }
 
+
     private fun setupBottomSheet() {
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsBottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.overlay.isVisible = true
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        binding.overlay.isVisible = true
+                    }
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.isVisible = false
+                    }
+                    else -> {}
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
     }
+
 
     private fun showPlayer() {
         updateTrackInfo()
         updateAlbumArtwork()
         viewModel.setCurrentTrack(track)
     }
+
 
     private fun updateTrackInfo() {
         binding.trackName.text = track.trackName
@@ -156,6 +186,7 @@ class PlayerFragment : Fragment() {
         updateCollectionAlbumVisibility()
     }
 
+
     private fun updateAlbumArtwork() {
         val artworkUrl = track.getCoverArtwork()
         Glide.with(this)
@@ -166,10 +197,12 @@ class PlayerFragment : Fragment() {
             .into(binding.artworkUrl100)
     }
 
+
     private fun updateCollectionAlbumVisibility() {
-        binding.collectionName.visibility = if (track.collectionName.isNotEmpty()) View.VISIBLE else View.GONE
-        binding.playerAlbum.visibility = if (track.collectionName.isNotEmpty()) View.VISIBLE else View.GONE
+        binding.collectionName.isVisible = track.collectionName.isNotEmpty()
+        binding.playerAlbum.isVisible = track.collectionName.isNotEmpty()
     }
+
 
     private fun preparePlayer() {
         binding.time.text = "00:00"
@@ -177,22 +210,28 @@ class PlayerFragment : Fragment() {
         track.previewUrl?.let { url ->
             try {
                 viewModel.setUrlTrack(url)
-                binding.playerPlayPause.setImageResource(imageState[PlayState.Paused]!!)
+                imageState[PlayState.Paused]?.let { pausedImageRes ->
+                    binding.playerPlayPause.setImageResource(pausedImageRes)
+                }
             } catch (e: IOException) {
                 Toast.makeText(context, "Ошибка загрузки трека", Toast.LENGTH_LONG).show()
             }
         }
     }
 
+
     private fun updatePlayButtonState(state: PlayState?) {
         binding.playerPlayPause.setImageResource(imageState[state]!!)
     }
+
 
     private fun updateFavoriteButtonState(isFavorite: Boolean) {
         val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
         binding.playerLike.setImageResource(iconRes)
         track.isFavorite = isFavorite
     }
+
+
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
@@ -204,7 +243,9 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.exit()
-        _binding = null
+        if (activity?.isChangingConfigurations != true) {
+            viewModel.exit()
+            _binding = null
+        }
     }
 }

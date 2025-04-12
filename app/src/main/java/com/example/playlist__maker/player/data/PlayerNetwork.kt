@@ -28,8 +28,8 @@ class PlayerNetwork(
         }
 
         mediaPlayer?.setOnCompletionListener {
-            mediaPlayer?.seekTo(0) // Сбрасываем позицию на начало
-            onCompletionListener?.invoke() // Уведомляем о завершении
+            mediaPlayer?.seekTo(0)
+            onCompletionListener?.invoke()
         }
     }
 
@@ -50,8 +50,18 @@ class PlayerNetwork(
     }
 
     fun release() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer?.let { player ->
+            try {
+                if (player.isPlaying) {
+                    player.stop()
+                }
+                player.reset()
+                player.release()
+            } catch (e: Exception) {
+            } finally {
+                mediaPlayer = null
+            }
+        }
     }
 
     fun getCurrentPosition(): Long {
@@ -59,8 +69,9 @@ class PlayerNetwork(
     }
 
     fun exit() {
-        mediaPlayer?.release()
+        release()
     }
+
 
     fun getPlayerState(): PlayState {
         return when {

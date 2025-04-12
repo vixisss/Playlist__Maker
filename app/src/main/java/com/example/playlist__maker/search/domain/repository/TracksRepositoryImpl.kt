@@ -27,7 +27,6 @@ class TracksRepositoryImpl(
 
         when (response) {
             is TrackSearchResponse -> {
-                // Фильтруем и преобразуем данные
                 val filteredTracks = response.results.filter {
                     it.trackName.isNotEmpty() &&
                             it.artistName.isNotEmpty() &&
@@ -39,12 +38,10 @@ class TracksRepositoryImpl(
                     return@flow
                 }
 
-                // Получаем список избранных ID
                 val favoriteIds = withContext(Dispatchers.IO) {
                     appDatabase.mediaFavDao().getFavTrackId()
                 }
 
-                // Преобразуем в Track с учетом избранного статуса
                 val tracksWithFavorites = filteredTracks.map { result ->
                     Track(
                         trackId = result.trackId,
@@ -58,7 +55,7 @@ class TracksRepositoryImpl(
                         primaryGenreName = result.primaryGenreName,
                         country = result.country,
                         previewUrl = result.previewUrl,
-                        isFavorite = result.trackId in favoriteIds // Устанавливаем статус здесь
+                        isFavorite = result.trackId in favoriteIds
                     )
                 }
 

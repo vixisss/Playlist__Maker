@@ -7,6 +7,7 @@ import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
 import com.example.playlist__maker.search.domain.models.Track
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import androidx.core.content.edit
 
 class History(
     private val sharedPreferences: SharedPreferences,
@@ -37,7 +38,7 @@ class History(
         historyList.add(0, trackToAdd)
 
         if (historyList.size > 10) {
-            historyList.removeLast()
+            historyList.removeAt(historyList.lastIndex)
         }
 
         saveHistory()
@@ -56,7 +57,7 @@ class History(
 
     private fun saveHistory() {
         val json = Gson().toJson(historyList)
-        sharedPreferences.edit().putString(HISTORY_KEY, json).apply()
+        sharedPreferences.edit() { putString(HISTORY_KEY, json) }
     }
 
     private fun loadHistory() {
@@ -74,7 +75,7 @@ class History(
 
     fun clearHistory(){
         historyList.clear()
-        sharedPreferences.edit().putString(HISTORY_KEY, "").apply()
+        sharedPreferences.edit() { putString(HISTORY_KEY, "") }
     }
     fun showHistoryList(): ArrayList<Track> = ArrayList(historyList)
 }

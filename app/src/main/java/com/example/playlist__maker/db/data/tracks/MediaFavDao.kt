@@ -11,7 +11,7 @@ import com.example.playlist__maker.db.data.tracks.MediaFavEntity
 interface MediaFavDao {
 
     // Добавление трека в избранное
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addTrackInFav(media: MediaFavEntity)
 
     // Удаление трека из избранного

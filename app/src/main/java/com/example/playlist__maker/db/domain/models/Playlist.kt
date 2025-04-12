@@ -7,7 +7,7 @@ data class Playlist(
     val name: String,
     val description: String,
     val coverPath: String?,
-    val tracksIdJson: String, // Список ID треков в формате JSON
+    val tracksIdJson: String,
     val tracksCount: Int
 
 ) : Serializable
