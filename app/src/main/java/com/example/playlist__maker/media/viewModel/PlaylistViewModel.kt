@@ -57,7 +57,7 @@ class PlaylistViewModel(
 
 
     fun createPlaylist(context: Context, playlist: Playlist) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val newCoverUri = playlist.coverPath?.let { uriString ->
                     savePlaylistCover(context, uriString.toUri(), playlist.id.toString())
@@ -67,14 +67,10 @@ class PlaylistViewModel(
                     coverPath = newCoverUri?.toString()
                 )
                 playlistRepository.createPlaylist(updatedPlaylist)
-                withContext(Dispatchers.Main) {
-                    _playlistCreated.value = true
-                }
+                _playlistCreated.value = true
                 loadPlaylists()
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _playlistCreated.value = false
-                }
+                _playlistCreated.value = false
             }
         }
     }

@@ -110,7 +110,7 @@ class CreatePlaylistFragment : Fragment() {
             tracksCount = 0
         )
 
-        viewModel.createPlaylist(requireContext(), playlist)
+        viewModel.createPlaylist(requireContext().applicationContext, playlist)
         Toast.makeText(requireContext(),"Плейлист успешно создан!", Toast.LENGTH_SHORT).show()
         findNavController().popBackStack()
     }
