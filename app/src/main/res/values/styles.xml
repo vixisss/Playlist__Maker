@@ -4,7 +4,7 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:textSize">@dimen/text22</item>
     </style>
 
 
@@ -12,7 +12,7 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:textSize">@dimen/text22</item>
         <item name="android:letterSpacing">0</item>
 
         <item name="cornerRadius">@dimen/margin16</item>
@@ -34,7 +34,7 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textAlignment">textStart</item>
-        <item name="android:textSize">@dimen/text_size_settings</item>
+        <item name="android:textSize">@dimen/text16</item>
         <item name="android:letterSpacing">0</item>
 
         <item name="iconGravity">end</item>
@@ -51,7 +51,7 @@
 
     <style name="EditTextTheme" parent="Widget.AppCompat.EditText">
         <item name="android:padding">@dimen/margin10</item>
-        <item name="android:textSize">@dimen/text_size_settings</item>
+        <item name="android:textSize">@dimen/text16</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
 
         <item name="android:drawablePadding">@dimen/margin5</item>
@@ -83,6 +83,12 @@
         <item name="android:titleTextAppearance">@style/MainTextStyle</item>
     </style>
 
+    <style name="ToolbarStylePlaylist">
+        <item name="android:titleTextColor">@color/night_theme</item>
+        <item name="android:titleTextAppearance">@style/MainTextStyle</item>
+        <item name="android:navigationIcon">@drawable/light_mode</item>
+    </style>
+
 
     <style name="TrackName">
         <item name="android:textFontWeight">400</item>
@@ -96,7 +102,7 @@
 
     <style name="ArtistName">
         <item name="fontFamily">@font/ys_display_regular</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">@dimen/text11</item>
 
         <item name="android:textColor">@color/edit_text_lightTheme_text</item>
     </style>
@@ -117,7 +123,7 @@
     </style>
 
     <style name="button_in_noInternet">
-        <item name="cornerRadius">54dp</item>
+        <item name="cornerRadius">@dimen/margin54</item>
         <item name="backgroundTint">@color/night_theme</item>
         <item name="android:layout_marginTop">@dimen/margin24</item>
         <item name="android:layout_gravity">center</item>
@@ -147,7 +153,7 @@
     </style>
 
     <style name="playerAttributes">
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">@dimen/text13</item>
         <item name="android:textColor">@color/night_theme</item>
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
@@ -179,7 +185,9 @@
         <item name="lineHeight">16.41sp</item>
     </style>
 
-
+    <style name="AlbumImage">
+        <item name="cornerRadius">@dimen/margin8</item>
+    </style>
 
 
 </resources>

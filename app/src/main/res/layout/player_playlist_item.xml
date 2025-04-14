@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="61dp">
+
+    <ImageView
+        android:id="@+id/artworkUrl100Playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin13"
+        android:layout_gravity="center_vertical" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginHorizontal="@dimen/margin66"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/PlaylistNameItemPlayer"
+            style="@style/TrackName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Best songs 2021" />
+
+        <TextView
+            android:id="@+id/SongsCountItemPlayer"
+            style="@style/ArtistName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxLength="30"
+            tools:text="98 треков" />
+
+    </LinearLayout>
+
+</FrameLayout>

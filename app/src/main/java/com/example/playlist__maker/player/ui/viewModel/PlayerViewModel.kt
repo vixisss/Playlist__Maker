@@ -1,74 +1,154 @@
 package com.example.playlist__maker.player.ui.viewModel
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
-import com.example.playlist__maker.player.domain.models.PlayState
-
+import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.PlayState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-        private val playerInteractor: PlayerInteractor
+    private val playerInteractor: PlayerInteractor,
+    private val trackFavInteractor: TrackFavInteractor
 ) : ViewModel() {
 
-    private var state : MutableLiveData<PlayState> = MutableLiveData<PlayState>(PlayState.Paused)
-    private var urlTrack : String = ""
+    data class PlayerUiState(
+        val playState: PlayState,
+        val currentPosition: Long,
+        val isFavorite: Boolean = false
+    )
 
+    private val _uiState = MutableLiveData<PlayerUiState>().apply {
+        value = PlayerUiState(PlayState.Prepared, 0L)
+    }
+    val uiState: LiveData<PlayerUiState> = _uiState
 
-    fun getState() : PlayState {
-        return playerInteractor.getStatePlayer()
+    private var urlTrack: String = ""
+    private var updateJob: Job? = null
+    private var currentTrack: Track? = null
+
+    init {
+        playerInteractor.setOnCompletionListener {
+            _uiState.postValue(
+                PlayerUiState(
+                    PlayState.Paused,
+                    playerInteractor.getCurrentPosition(),
+                    _uiState.value?.isFavorite ?: false
+                )
+            )
+        }
+    }
+
+    fun setCurrentTrack(track: Track) {
+        currentTrack = track
+        _uiState.value = _uiState.value?.copy(
+            isFavorite = track.isFavorite
+        )
+    }
+
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+        viewModelScope.launch {
+            val newFavoriteState = !track.isFavorite
+            if (newFavoriteState) {
+                trackFavInteractor.addToFavorite(track)
+            } else {
+                trackFavInteractor.deleteFromFavorites(track)
+            }
+            _uiState.value = _uiState.value?.copy(isFavorite = newFavoriteState)
+            track.isFavorite = newFavoriteState
+        }
+    }
+
+    fun getState(): PlayState {
+        return _uiState.value?.playState ?: PlayState.Prepared
     }
 
     fun exit() {
         playerInteractor.exit()
+        updateJob?.cancel()
     }
 
-    fun changeState(state : PlayState) {
-        when(state) {
-            PlayState.Playing -> { start() }
-            PlayState.Paused -> { pause() }
+    fun changeState(newState: PlayState) {
+        when (newState) {
+            PlayState.Playing -> start()
+            PlayState.Paused -> pause()
+            PlayState.Prepared -> prepare()
         }
+        _uiState.value = _uiState.value?.copy(playState = newState)
     }
 
+    private fun prepare() {
+        playerInteractor.release()
+        playerInteractor.prepare(urlTrack)
+        _uiState.value = _uiState.value?.copy(playState = PlayState.Prepared)
+    }
 
-
-    fun setUrlTrack(url : String?) {
-        if (url != null) {
-            urlTrack = url
+    fun setUrlTrack(url: String?) {
+        url?.let {
+            urlTrack = it
+            playerInteractor.release()
         }
     }
 
     private fun start() {
-        if (playerInteractor.getCurrentPosition() == -1L) {
+        try {
+            when {
+                playerInteractor.getCurrentPosition() == -1L -> {
+                    playerInteractor.prepare(urlTrack)
+                }
+
+                playerInteractor.getStatePlayer() != PlayState.Playing -> {
+                    playerInteractor.start()
+                }
+            }
+
+            _uiState.value = _uiState.value?.copy(
+                playState = PlayState.Playing,
+                currentPosition = playerInteractor.getCurrentPosition().coerceAtLeast(0L)
+            )
+
+            startUpdatingCurrentPosition()
+        } catch (e: IllegalStateException) {
+            _uiState.value = _uiState.value?.copy(
+                playState = PlayState.Paused,
+                currentPosition = 0L
+            )
+
+            playerInteractor.release()
             playerInteractor.prepare(urlTrack)
         }
-        else {
-            playerInteractor.start()
-        }
-
-        state.value = PlayState.Playing
     }
-
 
     private fun pause() {
         playerInteractor.pause()
-        state.value = (PlayState.Paused)
+        _uiState.value = _uiState.value?.copy(playState = PlayState.Paused)
+        stopUpdatingCurrentPosition()
     }
 
+    private fun startUpdatingCurrentPosition() {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
+            while (true) {
+                val currentPosition = playerInteractor.getCurrentPosition()
+                _uiState.value = _uiState.value?.copy(currentPosition = currentPosition)
+                delay(300)
+            }
+        }
+    }
 
-    fun getCurrentPosition(): LiveData<Long> {
-        return MutableLiveData(playerInteractor.getCurrentPosition())
+    private fun stopUpdatingCurrentPosition() {
+        updateJob?.cancel()
     }
 
     override fun onCleared() {
         super.onCleared()
         playerInteractor.release()
+        updateJob?.cancel()
     }
-
 }
-
-
-
-
-

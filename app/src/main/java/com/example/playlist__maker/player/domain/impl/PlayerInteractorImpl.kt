@@ -2,7 +2,7 @@ package com.example.playlist__maker.player.domain.impl
 
 import com.example.playlist__maker.player.data.PlayerNetwork
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 
 class PlayerInteractorImpl(
@@ -25,8 +25,13 @@ class PlayerInteractorImpl(
         context.pause()
     }
 
-    override fun getCurrentPosition(): Long = context.getCurrentPosition()
-
+    override fun getCurrentPosition(): Long {
+        return try {
+            context.getCurrentPosition()
+        } catch (e: IllegalStateException) {
+            -1L
+        }
+    }
 
     override fun release() {
         context.release()
@@ -37,6 +42,14 @@ class PlayerInteractorImpl(
     }
 
     override fun getStatePlayer(): PlayState {
-        return context.getPlayerState()
+        return try {
+            context.getPlayerState()
+        } catch (e: IllegalStateException) {
+            PlayState.Paused
+        }
+    }
+
+    override fun setOnCompletionListener(listener: () -> Unit) {
+        context.setOnCompletionListener(listener)
     }
 }

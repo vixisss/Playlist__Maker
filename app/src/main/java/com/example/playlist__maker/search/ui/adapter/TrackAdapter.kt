@@ -3,6 +3,7 @@ package com.example.playlist__maker.search.ui.adapter
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist__maker.R
 import com.example.playlist__maker.search.domain.models.Track
@@ -21,6 +22,7 @@ class TrackAdapter(
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position], listenerOnClick)
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -31,6 +33,20 @@ class TrackAdapter(
 
     interface OnTrackClickListener {
         fun onClick(track: Track)
+    }
+
+    fun updateList(newList: List<Track>) {
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize() = tracks.size
+            override fun getNewListSize() = newList.size
+            override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+                tracks[oldPos].trackId == newList[newPos].trackId
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+                tracks[oldPos] == newList[newPos]
+        }
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        tracks = newList.toMutableList()
+        diffResult.dispatchUpdatesTo(this)
     }
 
 }

@@ -1,77 +1,83 @@
 package com.example.playlist__maker.player.data
 
 import android.media.MediaPlayer
-import com.example.playlist__maker.player.domain.models.PlayState
+import com.example.playlist__maker.utils.PlayState
 
 
-class PlayerNetwork (
-    private var mediaPlayer: MediaPlayer? = null
-){
+class PlayerNetwork(
+    private var mediaPlayer: MediaPlayer?
+) {
+    private var onCompletionListener: (() -> Unit)? = null
+
+    fun setOnCompletionListener(listener: () -> Unit) {
+        onCompletionListener = listener
+    }
+
     fun stop() {
-        mediaPlayer!!.stop()
+        mediaPlayer?.stop()
     }
 
     fun prepare(url: String) {
         release()
-
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setDataSource(url)
         mediaPlayer?.prepareAsync()
 
-        mediaPlayer!!.setOnPreparedListener {
+        mediaPlayer?.setOnPreparedListener {
             start()
         }
 
-        mediaPlayer!!.setOnCompletionListener {
-            mediaPlayer!!.seekTo(0)
+        mediaPlayer?.setOnCompletionListener {
+            mediaPlayer?.seekTo(0)
+            onCompletionListener?.invoke()
         }
-
     }
 
     fun start() {
-        if (mediaPlayer == null) { return }
+        if (mediaPlayer == null) return
 
-        if (!mediaPlayer!!.isPlaying()) {
+        if (!mediaPlayer!!.isPlaying) {
             mediaPlayer!!.seekTo(mediaPlayer!!.currentPosition)
             mediaPlayer!!.start()
         }
     }
 
-
     fun pause() {
-        if (mediaPlayer == null) { return }
-        if (mediaPlayer!!.isPlaying()) {
+        if (mediaPlayer == null) return
+        if (mediaPlayer!!.isPlaying) {
             mediaPlayer!!.pause()
         }
     }
 
-
     fun release() {
-        if (mediaPlayer == null) {return}
-
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer?.let { player ->
+            try {
+                if (player.isPlaying) {
+                    player.stop()
+                }
+                player.reset()
+                player.release()
+            } catch (e: Exception) {
+            } finally {
+                mediaPlayer = null
+            }
+        }
     }
 
-    fun getCurrentPosition() : Long {
-        if (mediaPlayer == null) { return -1L }
-
-        return mediaPlayer!!.currentPosition.toLong()
+    fun getCurrentPosition(): Long {
+        return mediaPlayer?.currentPosition?.toLong() ?: -1L
     }
 
     fun exit() {
-        if (mediaPlayer == null) { return }
-        mediaPlayer!!.release()
+        release()
     }
 
-    fun getPlayerState() : PlayState {
-        if (mediaPlayer == null) {
-            return PlayState.Paused
-        }
-        if (mediaPlayer!!.isPlaying()) {
-            return PlayState.Playing
-        }
 
-        return PlayState.Paused
+    fun getPlayerState(): PlayState {
+        return when {
+            mediaPlayer == null -> PlayState.Paused
+            mediaPlayer!!.isPlaying -> PlayState.Playing
+            else -> PlayState.Paused
+        }
     }
 }

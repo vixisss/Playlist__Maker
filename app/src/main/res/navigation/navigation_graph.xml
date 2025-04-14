@@ -4,19 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation_graph"
     app:startDestination="@id/mediaFragment">
+
     <fragment
         android:id="@+id/mediaFragment"
         android:name="com.example.playlist__maker.media.fragments.MediaFragment"
-        android:label="fragment_mediateka"
-        tools:layout="@layout/fragment_media" />
+        android:label="fragment_media"
+        tools:layout="@layout/fragment_media" >
+
+        <action
+            android:id="@+id/action_mediaFragment_to_createPlaylistFragment2"
+            app:destination="@id/createPlaylistFragment" />
+        <action
+            android:name="track"
+            android:id="@+id/action_mediaFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.playlist__maker.search.fragment.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_searchFragment_to_playerActivity3"
-            app:destination="@id/playerActivity" />
+            android:name="track"
+            android:id="@+id/action_searchFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
 
     <fragment
@@ -25,16 +37,21 @@
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
 
-    <activity
-        android:id="@+id/playerActivity"
-        android:name="com.example.playlist__maker.player.ui.PlayerActivity"
-        android:label="PlayerActivity"
-        tools:layout="@layout/activity_player">
-    <argument
-        android:name="item"
-        app:argType="com.example.playlist__maker.search.domain.models.Track" />
-</activity>
-    <argument
-        android:name="item"
-        app:argType="com.example.playlist__maker.search.domain.models.Track" />
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        tools:layout="@layout/fragment_create_playlist"
+        android:name="com.example.playlist__maker.media.fragments.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment" />
+
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.example.playlist__maker.player.ui.PlayerFragment"
+        android:label="PlayerFragment"
+        tools:layout="@layout/fragment_player">
+        <action
+            android:id="@+id/action_playerFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+    </fragment>
+
+
 </navigation>

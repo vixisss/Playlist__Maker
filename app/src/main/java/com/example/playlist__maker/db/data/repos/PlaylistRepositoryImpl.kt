@@ -1,0 +1,69 @@
+package com.example.playlist__maker.db.data.repos
+
+import com.example.playlist__maker.db.data.AppDatabase
+import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
+import com.example.playlist__maker.db.data.playlists.PlaylistEntity
+import com.example.playlist__maker.db.data.tracks.MediaFavDbConvertor
+import com.example.playlist__maker.db.domain.models.Playlist
+import com.example.playlist__maker.db.domain.repository.PlaylistRepository
+import com.example.playlist__maker.search.domain.models.Track
+import com.google.gson.Gson
+
+class PlaylistRepositoryImpl(
+    private val appDatabase: AppDatabase,
+    private val dbConvertor: PlaylistDbConvertor
+) : PlaylistRepository {
+
+    override suspend fun insert(playlist: PlaylistEntity): Long {
+        return appDatabase.playlistDao().insert(playlist)
+    }
+
+    override suspend fun update(playlist: PlaylistEntity) {
+        appDatabase.playlistDao().update(playlist)
+    }
+
+    override suspend fun getAllPlaylists(): List<PlaylistEntity> {
+        return appDatabase.playlistDao().getAllPlaylists().sortedByDescending { it.id }
+    }
+
+    override suspend fun getPlaylistById(playlistId: Long): PlaylistEntity? {
+        return appDatabase.playlistDao().getPlaylistById(playlistId)
+    }
+
+    override suspend fun delete(playlist: PlaylistEntity) {
+        appDatabase.playlistDao().delete(playlist)
+    }
+
+    override suspend fun createPlaylist(playlist: Playlist): Long {
+        val entity = dbConvertor.map(playlist)
+        return appDatabase.playlistDao().insert(entity)
+    }
+
+    override suspend fun addTrackToPlaylist(playlistId: Long, track: Track) {
+        val playlistEntity = appDatabase.playlistDao().getPlaylistById(playlistId)
+            ?: throw Exception("Плейлист не найден")
+
+        val currentTracks = if (playlistEntity.tracksJson.isEmpty()) {
+            emptyList()
+        } else {
+            Gson().fromJson(playlistEntity.tracksJson, Array<Track>::class.java).toList()
+        }
+
+        if (currentTracks.any { it.trackId == track.trackId }) {
+            throw Exception("Трек уже есть в плейлисте")
+        }
+
+        val updatedTracks = currentTracks + track
+        val updatedJson = Gson().toJson(updatedTracks)
+
+        appDatabase.playlistDao().updatePlaylistTracks(
+            playlistId,
+            updatedJson,
+            updatedTracks.size
+        )
+
+        try {
+            appDatabase.mediaFavDao().addTrackInFav(MediaFavDbConvertor().map(track))
+        } catch (e: Exception) { }
+    }
+}

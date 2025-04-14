@@ -1,7 +1,14 @@
 package com.example.playlist__maker.di
 
+import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
+import com.example.playlist__maker.db.data.repos.PlaylistRepositoryImpl
+import com.example.playlist__maker.db.data.repos.TrackFavRepositoryImpl
+import com.example.playlist__maker.db.data.tracks.MediaFavDbConvertor
+import com.example.playlist__maker.db.domain.repository.PlaylistRepository
+import com.example.playlist__maker.db.domain.repository.TrackFavRepository
+import com.example.playlist__maker.player.domain.impl.PlayerInteractorImpl
 import com.example.playlist__maker.search.domain.repository.TracksRepository
-import com.example.playlist__maker.search.data.impl.TracksRepositoryImpl
+import com.example.playlist__maker.search.domain.repository.TracksRepositoryImpl
 import com.example.playlist__maker.settings.data.AppSwitcher
 import com.example.playlist__maker.settings.domain.repository.AppSwitcherRepository
 import com.example.playlist__maker.sharing.data.ExternalNavigatorImpl
@@ -12,7 +19,7 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
     single <TracksRepository> {
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     single <AppSwitcherRepository> {
@@ -21,5 +28,16 @@ val repositoryModule = module {
 
     single <ExternalNavigator> {
         ExternalNavigatorImpl(androidContext())
+    }
+
+    factory { MediaFavDbConvertor() }
+    factory { PlaylistDbConvertor() }
+
+    single<TrackFavRepository> {
+        TrackFavRepositoryImpl(get(), get())
+    }
+
+    single <PlaylistRepository>{
+        PlaylistRepositoryImpl(get(), get())
     }
 }
