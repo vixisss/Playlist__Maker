@@ -18,6 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class PlaylistsFragment : Fragment() {
     companion object {
         fun newInstance() = PlaylistsFragment()
+        // testest
     }
 
     private var _binding: FragmentPlaylistsBinding? = null
