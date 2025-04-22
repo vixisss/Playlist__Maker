@@ -228,7 +228,9 @@ class PlayerFragment : Fragment() {
     private fun updateFavoriteButtonState(isFavorite: Boolean) {
         val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
         binding.playerLike.setImageResource(iconRes)
-        track.isFavorite = isFavorite
+        viewModel.uiState.observe(viewLifecycleOwner) {
+            track.isFavorite
+        }
     }
 
 

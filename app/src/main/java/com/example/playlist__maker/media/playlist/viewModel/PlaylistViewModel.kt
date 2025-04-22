@@ -36,12 +36,6 @@ class PlaylistViewModel(
         }
     }
 
-    fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
-        viewModelScope.launch {
-            playlistRepository.removeTrackFromPlaylist(playlistId, trackId)
-            loadPlaylistTracks(playlistId) // Обновляем список после удаления
-        }
-    }
 
     private fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri? {
         return try {
@@ -108,6 +102,14 @@ class PlaylistViewModel(
                 playlistRepository.addTrackToPlaylist(playlistId, track)
             } catch (e: Exception) {
             }
+        }
+    }
+
+
+    fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
+        viewModelScope.launch {
+            playlistRepository.removeTrackFromPlaylist(playlistId, trackId)
+            loadPlaylistTracks(playlistId) // Обновляем список после удаления
         }
     }
 }

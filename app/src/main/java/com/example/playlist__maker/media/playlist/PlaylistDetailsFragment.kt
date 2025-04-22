@@ -18,6 +18,7 @@ import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -98,7 +99,15 @@ class PlaylistDetailsFragment : Fragment() {
             }
 
             override fun onLongClick(track: Track) {
-                //showDeleteTrackDialog(track)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Удалить трек")
+                    .setMessage("Хотите удалить трек?")
+                    .setNegativeButton("нет") { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton("да") { dialog, _ ->
+                        viewModel.removeTrackFromPlaylist(currentPlaylist.id, track.trackId)
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         })
 

@@ -94,19 +94,5 @@ class PlaylistRepositoryImpl(
             updatedJson,
             updatedTracks.size
         )
-
-        // Удаляем трек из таблицы треков, если он больше нигде не используется
-        checkAndRemoveOrphanedTrack(trackId)
-    }
-
-    private suspend fun checkAndRemoveOrphanedTrack(trackId: String) {
-        val allPlaylists = appDatabase.playlistDao().getAllPlaylists()
-        val isTrackUsed = allPlaylists.any { playlist ->
-            playlist.tracksJson.contains(trackId)
-        }
-
-//        if (!isTrackUsed) {
-//            appDatabase.mediaFavDao().removeTrackFromPlaylist(trackId)
-//        }
     }
 }
