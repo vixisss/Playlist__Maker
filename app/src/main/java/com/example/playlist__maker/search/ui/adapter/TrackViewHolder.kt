@@ -39,6 +39,11 @@ class TrackViewHolder (view: View) : RecyclerView.ViewHolder(view) {
             listenerOnClick.onClick(model)
         }
 
+        itemView.setOnLongClickListener {
+            listenerOnClick.onLongClick(model)
+            true
+        }
+
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName
         trackTimeView.text =

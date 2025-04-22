@@ -116,6 +116,10 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         }
     }
 
+    override fun onLongClick(track: Track) {
+        TODO("Not yet implemented")
+    }
+
 
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed

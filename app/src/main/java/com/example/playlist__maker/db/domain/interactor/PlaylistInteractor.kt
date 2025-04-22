@@ -13,4 +13,7 @@ interface PlaylistInteractor {
     suspend fun createPlaylist(playlist: Playlist): Long
 
     suspend fun addTrackToPlaylist(playlistId: Long, track: Track)
+
+    suspend fun getPlaylistTracks(playlistId: Long): List<Track>
+    suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String)
 }

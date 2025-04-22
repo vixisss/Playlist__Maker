@@ -11,7 +11,8 @@ import com.google.gson.Gson
 
 class PlaylistRepositoryImpl(
     private val appDatabase: AppDatabase,
-    private val dbConvertor: PlaylistDbConvertor
+    private val dbConvertor: PlaylistDbConvertor,
+    private val gson: Gson
 ) : PlaylistRepository {
 
     override suspend fun insert(playlist: PlaylistEntity): Long {
@@ -65,5 +66,47 @@ class PlaylistRepositoryImpl(
         try {
             appDatabase.mediaFavDao().addTrackInFav(MediaFavDbConvertor().map(track))
         } catch (e: Exception) { }
+    }
+
+    override suspend fun getPlaylistTracks(playlistId: Long): List<Track> {
+        val playlist = appDatabase.playlistDao().getPlaylistById(playlistId)
+        return if (playlist?.tracksJson?.isNotEmpty() == true) {
+            gson.fromJson(playlist.tracksJson, Array<Track>::class.java).toList()
+        } else {
+            emptyList()
+        }
+    }
+
+    override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
+        val playlist = appDatabase.playlistDao().getPlaylistById(playlistId) ?: return
+
+        val currentTracks = if (playlist.tracksJson.isNotEmpty()) {
+            gson.fromJson(playlist.tracksJson, Array<Track>::class.java).toList()
+        } else {
+            emptyList()
+        }
+
+        val updatedTracks = currentTracks.filter { it.trackId != trackId }
+        val updatedJson = gson.toJson(updatedTracks)
+
+        appDatabase.playlistDao().updatePlaylistTracks(
+            playlistId,
+            updatedJson,
+            updatedTracks.size
+        )
+
+        // Удаляем трек из таблицы треков, если он больше нигде не используется
+        checkAndRemoveOrphanedTrack(trackId)
+    }
+
+    private suspend fun checkAndRemoveOrphanedTrack(trackId: String) {
+        val allPlaylists = appDatabase.playlistDao().getAllPlaylists()
+        val isTrackUsed = allPlaylists.any { playlist ->
+            playlist.tracksJson.contains(trackId)
+        }
+
+//        if (!isTrackUsed) {
+//            appDatabase.mediaFavDao().removeTrackFromPlaylist(trackId)
+//        }
     }
 }

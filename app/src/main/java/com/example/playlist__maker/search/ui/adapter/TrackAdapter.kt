@@ -33,7 +33,9 @@ class TrackAdapter(
 
     interface OnTrackClickListener {
         fun onClick(track: Track)
+        fun onLongClick(track: Track)
     }
+
 
     fun updateList(newList: List<Track>) {
         val diffCallback = object : DiffUtil.Callback() {

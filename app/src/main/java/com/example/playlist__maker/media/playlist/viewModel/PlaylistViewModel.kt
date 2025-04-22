@@ -27,6 +27,22 @@ class PlaylistViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
 
+    private val _playlistTracks = MutableLiveData<List<Track>>()
+    val playlistTracks: LiveData<List<Track>> = _playlistTracks
+
+    fun loadPlaylistTracks(playlistId: Long) {
+        viewModelScope.launch {
+            _playlistTracks.value = playlistRepository.getPlaylistTracks(playlistId)
+        }
+    }
+
+    fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
+        viewModelScope.launch {
+            playlistRepository.removeTrackFromPlaylist(playlistId, trackId)
+            loadPlaylistTracks(playlistId) // Обновляем список после удаления
+        }
+    }
+
     private fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri? {
         return try {
             val storageDir = File(
