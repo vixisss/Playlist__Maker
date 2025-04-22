@@ -1,4 +1,4 @@
-package com.example.playlist__maker.media.state
+package com.example.playlist__maker.media.favorite.state
 
 import com.example.playlist__maker.search.domain.models.Track
 

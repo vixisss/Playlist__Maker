@@ -1,7 +1,7 @@
 package com.example.playlist__maker.di
 
-import com.example.playlist__maker.media.viewModel.FavTracksViewModel
-import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.example.playlist__maker.media.favorite.viewModel.FavTracksViewModel
+import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.ui.viewModel.SearchViewModel
 import com.example.playlist__maker.settings.ui.viewModel.SettingsViewModel

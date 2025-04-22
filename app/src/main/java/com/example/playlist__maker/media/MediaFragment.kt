@@ -1,4 +1,4 @@
-package com.example.playlist__maker.media.fragments
+package com.example.playlist__maker.media
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentMediaBinding
-import com.example.playlist__maker.media.ui.MediaViewPagerAdapter
+import com.example.playlist__maker.media.favorite.FavTracksFragment
+import com.example.playlist__maker.media.playlist.PlaylistsFragment
+import com.example.playlist__maker.media.MediaViewPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MediaFragment : Fragment() {
@@ -31,7 +33,6 @@ class MediaFragment : Fragment() {
     }
 
     private fun setupViewPager() {
-        // Создаем адаптер для ViewPager
         val adapter = MediaViewPagerAdapter(
             fragmentManager = childFragmentManager,
             lifecycle = lifecycle,
@@ -40,9 +41,8 @@ class MediaFragment : Fragment() {
 
         binding.viewPager.adapter = adapter
 
-        // Настраиваем TabLayout
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when(position) {
+            when (position) {
                 0 -> tab.text = getString(R.string.favTracks)
                 1 -> tab.text = getString(R.string.playlists)
             }
@@ -53,8 +53,8 @@ class MediaFragment : Fragment() {
 
     private fun createFragments(): List<Fragment> {
         return listOf(
-            FavTracksFragment.newInstance(),
-            PlaylistsFragment.newInstance()
+            FavTracksFragment.Companion.newInstance(),
+            PlaylistsFragment.Companion.newInstance()
         )
     }
 

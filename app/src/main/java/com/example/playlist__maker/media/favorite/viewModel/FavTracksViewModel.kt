@@ -1,5 +1,4 @@
-package com.example.playlist__maker.media.viewModel
-
+package com.example.playlist__maker.media.favorite.viewModel
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -8,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlist__maker.R
 import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
-import com.example.playlist__maker.media.state.FavState
+import com.example.playlist__maker.media.favorite.state.FavState
 import com.example.playlist__maker.search.domain.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

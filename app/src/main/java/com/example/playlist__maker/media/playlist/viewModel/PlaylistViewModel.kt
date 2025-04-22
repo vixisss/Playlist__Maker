@@ -1,10 +1,11 @@
-package com.example.playlist__maker.media.viewModel
+package com.example.playlist__maker.media.playlist.viewModel
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,12 +14,9 @@ import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
 import com.example.playlist__maker.db.domain.interactor.PlaylistInteractor
 import com.example.playlist__maker.db.domain.models.Playlist
 import com.example.playlist__maker.search.domain.models.Track
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import androidx.core.net.toUri
-import kotlinx.coroutines.withContext
 
 class PlaylistViewModel(
     private val playlistRepository: PlaylistInteractor

@@ -1,4 +1,4 @@
-package com.example.playlist__maker.media.fragments
+package com.example.playlist__maker.media.playlist
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,24 +7,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentPlaylistsBinding
-import com.example.playlist__maker.media.ui.PlaylistAdapter
-import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.example.playlist__maker.db.domain.models.Playlist
+import com.example.playlist__maker.media.playlist.ui.adapter.PlaylistAdapter
+import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistsFragment : Fragment() {
+class PlaylistsFragment : Fragment(){
     companion object {
         fun newInstance() = PlaylistsFragment()
-        // testest
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var adapter: PlaylistAdapter
+    private var isClickAllowed = true
+    private var clickDebounceJob: Job? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,11 +54,14 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = PlaylistAdapter(emptyList())
+        adapter = PlaylistAdapter(emptyList()) { playlist ->
+            onPlaylistClick(playlist)
+        }
 
         binding.recyclerViewPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerViewPlaylists.adapter = adapter
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupObservers() {
@@ -76,5 +87,30 @@ class PlaylistsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    private fun onPlaylistClick(playlist: Playlist) {
+        if (clickDebounce()) {
+            val bundle = Bundle().apply {
+                putSerializable("playlist", playlist)
+            }
+            findNavController().navigate(
+                R.id.action_mediaFragment_to_playlistDetailsFragment,
+                bundle
+            )
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        if (!isClickAllowed) return false
+
+        isClickAllowed = false
+        clickDebounceJob?.cancel()
+        clickDebounceJob = lifecycleScope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
+            isClickAllowed = true
+        }
+        return true
     }
 }

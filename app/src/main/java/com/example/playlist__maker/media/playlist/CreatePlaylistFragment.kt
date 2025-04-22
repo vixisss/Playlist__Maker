@@ -1,6 +1,7 @@
-package com.example.playlist__maker.media.fragments
+package com.example.playlist__maker.media.playlist
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -22,10 +23,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentCreatePlaylistBinding
 import com.example.playlist__maker.db.domain.models.Playlist
-import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class CreatePlaylistFragment : Fragment() {
     private var _binding: FragmentCreatePlaylistBinding? = null
@@ -178,7 +178,7 @@ class CreatePlaylistFragment : Fragment() {
     }
 
 
-    private fun chooseBorderColor(isEmpty: Boolean): android.graphics.drawable.Drawable? {
+    private fun chooseBorderColor(isEmpty: Boolean): Drawable? {
         return ContextCompat.getDrawable(
             requireContext(),
             if (isEmpty) R.drawable.border_edittext_playlist

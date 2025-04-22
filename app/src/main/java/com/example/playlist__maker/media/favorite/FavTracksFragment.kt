@@ -1,4 +1,4 @@
-package com.example.playlist__maker.media.fragments
+package com.example.playlist__maker.media.favorite
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,8 +12,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentFavTracksBinding
-import com.example.playlist__maker.media.viewModel.FavTracksViewModel
-import com.example.playlist__maker.media.state.FavState
+import com.example.playlist__maker.media.favorite.state.FavState
+import com.example.playlist__maker.media.favorite.viewModel.FavTracksViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
 import com.google.gson.Gson
