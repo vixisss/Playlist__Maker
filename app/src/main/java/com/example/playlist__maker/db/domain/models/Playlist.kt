@@ -8,6 +8,7 @@ data class Playlist(
     val description: String,
     val coverPath: String?,
     val tracksIdJson: String,
-    val tracksCount: Int
+    val tracksCount: Int,
+    val creationDate: Long = System.currentTimeMillis()
 
 ) : Serializable

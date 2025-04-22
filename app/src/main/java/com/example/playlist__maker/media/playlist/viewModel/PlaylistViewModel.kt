@@ -14,12 +14,16 @@ import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
 import com.example.playlist__maker.db.domain.interactor.PlaylistInteractor
 import com.example.playlist__maker.db.domain.models.Playlist
 import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.PlaylistDateManager
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 class PlaylistViewModel(
-    private val playlistRepository: PlaylistInteractor
+    private val playlistRepository: PlaylistInteractor,
+    private val context: Context
+
 ) : ViewModel() {
 
     private val _playlistCreated = MutableLiveData<Boolean>()
@@ -37,49 +41,57 @@ class PlaylistViewModel(
     }
 
 
-    private fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri? {
-        return try {
-            val storageDir = File(
-                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                "playlist_covers"
-            )
-            if (!storageDir.exists()) storageDir.mkdirs()
-
-            val fileName = "cover_${playlistId}_${System.currentTimeMillis()}.jpg"
-            val file = File(storageDir, fileName)
-
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                FileOutputStream(file).use { outputStream ->
-                    BitmapFactory.decodeStream(inputStream)?.compress(
-                        Bitmap.CompressFormat.JPEG,
-                        85,
-                        outputStream
-                    )
-                }
-            }
-            Uri.fromFile(file)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-
-    fun createPlaylist(context: Context, playlist: Playlist) {
+    fun createPlaylist(playlist: Playlist) {
         viewModelScope.launch {
             try {
+                // Всегда сохраняем текущую дату создания
+                val creationDate = System.currentTimeMillis()
+
+                // Сохраняем обложку если есть
                 val newCoverUri = playlist.coverPath?.let { uriString ->
                     savePlaylistCover(context, uriString.toUri(), playlist.id.toString())
                 }
 
+                // Создаем плейлист с датой создания
                 val updatedPlaylist = playlist.copy(
-                    coverPath = newCoverUri?.toString()
+                    coverPath = newCoverUri?.toString(),
+                    creationDate = creationDate // Добавляем дату в модель
                 )
+
                 playlistRepository.createPlaylist(updatedPlaylist)
                 _playlistCreated.value = true
                 loadPlaylists()
             } catch (e: Exception) {
                 _playlistCreated.value = false
             }
+        }
+    }
+
+    private fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri {
+        val storageDir = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "playlist_covers"
+        ).apply { if (!exists()) mkdirs() }
+
+        val fileName = "cover_${playlistId}.jpg"
+        val file = File(storageDir, fileName)
+
+        return try {
+            if (uri != Uri.EMPTY) {
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    BitmapFactory.decodeStream(inputStream)?.let { bitmap ->
+                        FileOutputStream(file).use { outputStream ->
+                            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream)) {
+                                throw IOException("Compression failed")
+                            }
+                        }
+                        return Uri.fromFile(file)
+                    } ?: throw NullPointerException("Failed to decode bitmap")
+                } ?: throw IllegalStateException("Cannot open input stream")
+            }
+            Uri.fromFile(file)
+        } catch (e: Exception) {
+            Uri.fromFile(file)
         }
     }
 

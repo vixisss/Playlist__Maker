@@ -20,4 +20,7 @@ data class Track (
 
 ): Serializable {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
+    fun updateFavoriteState(isFavorite: Boolean): Track {
+        return this.copy(isFavorite = isFavorite)
+    }
 }

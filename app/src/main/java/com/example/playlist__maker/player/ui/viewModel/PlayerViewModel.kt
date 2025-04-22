@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlist__maker.db.data.tracks.FavoriteManager
 import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.search.domain.models.Track
@@ -45,10 +46,11 @@ class PlayerViewModel(
     }
 
     fun setCurrentTrack(track: Track) {
-        currentTrack = track
-        _uiState.value = _uiState.value?.copy(
-            isFavorite = track.isFavorite
-        )
+        viewModelScope.launch {
+            val isFavorite = trackFavInteractor.isTrackFavorite(track.trackId)
+            currentTrack = track.updateFavoriteState(isFavorite)
+            _uiState.value = _uiState.value?.copy(isFavorite = isFavorite)
+        }
     }
 
     fun onFavoriteClicked() {
@@ -60,8 +62,10 @@ class PlayerViewModel(
             } else {
                 trackFavInteractor.deleteFromFavorites(track)
             }
+            currentTrack = track.updateFavoriteState(newFavoriteState)
             _uiState.value = _uiState.value?.copy(isFavorite = newFavoriteState)
-            track.isFavorite = newFavoriteState
+
+            FavoriteManager.notifyFavoriteChanged(track.trackId, newFavoriteState)
         }
     }
 

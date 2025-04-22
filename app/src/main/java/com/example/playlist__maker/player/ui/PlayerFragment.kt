@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentPlayerBinding
+import com.example.playlist__maker.db.data.tracks.FavoriteManager
 import com.example.playlist__maker.db.domain.models.Playlist
 import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
 import com.example.playlist__maker.player.ui.adapters.TrackInPlaylistAdapter
@@ -44,6 +45,13 @@ class PlayerFragment : Fragment() {
         updateFavoriteButtonState(uiState.isFavorite)
     }
 
+    private val favoriteObserver = Observer<Pair<String, Boolean>> { (trackId, isFavorite) ->
+        if (track.trackId == trackId) {
+            track.isFavorite = isFavorite
+            updateFavoriteButtonState(isFavorite)
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private val playlistsObserver = Observer<List<Playlist>> { playlists ->
         playlistsAdapter.playlists = playlists
@@ -67,6 +75,7 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FavoriteManager.favoriteUpdates.observe(viewLifecycleOwner, favoriteObserver)
 
         arguments?.getString("track")?.let { trackString ->
 

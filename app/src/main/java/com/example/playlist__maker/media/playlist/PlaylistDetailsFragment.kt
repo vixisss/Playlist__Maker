@@ -17,6 +17,7 @@ import com.example.playlist__maker.db.domain.models.Playlist
 import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.search.ui.adapter.TrackAdapter
+import com.example.playlist__maker.utils.PlaylistDateManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -24,6 +25,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
@@ -147,8 +153,44 @@ class PlaylistDetailsFragment : Fragment() {
             } ?: run {
                 coverDetails.setImageResource(R.drawable.big_placeholder)
             }
+
+            yearDetails.text = SimpleDateFormat("yyyy", Locale.getDefault())
+                .format(Date(currentPlaylist.creationDate))
+
         }
     }
+
+
+
+    private fun extractYearFromCoverPath(coverPath: String?): String {
+        if (coverPath.isNullOrEmpty()) return "—"
+
+        return try {
+            // Пытаемся извлечь из имени файла
+            val fileName = coverPath.substringAfterLast('/')
+            when {
+                fileName.contains("_") -> {
+                    val timestampPart = fileName.substringAfterLast('_').substringBefore('.')
+                    val timestamp = timestampPart.toLongOrNull() ?: return "—"
+                    Calendar.getInstance().apply { timeInMillis = timestamp }.get(Calendar.YEAR).toString()
+                }
+                // Для старых файлов без timestamp - пробуем дату модификации файла
+                else -> {
+                    val file = File(coverPath)
+                    if (file.exists()) {
+                        Calendar.getInstance().apply { timeInMillis = file.lastModified() }.get(Calendar.YEAR).toString()
+                    } else {
+                        "—"
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            "—"
+        }
+    }
+
+
+
 
     private fun setupClickListeners() {
         binding.backToolbar.setOnClickListener {
