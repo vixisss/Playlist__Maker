@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentMediaBinding
-import com.example.playlist__maker.media.favorite.FavTracksFragment
-import com.example.playlist__maker.media.playlist.PlaylistsFragment
+import com.example.playlist__maker.media.favorite.ui.FavTracksFragment
+import com.example.playlist__maker.media.playlist.ui.fragments.PlaylistsFragment
 import com.example.playlist__maker.media.MediaViewPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 

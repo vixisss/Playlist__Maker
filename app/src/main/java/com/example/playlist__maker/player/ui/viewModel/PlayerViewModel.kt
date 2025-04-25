@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlist__maker.db.data.tracks.FavoriteManager
-import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
+import com.example.playlist__maker.db.tracks.FavoriteManager
+import com.example.playlist__maker.media.favorite.domain.TrackFavInteractor
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.search.domain.models.Track
 import com.example.playlist__maker.utils.PlayState

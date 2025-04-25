@@ -1,6 +1,6 @@
 package com.example.playlist__maker.search.domain.repository
 
-import com.example.playlist__maker.db.data.AppDatabase
+import com.example.playlist__maker.db.AppDatabase
 import com.example.playlist__maker.search.data.NetworkClient
 import com.example.playlist__maker.search.data.TrackSearchRequest
 import com.example.playlist__maker.search.data.TrackSearchResponse

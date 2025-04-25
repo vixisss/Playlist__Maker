@@ -1,9 +1,9 @@
 package com.example.playlist__maker.di
 
-import com.example.playlist__maker.db.domain.interactor.PlaylistInteractor
-import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
-import com.example.playlist__maker.db.domain.interactorImpl.PlaylistInteractorImpl
-import com.example.playlist__maker.db.domain.interactorImpl.TrackFavInteractorImpl
+import com.example.playlist__maker.media.playlist.domain.interactor.PlaylistInteractor
+import com.example.playlist__maker.media.favorite.domain.TrackFavInteractor
+import com.example.playlist__maker.media.playlist.domain.interactorImpl.PlaylistInteractorImpl
+import com.example.playlist__maker.media.favorite.domain.impl.TrackFavInteractorImpl
 import com.example.playlist__maker.player.domain.impl.PlayerInteractorImpl
 import com.example.playlist__maker.player.domain.interactors.PlayerInteractor
 import com.example.playlist__maker.search.domain.interactors.HistoryInteractor

@@ -51,4 +51,7 @@
         <item quantity="many">%d минут</item>
         <item quantity="other">%d минут</item>
     </plurals>
+
+    <string name="share_playlist_title">Поделиться плейлистом</string>
+    <string name="empty_playlist_message">Нельзя поделиться пустым плейлистом</string>
 </resources>

@@ -17,12 +17,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentPlayerBinding
-import com.example.playlist__maker.db.data.tracks.FavoriteManager
-import com.example.playlist__maker.db.domain.models.Playlist
-import com.example.playlist__maker.media.playlist.viewModel.PlaylistViewModel
+import com.example.playlist__maker.db.tracks.FavoriteManager
+import com.example.playlist__maker.media.playlist.domain.models.Playlist
+import com.example.playlist__maker.media.playlist.ui.viewModel.PlaylistViewModel
 import com.example.playlist__maker.player.ui.adapters.TrackInPlaylistAdapter
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.DpToPx
 import com.example.playlist__maker.utils.PlayState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
@@ -202,7 +203,7 @@ class PlayerFragment : Fragment() {
             .load(artworkUrl)
             .placeholder(R.drawable.big_placeholder)
             .error(R.drawable.big_placeholder)
-            .transform(RoundedCorners(dpToPx(8F, requireContext())))
+            .transform(RoundedCorners(DpToPx.dpToPx(8F, requireContext())))
             .into(binding.artworkUrl100)
     }
 
@@ -240,16 +241,6 @@ class PlayerFragment : Fragment() {
         viewModel.uiState.observe(viewLifecycleOwner) {
             track.isFavorite
         }
-    }
-
-
-
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics
-        ).toInt()
     }
 
     override fun onDestroyView() {

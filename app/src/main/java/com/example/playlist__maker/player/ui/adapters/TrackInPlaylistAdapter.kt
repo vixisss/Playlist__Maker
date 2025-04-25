@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist__maker.R
-import com.example.playlist__maker.db.domain.models.Playlist
+import com.example.playlist__maker.media.playlist.domain.models.Playlist
 
 class TrackInPlaylistAdapter (
     var playlists: List<Playlist>,

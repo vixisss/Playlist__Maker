@@ -43,7 +43,7 @@
     <fragment
         android:id="@+id/createPlaylistFragment"
         tools:layout="@layout/fragment_create_playlist"
-        android:name="com.example.playlist__maker.media.playlist.CreatePlaylistFragment"
+        android:name="com.example.playlist__maker.media.playlist.ui.fragments.CreatePlaylistFragment"
         android:label="CreatePlaylistFragment" />
 
     <fragment
@@ -57,12 +57,15 @@
     </fragment>
     <fragment
         android:id="@+id/playlistDetailsFragment"
-        android:name="com.example.playlist__maker.media.playlist.PlaylistDetailsFragment"
+        android:name="com.example.playlist__maker.media.playlist.ui.fragments.PlaylistDetailsFragment"
         android:label="PlaylistDetailsFragment"
-        tools:layout="@layout/playlist_details_fragment">
+        tools:layout="@layout/fragment_playlist_details">
         <action
             android:id="@+id/action_playlistDetailsFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_playlistDetailsFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
 
 

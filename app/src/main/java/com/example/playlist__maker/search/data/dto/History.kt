@@ -3,7 +3,7 @@ package com.example.playlist__maker.search.data.dto
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.playlist__maker.db.domain.interactor.TrackFavInteractor
+import com.example.playlist__maker.media.favorite.domain.TrackFavInteractor
 import com.example.playlist__maker.search.domain.models.Track
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
