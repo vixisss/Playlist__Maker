@@ -6,12 +6,13 @@ class PlaylistDbConvertor {
 
     fun map(playlist: Playlist) : PlaylistEntity {
         return PlaylistEntity(
-            playlist.id,
-            playlist.name,
-            playlist.description,
-            playlist.coverPath,
-            playlist.tracksIdJson,
-            playlist.tracksCount
+            id = playlist.id,
+            name = playlist.name,
+            description = playlist.description,
+            coverPath = playlist.coverPath,
+            // Не перезаписываем tracksJson, чтобы сохранить актуальные треки
+            tracksJson = "[]", // Будет заменено в repository
+            tracksCount = playlist.tracksCount
         )
     }
 

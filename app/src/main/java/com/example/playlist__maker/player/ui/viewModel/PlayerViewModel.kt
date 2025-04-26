@@ -64,7 +64,6 @@ class PlayerViewModel(
             }
             currentTrack = track.updateFavoriteState(newFavoriteState)
             _uiState.value = _uiState.value?.copy(isFavorite = newFavoriteState)
-
             FavoriteManager.notifyFavoriteChanged(track.trackId, newFavoriteState)
         }
     }

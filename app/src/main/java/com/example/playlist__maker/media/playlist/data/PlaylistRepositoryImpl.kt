@@ -14,13 +14,14 @@ class PlaylistRepositoryImpl(
     private val dbConvertor: PlaylistDbConvertor,
     private val gson: Gson
 ) : PlaylistRepository {
-
-    override suspend fun insert(playlist: PlaylistEntity): Long {
-        return appDatabase.playlistDao().insert(playlist)
-    }
-
     override suspend fun update(playlist: PlaylistEntity) {
-        appDatabase.playlistDao().update(playlist)
+        val currentTracks = getPlaylistTracks(playlist.id)
+        appDatabase.playlistDao().update(
+            playlist.copy(
+                tracksJson = gson.toJson(currentTracks),
+                tracksCount = currentTracks.size
+            )
+        )
     }
 
     override suspend fun getAllPlaylists(): List<PlaylistEntity> {
@@ -62,10 +63,6 @@ class PlaylistRepositoryImpl(
             updatedJson,
             updatedTracks.size
         )
-
-        try {
-            appDatabase.mediaFavDao().addTrackInFav(MediaFavDbConvertor().map(track))
-        } catch (e: Exception) { }
     }
 
     override suspend fun getPlaylistTracks(playlistId: Long): List<Track> {
@@ -93,6 +90,13 @@ class PlaylistRepositoryImpl(
             playlistId,
             updatedJson,
             updatedTracks.size
+        )
+
+        appDatabase.playlistDao().update(
+            playlist.copy(
+                tracksJson = updatedJson,
+                tracksCount = updatedTracks.size
+            )
         )
     }
 }

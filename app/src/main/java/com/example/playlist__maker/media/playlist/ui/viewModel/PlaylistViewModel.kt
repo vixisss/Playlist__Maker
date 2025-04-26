@@ -19,7 +19,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class PlaylistViewModel(
+open class PlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor,
     private val context: Context
 
@@ -71,7 +71,7 @@ class PlaylistViewModel(
         }
     }
 
-    private fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri {
+    protected fun savePlaylistCover(context: Context, uri: Uri, playlistId: String): Uri {
         val storageDir = File(
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             "playlist_covers"
@@ -116,16 +116,19 @@ class PlaylistViewModel(
         viewModelScope.launch {
             try {
                 playlistInteractor.addTrackToPlaylist(playlistId, track)
+                loadPlaylists()
             } catch (e: Exception) {
             }
         }
     }
 
 
+
     fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
         viewModelScope.launch {
             playlistInteractor.removeTrackFromPlaylist(playlistId, trackId)
             loadPlaylistTracks(playlistId)
+            loadPlaylists()
         }
     }
 }

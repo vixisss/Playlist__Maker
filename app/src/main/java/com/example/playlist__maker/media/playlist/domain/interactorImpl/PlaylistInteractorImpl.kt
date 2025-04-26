@@ -1,5 +1,6 @@
 package com.example.playlist__maker.media.playlist.domain.interactorImpl
 
+import com.example.playlist__maker.db.playlists.PlaylistDbConvertor
 import com.example.playlist__maker.db.playlists.PlaylistEntity
 import com.example.playlist__maker.media.playlist.domain.interactor.PlaylistInteractor
 import com.example.playlist__maker.media.playlist.domain.models.Playlist
@@ -9,14 +10,6 @@ import com.example.playlist__maker.search.domain.models.Track
 class PlaylistInteractorImpl(
     private val playlistRepository: PlaylistRepository
 ) : PlaylistInteractor {
-
-    override suspend fun insert(playlist: PlaylistEntity): Long {
-       return playlistRepository.insert(playlist)
-    }
-
-    override suspend fun update(playlist: PlaylistEntity) {
-        playlistRepository.update(playlist)
-    }
 
     override suspend fun getAllPlaylists(): List<PlaylistEntity> {
         return playlistRepository.getAllPlaylists()
@@ -34,11 +27,11 @@ class PlaylistInteractorImpl(
         return playlistRepository.createPlaylist(playlist)
     }
 
-    override suspend fun addTrackToPlaylist(
-        playlistId: Long,
-        track: Track
-    ) {
+    override suspend fun addTrackToPlaylist(playlistId: Long, track: Track) {
         playlistRepository.addTrackToPlaylist(playlistId, track)
+        val updatedTracks = playlistRepository.getPlaylistTracks(playlistId)
+        val playlist = playlistRepository.getPlaylistById(playlistId) ?: return
+        playlistRepository.update(playlist.copy(tracksCount = updatedTracks.size))
     }
 
     override suspend fun getPlaylistTracks(playlistId: Long): List<Track> {
@@ -47,5 +40,15 @@ class PlaylistInteractorImpl(
 
     override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
         playlistRepository.removeTrackFromPlaylist(playlistId, trackId)
+    }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        val currentTracks = playlistRepository.getPlaylistTracks(playlist.id)
+        val updatedPlaylist = playlist.copy(
+            tracksCount = currentTracks.size
+        )
+
+        val entity = PlaylistDbConvertor().map(updatedPlaylist)
+        playlistRepository.update(entity)
     }
 }

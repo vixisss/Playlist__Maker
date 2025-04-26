@@ -54,4 +54,6 @@
 
     <string name="share_playlist_title">Поделиться плейлистом</string>
     <string name="empty_playlist_message">Нельзя поделиться пустым плейлистом</string>
+
+    <string name="refactor">Редактировать</string>
 </resources>

@@ -5,7 +5,6 @@ import com.example.playlist__maker.media.playlist.domain.models.Playlist
 import com.example.playlist__maker.search.domain.models.Track
 
 interface PlaylistRepository {
-    suspend fun insert(playlist: PlaylistEntity): Long
     suspend fun update(playlist: PlaylistEntity)
     suspend fun getAllPlaylists(): List<PlaylistEntity>
     suspend fun getPlaylistById(playlistId: Long): PlaylistEntity?

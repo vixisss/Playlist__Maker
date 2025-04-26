@@ -5,8 +5,6 @@ import com.example.playlist__maker.media.playlist.domain.models.Playlist
 import com.example.playlist__maker.search.domain.models.Track
 
 interface PlaylistInteractor {
-    suspend fun insert(playlist: PlaylistEntity): Long
-    suspend fun update(playlist: PlaylistEntity)
     suspend fun getAllPlaylists(): List<PlaylistEntity>
     suspend fun getPlaylistById(playlistId: Long): PlaylistEntity?
     suspend fun delete(playlistId: Long)
@@ -16,4 +14,7 @@ interface PlaylistInteractor {
 
     suspend fun getPlaylistTracks(playlistId: Long): List<Track>
     suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String)
+
+    suspend fun updatePlaylist(playlist: Playlist)
+
 }

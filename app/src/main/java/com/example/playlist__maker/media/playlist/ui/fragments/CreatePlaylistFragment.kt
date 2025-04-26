@@ -1,5 +1,6 @@
 package com.example.playlist__maker.media.playlist.ui.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
@@ -28,10 +30,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 open class CreatePlaylistFragment : Fragment() {
-    private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
-    private var imageUri: Uri? = null
-    private val viewModel by viewModel<PlaylistViewModel>()
+    protected var _binding: FragmentCreatePlaylistBinding? = null
+    protected val binding get() = _binding!!
+    protected var imageUri: Uri? = null
+    open val viewModel by viewModel<PlaylistViewModel>()
 
     private val pickAlbumImage =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -79,7 +81,7 @@ open class CreatePlaylistFragment : Fragment() {
     }
 
 
-    private fun setupListeners(){
+    protected fun setupListeners(){
         binding.toolbarCreatePlayList.setOnClickListener {
             exit()
         }
@@ -95,7 +97,7 @@ open class CreatePlaylistFragment : Fragment() {
     }
 
 
-    private fun createPlaylist() {
+    protected open fun createPlaylist() {
         val name = binding.editTextTitle.text.toString()
         if (name.isBlank()) return
 
@@ -116,7 +118,7 @@ open class CreatePlaylistFragment : Fragment() {
     }
 
 
-    private fun exit(){
+    protected open fun exit(){
         if(binding.editTextTitle.text.isNotEmpty() || binding.editTextMessage.text.isNotEmpty() || imageUri != null) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Завершить создание плейлиста?")
@@ -195,5 +197,17 @@ open class CreatePlaylistFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.editTextTitle.clearFocus()
+        binding.editTextMessage.clearFocus()
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }

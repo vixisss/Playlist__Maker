@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,8 +43,6 @@ class PlaylistDetailsFragment : Fragment() {
     private lateinit var trackAdapter: TrackAdapter
     private val viewModel: PlaylistViewModel by viewModel()
 
-
-
     companion object {
         private const val PLAYLIST_ARG_KEY = "playlist"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -73,7 +73,24 @@ class PlaylistDetailsFragment : Fragment() {
         bottomSheetBehavior.isHideable = false
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Playlist>(
+            "updated_playlist"
+        )?.observe(viewLifecycleOwner) { updatedPlaylist ->
+            currentPlaylist = updatedPlaylist
+            bindPlaylistData()
+        }
 
+        arguments?.getSerializable("playlist")?.let {
+            currentPlaylist = it as Playlist
+            bindPlaylistData()
+        }
+
+        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            playlists.find { it.id == currentPlaylist.id }?.let { updatedPlaylist ->
+                currentPlaylist = updatedPlaylist
+                bindPlaylistData()
+            }
+        }
 
         setupClickListeners()
         loadPlaylist()
@@ -148,6 +165,7 @@ class PlaylistDetailsFragment : Fragment() {
                     .setNegativeButton("нет") { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton("да") { dialog, _ ->
                         viewModel.removeTrackFromPlaylist(currentPlaylist.id, track.trackId)
+                        bindPlaylistData()
                         dialog.dismiss()
                     }
                     .show()
@@ -244,6 +262,16 @@ class PlaylistDetailsFragment : Fragment() {
                 }
             }
         }
+
+        binding.editPlaylistBtn.setOnClickListener {
+            val bundle = Bundle().apply {
+                putSerializable("playlist", currentPlaylist)
+            }
+            findNavController().navigate(
+                R.id.action_playlistDetailsFragment_to_refactorPlaylistFragment,
+                bundle
+            )
+        }
     }
 
     private fun sharePlaylist(playlist: Playlist, tracks: List<Track>) {
@@ -301,6 +329,17 @@ class PlaylistDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        arguments?.getSerializable("playlist")?.let {
+            val newPlaylist = it as Playlist
+            if (newPlaylist != currentPlaylist) {
+                currentPlaylist = newPlaylist
+                bindPlaylistData()
+            }
+        }
     }
 
     private fun clickDebounce(): Boolean {

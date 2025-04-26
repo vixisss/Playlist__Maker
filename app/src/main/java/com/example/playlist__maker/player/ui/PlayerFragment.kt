@@ -136,14 +136,16 @@ class PlayerFragment : Fragment() {
                 } ?: emptyList()
 
                 if (tracksInPlaylist.none { it.trackId == track.trackId }) {
-                    viewModelPlaylist.addTrackToPlaylist(playlist.id, track)
-                    Toast.makeText(context, "Добавлено в плейлист  ${playlist.name}", Toast.LENGTH_SHORT).show()
+                    // Создаем копию трека без изменения состояния избранного
+                    val trackToAdd = track.copy(isFavorite = false)
+                    viewModelPlaylist.addTrackToPlaylist(playlist.id, trackToAdd)
+                    Toast.makeText(context, "Добавлено в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
                     BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
                 } else {
                     Toast.makeText(context, "Трек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "рек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Ошибка при добавлении в плейлист", Toast.LENGTH_SHORT).show()
             }
         }
 
