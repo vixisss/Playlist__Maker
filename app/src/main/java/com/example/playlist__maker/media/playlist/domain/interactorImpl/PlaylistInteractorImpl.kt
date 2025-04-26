@@ -6,20 +6,29 @@ import com.example.playlist__maker.media.playlist.domain.interactor.PlaylistInte
 import com.example.playlist__maker.media.playlist.domain.models.Playlist
 import com.example.playlist__maker.media.playlist.domain.repository.PlaylistRepository
 import com.example.playlist__maker.search.domain.models.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PlaylistInteractorImpl(
-    private val playlistRepository: PlaylistRepository
+    private val playlistRepository: PlaylistRepository,
+    private val dbConvertor: PlaylistDbConvertor
 ) : PlaylistInteractor {
 
-    override suspend fun getAllPlaylists(): List<PlaylistEntity> {
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistRepository.update(dbConvertor.map(playlist))
+    }
+
+    override fun getAllPlaylists(): Flow<List<Playlist>> {
         return playlistRepository.getAllPlaylists()
+            .map { entities -> entities.map { dbConvertor.map(it) } }
     }
 
-    override suspend fun getPlaylistById(playlistId: Long): PlaylistEntity? {
+    override fun getPlaylistById(playlistId: Long): Flow<Playlist?> {
         return playlistRepository.getPlaylistById(playlistId)
+            .map { entity -> entity?.let { dbConvertor.map(it) } }
     }
 
-    override suspend fun delete(playlistId: Long) {
+    override suspend fun deletePlaylist(playlistId: Long) {
         playlistRepository.delete(playlistId)
     }
 
@@ -29,26 +38,13 @@ class PlaylistInteractorImpl(
 
     override suspend fun addTrackToPlaylist(playlistId: Long, track: Track) {
         playlistRepository.addTrackToPlaylist(playlistId, track)
-        val updatedTracks = playlistRepository.getPlaylistTracks(playlistId)
-        val playlist = playlistRepository.getPlaylistById(playlistId) ?: return
-        playlistRepository.update(playlist.copy(tracksCount = updatedTracks.size))
     }
 
-    override suspend fun getPlaylistTracks(playlistId: Long): List<Track> {
+    override fun getPlaylistTracks(playlistId: Long): Flow<List<Track>> {
         return playlistRepository.getPlaylistTracks(playlistId)
     }
 
     override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
         playlistRepository.removeTrackFromPlaylist(playlistId, trackId)
-    }
-
-    override suspend fun updatePlaylist(playlist: Playlist) {
-        val currentTracks = playlistRepository.getPlaylistTracks(playlist.id)
-        val updatedPlaylist = playlist.copy(
-            tracksCount = currentTracks.size
-        )
-
-        val entity = PlaylistDbConvertor().map(updatedPlaylist)
-        playlistRepository.update(entity)
     }
 }

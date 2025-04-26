@@ -150,10 +150,6 @@ class SearchFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         }
     }
 
-    override fun onLongClick(track: Track) {
-        TODO("Not yet implemented")
-    }
-
     private fun setupDeleteKeyListener() {
         binding.editTextSearch.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {

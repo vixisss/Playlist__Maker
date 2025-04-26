@@ -2,9 +2,12 @@ package com.example.playlist__maker.media.playlist.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Trace.isEnabled
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -45,6 +48,7 @@ class PlaylistDetailsFragment : Fragment() {
 
     companion object {
         private const val PLAYLIST_ARG_KEY = "playlist"
+        private const val KEY_UPDATED_PLAYLIST = "updated_playlist"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
 
         fun newInstance(playlist: Playlist): PlaylistDetailsFragment {
@@ -55,7 +59,6 @@ class PlaylistDetailsFragment : Fragment() {
             }
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,19 +72,25 @@ class PlaylistDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
-        bottomSheetBehavior.isHideable = false
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        setupClickListeners()
+        loadPlaylist()
+        setupRecycleAdapter()
+        handleExit()
+        setupObservers()
+    }
 
+
+    private fun setupObservers() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Playlist>(
-            "updated_playlist"
+            KEY_UPDATED_PLAYLIST
         )?.observe(viewLifecycleOwner) { updatedPlaylist ->
             currentPlaylist = updatedPlaylist
             bindPlaylistData()
         }
 
-        arguments?.getSerializable("playlist")?.let {
+        arguments?.getSerializable(PLAYLIST_ARG_KEY)?.let {
             currentPlaylist = it as Playlist
+            viewModel.loadPlaylistTracks(currentPlaylist.id)
             bindPlaylistData()
         }
 
@@ -92,15 +101,42 @@ class PlaylistDetailsFragment : Fragment() {
             }
         }
 
-        setupClickListeners()
-        loadPlaylist()
-        setupRecycleAdapter()
+        viewModel.playlistTracks.observe(viewLifecycleOwner) { tracks ->
+            trackAdapter.updateList(tracks)
+            binding.tracksBottomSheet.isVisible = tracks.isNotEmpty()
+        }
+    }
+
+    private var backPressedCallback: OnBackPressedCallback? = null
+
+    private fun handleExit() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.moreBottomSheet.isVisible) {
+                    binding.moreBottomSheet.isVisible = false
+                    binding.overlay.isVisible = false
+                } else {
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                    isEnabled = true
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback!!
+        )
     }
 
 
     private fun setupBottomSheet(){
         val bottomSheetBehaviorMore = BottomSheetBehavior.from(binding.moreBottomSheet)
         bottomSheetBehaviorMore.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
+        bottomSheetBehavior.isHideable = false
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         bottomSheetBehaviorMore.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -119,27 +155,16 @@ class PlaylistDetailsFragment : Fragment() {
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
-
-
     }
+
 
     private fun loadPlaylist(){
         arguments?.getSerializable("playlist")?.let { playlist ->
             currentPlaylist = playlist as Playlist
             viewModel.loadPlaylistTracks(currentPlaylist.id)
         }
-
-        arguments?.let { bundle ->
-            currentPlaylist = (bundle.getSerializable(PLAYLIST_ARG_KEY) as? Playlist)!!
-            if (true) {
-                bindPlaylistData()
-            } else {
-                requireActivity()
-            }
-        } ?: run {
-            requireActivity()
-        }
     }
+
 
     private fun setupRecycleAdapter(){
         trackAdapter = TrackAdapter(emptyList(), object : TrackAdapter.OnTrackClickListener {
@@ -172,6 +197,7 @@ class PlaylistDetailsFragment : Fragment() {
             }
         })
 
+
         binding.recycleListPlaylistDetails.adapter = trackAdapter
         binding.recycleListPlaylistDetails.layoutManager = LinearLayoutManager(requireContext())
 
@@ -181,10 +207,43 @@ class PlaylistDetailsFragment : Fragment() {
         }
     }
 
+
     private fun bindPlaylistData() {
         with(binding) {
+            shareDetails.post {
+                val location = IntArray(2)
+                shareDetails.getLocationOnScreen(location)
+                val shareDetailsBottom = location[1] + shareDetails.height
+
+                val rootLocation = IntArray(2)
+                (root as View).getLocationOnScreen(rootLocation)
+                val rootTop = rootLocation[1]
+
+                val relativeBottom = shareDetailsBottom - rootTop
+                val margin24dp = resources.getDimensionPixelSize(R.dimen.margin24)
+                val peekHeight = relativeBottom + margin24dp
+                val behavior = BottomSheetBehavior.from(tracksBottomSheet)
+                behavior.peekHeight = peekHeight
+
+                behavior.maxHeight = resources.displayMetrics.heightPixels - peekHeight
+            }
+
+            if(currentPlaylist.tracksCount == 0) {
+                binding.placeholderNothing.isVisible = true
+                binding.placeholderNothingText.isVisible = true
+            } else {
+                binding.placeholderNothing.isVisible = false
+                binding.placeholderNothingText.isVisible = false
+            }
+
             playlistNameDetails.text = currentPlaylist.name
             PlaylistNameItemPlayer.text = currentPlaylist.name
+
+            if(currentPlaylist.description.isNotEmpty()){
+                playlistDescriptionDetails.isVisible = true
+                playlistDescriptionDetails.text = currentPlaylist.description
+            } else playlistDescriptionDetails.isVisible = false
+
 
             totalTracks.text = resources.getQuantityString(
                 R.plurals.howManyTracks,
@@ -231,6 +290,8 @@ class PlaylistDetailsFragment : Fragment() {
         }
 
         binding.deletePlaylistBtn.setOnClickListener {
+            binding.moreBottomSheet.isVisible = false
+            binding.overlay.isVisible = false
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Удалить плейлист")
                 .setMessage("Хотите удалить плейлист?")
@@ -327,6 +388,8 @@ class PlaylistDetailsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        backPressedCallback?.remove()
+        backPressedCallback = null
         super.onDestroyView()
         _binding = null
     }

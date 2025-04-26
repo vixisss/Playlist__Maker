@@ -14,6 +14,7 @@ import com.example.playlist__maker.db.playlists.PlaylistDbConvertor
 import com.example.playlist__maker.media.playlist.domain.interactor.PlaylistInteractor
 import com.example.playlist__maker.media.playlist.domain.models.Playlist
 import com.example.playlist__maker.search.domain.models.Track
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -22,10 +23,8 @@ import java.io.IOException
 open class PlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor,
     private val context: Context
-
 ) : ViewModel() {
 
-    private val _playlistCreated = MutableLiveData<Boolean>()
 
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
@@ -33,20 +32,37 @@ open class PlaylistViewModel(
     private val _playlistTracks = MutableLiveData<List<Track>>()
     val playlistTracks: LiveData<List<Track>> = _playlistTracks
 
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     fun deletePlaylist(playlistId: Long) {
         viewModelScope.launch {
             try {
-                playlistInteractor.delete(playlistId)
-            } catch (e: Exception) {}
+                playlistInteractor.deletePlaylist(playlistId)
+                loadPlaylists()
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to delete playlist"
+            } finally {
+            }
         }
     }
 
     fun loadPlaylistTracks(playlistId: Long) {
         viewModelScope.launch {
-            _playlistTracks.value = playlistInteractor.getPlaylistTracks(playlistId)
+            try {
+                playlistInteractor.getPlaylistTracks(playlistId).collectLatest { tracks ->
+                    val sortedTracks = tracks.sortedByDescending { it.addedDate ?: 0 }
+                    _playlistTracks.value = sortedTracks
+                }
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load playlist tracks"
+            } finally {
+            }
         }
     }
-
 
     fun createPlaylist(playlist: Playlist) {
         viewModelScope.launch {
@@ -63,10 +79,11 @@ open class PlaylistViewModel(
                 )
 
                 playlistInteractor.createPlaylist(updatedPlaylist)
-                _playlistCreated.value = true
                 loadPlaylists()
+                _error.value = null
             } catch (e: Exception) {
-                _playlistCreated.value = false
+                _error.value = e.message ?: "Failed to create playlist"
+            } finally {
             }
         }
     }
@@ -102,12 +119,13 @@ open class PlaylistViewModel(
     fun loadPlaylists() {
         viewModelScope.launch {
             try {
-                val playlistEntities = playlistInteractor.getAllPlaylists()
-                val playlists = playlistEntities.map { playlistEntity ->
-                    PlaylistDbConvertor().map(playlistEntity)
+                playlistInteractor.getAllPlaylists().collectLatest { playlists ->
+                    _playlists.value = playlists
                 }
-                _playlists.value = playlists
+                _error.value = null
             } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load playlists"
+            } finally {
             }
         }
     }
@@ -115,20 +133,28 @@ open class PlaylistViewModel(
     fun addTrackToPlaylist(playlistId: Long, track: Track) {
         viewModelScope.launch {
             try {
-                playlistInteractor.addTrackToPlaylist(playlistId, track)
+                val trackWithDate = track.copy(addedDate = System.currentTimeMillis())
+                playlistInteractor.addTrackToPlaylist(playlistId, trackWithDate)
                 loadPlaylists()
+                _error.value = null
             } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to add track to playlist"
+            } finally {
             }
         }
     }
 
-
-
     fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
         viewModelScope.launch {
-            playlistInteractor.removeTrackFromPlaylist(playlistId, trackId)
-            loadPlaylistTracks(playlistId)
-            loadPlaylists()
+            try {
+                playlistInteractor.removeTrackFromPlaylist(playlistId, trackId)
+                loadPlaylistTracks(playlistId)
+                loadPlaylists()
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to remove track from playlist"
+            } finally {
+            }
         }
     }
 }

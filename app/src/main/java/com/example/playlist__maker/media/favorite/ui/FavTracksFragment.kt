@@ -32,6 +32,7 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         fun newInstance() = FavTracksFragment()
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
+
     private var _binding: FragmentFavTracksBinding? = null
     private val binding
         get() = _binding!!
@@ -45,6 +46,7 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         _binding = FragmentFavTracksBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -85,11 +87,11 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         trackList.addAll(data)
         adapter.updateList(trackList)
 
-        binding.mediaPlaceholderFavTracks.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+        binding.mediaPlaceholderFavTracks.visibility =
+            if (data.isEmpty()) View.VISIBLE else View.GONE
         binding.placeholderText.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
         binding.favTracksList.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
     }
-
 
 
     override fun onResume() {
@@ -116,9 +118,6 @@ class FavTracksFragment : Fragment(), TrackAdapter.OnTrackClickListener {
         }
     }
 
-    override fun onLongClick(track: Track) {
-        TODO("Not yet implemented")
-    }
 
 
     private fun clickDebounce(): Boolean {

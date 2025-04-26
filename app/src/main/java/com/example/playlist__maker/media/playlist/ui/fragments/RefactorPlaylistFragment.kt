@@ -92,6 +92,7 @@ class RefactorPlaylistFragment : CreatePlaylistFragment() {
     private fun setupUI() {
         binding.toolbarCreatePlayList.setTitle(R.string.refactor)
         binding.createPlaylistButton.text = "Сохранить"
+        binding.iconAddPhoto.isVisible = true
     }
 
     override fun createPlaylist() {

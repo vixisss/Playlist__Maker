@@ -10,8 +10,7 @@ class PlaylistDbConvertor {
             name = playlist.name,
             description = playlist.description,
             coverPath = playlist.coverPath,
-            // Не перезаписываем tracksJson, чтобы сохранить актуальные треки
-            tracksJson = "[]", // Будет заменено в repository
+            tracksJson = "[]",
             tracksCount = playlist.tracksCount
         )
     }
