@@ -31,14 +31,12 @@ class ExternalNavigatorImpl(
     )
 
 
-
-
     override fun shareApp() {
         val shareLinkData = makeUriForShareApp()
         val intent = Intent(Intent.ACTION_SEND).apply {
             putExtra(Intent.EXTRA_TEXT, shareLinkData.url)
-            setType(shareLinkData.type)
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            type = shareLinkData.type
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         context.startActivity(intent)
     }
@@ -48,7 +46,7 @@ class ExternalNavigatorImpl(
         val browserLinkData = makeUriForUserAgree()
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = browserLinkData.url.toUri()
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         context.startActivity(intent)
     }
@@ -60,7 +58,7 @@ class ExternalNavigatorImpl(
             putExtra(Intent.EXTRA_EMAIL, emailData.emailAdress)
             putExtra(Intent.EXTRA_SUBJECT, emailData.supportHelpTheme)
             putExtra(Intent.EXTRA_TEXT, emailData.supportHelpBodyLetter)
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         context.startActivity(intent)
     }

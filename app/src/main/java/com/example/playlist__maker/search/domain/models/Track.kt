@@ -16,8 +16,12 @@ data class Track (
     val country: String?,
     val previewUrl: String?,
 
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+    val addedDate: Long = System.currentTimeMillis()
 
 ): Serializable {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
+    fun updateFavoriteState(isFavorite: Boolean): Track {
+        return this.copy(isFavorite = isFavorite)
+    }
 }

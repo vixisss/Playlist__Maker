@@ -1,12 +1,11 @@
 package com.example.playlist__maker.di
 
-import com.example.playlist__maker.db.data.playlists.PlaylistDbConvertor
-import com.example.playlist__maker.db.data.repos.PlaylistRepositoryImpl
-import com.example.playlist__maker.db.data.repos.TrackFavRepositoryImpl
-import com.example.playlist__maker.db.data.tracks.MediaFavDbConvertor
-import com.example.playlist__maker.db.domain.repository.PlaylistRepository
-import com.example.playlist__maker.db.domain.repository.TrackFavRepository
-import com.example.playlist__maker.player.domain.impl.PlayerInteractorImpl
+import com.example.playlist__maker.db.playlists.PlaylistDbConvertor
+import com.example.playlist__maker.media.playlist.data.PlaylistRepositoryImpl
+import com.example.playlist__maker.media.favorite.data.TrackFavRepositoryImpl
+import com.example.playlist__maker.db.tracks.MediaFavDbConvertor
+import com.example.playlist__maker.media.playlist.domain.repository.PlaylistRepository
+import com.example.playlist__maker.media.favorite.domain.TrackFavRepository
 import com.example.playlist__maker.search.domain.repository.TracksRepository
 import com.example.playlist__maker.search.domain.repository.TracksRepositoryImpl
 import com.example.playlist__maker.settings.data.AppSwitcher
@@ -38,6 +37,6 @@ val repositoryModule = module {
     }
 
     single <PlaylistRepository>{
-        PlaylistRepositoryImpl(get(), get())
+        PlaylistRepositoryImpl(get(), get(), get())
     }
 }

@@ -33,20 +33,14 @@ class TrackAdapter(
 
     interface OnTrackClickListener {
         fun onClick(track: Track)
+        fun onLongClick(track: Track) = Unit
     }
 
+
     fun updateList(newList: List<Track>) {
-        val diffCallback = object : DiffUtil.Callback() {
-            override fun getOldListSize() = tracks.size
-            override fun getNewListSize() = newList.size
-            override fun areItemsTheSame(oldPos: Int, newPos: Int) =
-                tracks[oldPos].trackId == newList[newPos].trackId
-            override fun areContentsTheSame(oldPos: Int, newPos: Int) =
-                tracks[oldPos] == newList[newPos]
-        }
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        tracks = newList.toMutableList()
-        diffResult.dispatchUpdatesTo(this)
+        // Полностью заменяем список, а не добавляем элементы
+        tracks = newList
+        notifyDataSetChanged()
     }
 
 }

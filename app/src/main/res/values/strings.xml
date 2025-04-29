@@ -43,4 +43,17 @@
         <item quantity="many">%d треков</item>
         <item quantity="other">%d треков</item>
     </plurals>
+
+    <plurals name="howManyMinutes" tools:ignore="MissingQuantity">
+        <item quantity="one">%d минута</item>
+        <item quantity="two">%d минуты</item>
+        <item quantity="few">%d минут</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+
+    <string name="share_playlist_title">Поделиться плейлистом</string>
+    <string name="empty_playlist_message">Нельзя поделиться пустым плейлистом</string>
+
+    <string name="refactor">Редактировать</string>
 </resources>

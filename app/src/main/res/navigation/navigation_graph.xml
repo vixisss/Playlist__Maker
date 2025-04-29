@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mediaFragment"
-        android:name="com.example.playlist__maker.media.fragments.MediaFragment"
+        android:name="com.example.playlist__maker.media.MediaFragment"
         android:label="fragment_media"
         tools:layout="@layout/fragment_media" >
 
@@ -18,6 +18,9 @@
             android:name="track"
             android:id="@+id/action_mediaFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_mediaFragment_to_playlistDetailsFragment"
+            app:destination="@id/playlistDetailsFragment" />
     </fragment>
 
     <fragment
@@ -40,8 +43,12 @@
     <fragment
         android:id="@+id/createPlaylistFragment"
         tools:layout="@layout/fragment_create_playlist"
-        android:name="com.example.playlist__maker.media.fragments.CreatePlaylistFragment"
-        android:label="CreatePlaylistFragment" />
+        android:name="com.example.playlist__maker.media.playlist.ui.fragments.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment" >
+        <action
+            android:id="@+id/action_createPlaylistFragment_to_mediaFragment"
+            app:destination="@id/mediaFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/playerFragment"
@@ -51,6 +58,41 @@
         <action
             android:id="@+id/action_playerFragment_to_createPlaylistFragment"
             app:destination="@id/createPlaylistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playlistDetailsFragment"
+        android:name="com.example.playlist__maker.media.playlist.ui.fragments.PlaylistDetailsFragment"
+        android:label="PlaylistDetailsFragment"
+        tools:layout="@layout/fragment_playlist_details">
+        <argument
+            android:name="playlist"
+            app:argType="com.example.playlist__maker.media.playlist.domain.models.Playlist" />
+        <action
+            android:id="@+id/action_playlistDetailsFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_playlistDetailsFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+        <action
+            android:id="@+id/action_playlistDetailsFragment_to_refactorPlaylistFragment"
+            app:destination="@id/refactorPlaylistFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/refactorPlaylistFragment"
+        android:name="com.example.playlist__maker.media.playlist.ui.fragments.RefactorPlaylistFragment"
+        android:label="RefactorPlaylistFragment">
+        <argument
+            android:name="playlist"
+            app:argType="com.example.playlist__maker.media.playlist.domain.models.Playlist" />
+
+        <!-- Добавляем действие для возврата с обновленными данными -->
+        <action
+            android:id="@+id/action_refactorPlaylistFragment_to_playlistDetailsFragment"
+            app:destination="@id/playlistDetailsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/playlistDetailsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 

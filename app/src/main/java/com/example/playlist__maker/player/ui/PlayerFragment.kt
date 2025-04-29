@@ -17,11 +17,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist__maker.R
 import com.example.playlist__maker.databinding.FragmentPlayerBinding
-import com.example.playlist__maker.db.domain.models.Playlist
-import com.example.playlist__maker.media.viewModel.PlaylistViewModel
+import com.example.playlist__maker.db.tracks.FavoriteManager
+import com.example.playlist__maker.media.playlist.domain.models.Playlist
+import com.example.playlist__maker.media.playlist.ui.viewModel.PlaylistViewModel
 import com.example.playlist__maker.player.ui.adapters.TrackInPlaylistAdapter
 import com.example.playlist__maker.player.ui.viewModel.PlayerViewModel
 import com.example.playlist__maker.search.domain.models.Track
+import com.example.playlist__maker.utils.DpToPx
 import com.example.playlist__maker.utils.PlayState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
@@ -42,6 +44,13 @@ class PlayerFragment : Fragment() {
         binding.time.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(uiState.currentPosition)
         updatePlayButtonState(uiState.playState)
         updateFavoriteButtonState(uiState.isFavorite)
+    }
+
+    private val favoriteObserver = Observer<Pair<String, Boolean>> { (trackId, isFavorite) ->
+        if (track.trackId == trackId) {
+            track.isFavorite = isFavorite
+            updateFavoriteButtonState(isFavorite)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -67,6 +76,7 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FavoriteManager.favoriteUpdates.observe(viewLifecycleOwner, favoriteObserver)
 
         arguments?.getString("track")?.let { trackString ->
 
@@ -126,14 +136,16 @@ class PlayerFragment : Fragment() {
                 } ?: emptyList()
 
                 if (tracksInPlaylist.none { it.trackId == track.trackId }) {
-                    viewModelPlaylist.addTrackToPlaylist(playlist.id, track)
-                    Toast.makeText(context, "Добавлено в плейлист  ${playlist.name}", Toast.LENGTH_SHORT).show()
+                    // Создаем копию трека без изменения состояния избранного
+                    val trackToAdd = track.copy(isFavorite = false)
+                    viewModelPlaylist.addTrackToPlaylist(playlist.id, trackToAdd)
+                    Toast.makeText(context, "Добавлено в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
                     BottomSheetBehavior.from(binding.playlistsBottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
                 } else {
                     Toast.makeText(context, "Трек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "рек уже добавлен в плейлист ${playlist.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Ошибка при добавлении в плейлист", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -193,7 +205,7 @@ class PlayerFragment : Fragment() {
             .load(artworkUrl)
             .placeholder(R.drawable.big_placeholder)
             .error(R.drawable.big_placeholder)
-            .transform(RoundedCorners(dpToPx(8F, requireContext())))
+            .transform(RoundedCorners(DpToPx.dpToPx(8F, requireContext())))
             .into(binding.artworkUrl100)
     }
 
@@ -228,17 +240,9 @@ class PlayerFragment : Fragment() {
     private fun updateFavoriteButtonState(isFavorite: Boolean) {
         val iconRes = if (isFavorite) R.drawable.player_like_click else R.drawable.player_like
         binding.playerLike.setImageResource(iconRes)
-        track.isFavorite = isFavorite
-    }
-
-
-
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics
-        ).toInt()
+        viewModel.uiState.observe(viewLifecycleOwner) {
+            track.isFavorite
+        }
     }
 
     override fun onDestroyView() {
